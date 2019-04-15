@@ -1,0 +1,27 @@
+{
+  "name": "html-to-pdfmake",
+  "version": "1.0.0",
+  "description": "Convert HTML code to PDFMake",
+  "main": "index.js",
+  "scripts": {
+    "pretest": "eslint index.js",
+    "test": "node test/unit.js",
+    "pdf": "node test/create_pdf.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aymkdn/html-to-pdfmake.git"
+  },
+  "author": "Aymkdn",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Aymkdn/html-to-pdfmake/issues"
+  },
+  "homepage": "https://github.com/Aymkdn/html-to-pdfmake#readme",
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "jsdom": "^14.0.0",
+    "pdfmake": "^0.1.54",
+    "simple-test-framework": "^0.1.7"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "env": {
+    "browser": true,
+    "amd": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended"
+  ],
+  "rules": {
+    "no-extra-semi": "off",
+    "no-console": "off"
+  }
+}
