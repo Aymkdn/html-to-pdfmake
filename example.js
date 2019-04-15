@@ -118,8 +118,8 @@ var docDefinition = {
     bold:{
       bold:true
     },
-    'html-p':{
-      margin:[0, 5, 0, 5]
+    'html-h6':{
+      color:'purple'
     }
   }
 };

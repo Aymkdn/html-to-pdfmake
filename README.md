@@ -22,7 +22,7 @@ var html = htmlToPdfMake(`
   <div>
     <h1>My title</h1>
     <p>
-      This is a sentence with a <strong>bold word</strong>, <em>one in italic</em>, 
+      This is a sentence with a <strong>bold word</strong>, <em>one in italic</em>,
       and <u>one with underline</u>. And finally <a href="https://www.somewhere.com">a link</a>.
     </p>
   </div>
@@ -30,36 +30,60 @@ var html = htmlToPdfMake(`
 
 /*
 it will return:
-{ stack:
-  [
-    { text: 'My title',
+{
+  stack:[
+    {
+      text: 'My title',
       fontSize: 24,
       bold: true,
       marginBottom: 5,
-      style: [ 'html-h1' ]
+      style: ['html-h1']
     },
-    { text:
-      [
-        { text: 'This is a sentence with a ', margin: [ 0, 5, 0, 10 ] },
-        { text: 'bold word', bold: true, style: [ 'html-strong' ] },
-        { text: ', ', margin: [ 0, 5, 0, 10 ] },
-        { text: 'one in italic', italics: true, style: [ 'html-em' ] },
-        { text: ', and ', margin: [ 0, 5, 0, 10 ] },
-        { text: 'one with underline',
+    {
+      text: [
+        {
+          text: 'This is a sentence with a '
+        },
+        {
+          text: 'bold word',
+          bold: true,
+          style: ['html-strong']
+        },
+        {
+          text: ', '
+        },
+        {
+          text: 'one in italic',
+          italics: true,
+          style: ['html-em']
+        },
+        {
+          text: ', and '
+        },
+        {
+          text: 'one with underline',
           decoration: 'underline',
-          style: [ 'html-u' ] },
-        { text: '. And finally ', margin: [ 0, 5, 0, 10 ] },
-        { text: 'a link',
+          style: ['html-u']
+        },
+        {
+          text: '. And finally '
+        },
+        {
+          text: 'a link',
           color: 'blue',
           decoration: 'underline',
           link: 'https://www.somewhere.com',
-          style: [ 'html-a' ] },
-        { text: '.', margin: [ 0, 5, 0, 10 ] }
+          style: ['html-a']
+        },
+        {
+          text: '.'
+        }
       ],
-      style: [ 'html-p' ]
+      margin: [0, 5, 0, 10],
+      style: ['html-p']
     }
   ],
-  style: [ 'html-div' ]
+  style: ['html-div']
 }
  */
 ```
@@ -124,23 +148,23 @@ var html = htmlToPdfMake(`
 /*
 It returns:
 {
-  text: [{
-      text: 'This sentence has ',
-      margin: [0, 5, 0, 10]
+  text: [
+    {
+      text: 'This sentence has '
     },
     {
       text: 'a bold and red word',
-      style: ['red', 'html-span'], // two classes will be applied: 'red' and 'html-span'
-      bold: true // the `font-weight:bold` has been translated to `bold:true`
+      style: ['red', 'html-span'], // 'red' added because of `class="red"`
+      bold: true // added because of `style="font-weight:bold"`
     },
     {
-      text: '.',
-      margin: [0, 5, 0, 10]
+      text: '.'
     }
   ],
+  margin: [0, 5, 0, 10],
   style: ['html-p']
 }
- */
+*/
 
 var docDefinition = {
  content: [

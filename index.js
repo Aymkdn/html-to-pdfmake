@@ -18,7 +18,7 @@
  * // but you can pass your own styles if you prefer
  * htmlToPdfMake('<div><h1>My Title</h1><p>My paragraph</p></div>')
  */
-//var util = require("util"); // to debug
+var util = require("util"); // to debug
 module.exports = function(htmlText, wndw) {
   wndw = wndw || window;
 
@@ -66,7 +66,7 @@ module.exports = function(htmlText, wndw) {
       if (ret) {
         // to reduce the amount of code
         if (Array.isArray(ret) && ret.length === 1) ret=ret[0];
-        //console.log(util.inspect(ret, {showHidden: false, depth: null})); // to debug
+        console.log(util.inspect(ret, {showHidden: false, depth: null})); // to debug
         docDef.push(ret);
       }
     });
@@ -85,7 +85,7 @@ module.exports = function(htmlText, wndw) {
   var parseElement = function(element, parentNode) {
     var nodeName = element.nodeName.toLowerCase();
     var parentNodeName = (parentNode ? parentNode.nodeName.toLowerCase() : '');
-    var ret, text, cssClass, cssStyle, style;
+    var ret, text, cssClass, cssStyle;
 
     // check the node type
     switch(element.nodeType) {
@@ -96,12 +96,9 @@ module.exports = function(htmlText, wndw) {
             ret = {'text': text};
             if (parentNodeName) {
               // do we have a default style to apply?
-              if (defaultStyles[parentNodeName]) {
-                for (style in defaultStyles[parentNodeName]) {
-                  if (defaultStyles[parentNodeName].hasOwnProperty(style)) {
-                    ret[style] = defaultStyles[parentNodeName][style];
-                  }
-                }
+              // for 'p' we want to apply it from the parent
+              if (parentNodeName !== 'p') {
+                applyDefaultStyle(ret, parentNodeName);
               }
 
               // for links
@@ -198,6 +195,10 @@ module.exports = function(htmlText, wndw) {
               ret.style = (ret.style||[]).concat(['html-'+nodeName]);
             } else {
               ret = (nodeName==='p' ? {text:ret} : {stack:ret});
+              // we apply the default style if it's a "p"
+              if (nodeName === 'p') {
+                applyDefaultStyle(ret, 'p');
+              }
               ret.style = ['html-'+nodeName];
             }
           } else if (ret.table || ret.ol || ret.ul) { // for TABLE / UL / OL
@@ -208,13 +209,7 @@ module.exports = function(htmlText, wndw) {
               ret.style = ret.style.concat(cssClass.split(' '));
             }
             // do we have a default style to apply?
-            if (defaultStyles.table) {
-              for (style in defaultStyles.table) {
-                if (defaultStyles.table.hasOwnProperty(style)) {
-                  ret[style] = defaultStyles.table[style];
-                }
-              }
-            }
+            applyDefaultStyle(ret, 'table');
           }
         }
 
@@ -222,6 +217,16 @@ module.exports = function(htmlText, wndw) {
       }
     }
     return "";
+  }
+
+  var applyDefaultStyle = function(ret, nodeName) {
+    if (defaultStyles[nodeName]) {
+      for (var style in defaultStyles[nodeName]) {
+        if (defaultStyles[nodeName].hasOwnProperty(style)) {
+          ret[style] = defaultStyles[nodeName][style];
+        }
+      }
+    }
   }
 
   /**
