@@ -85,9 +85,9 @@ For example, using a &lt;STRONG&gt; will display the word in **bold**. Or, a lin
 
 ### Customize style
 
-Each converted element will have an associated style-class called `html-TAGNAME`.
+Each converted element will have an associated style-class called `html-tagname`.
 
-For example, if you want all **STRONG** tags to be highlighted with a yellow backgroud you can use `html-strong` in the `styles` definition:
+For example, if you want all &lt;STRONG&gt; tags to be highlighted with a yellow backgroud you can use `html-strong` in the `styles` definition:
 
 ```javascript
 var html = htmlToPdfMake(`
@@ -112,7 +112,7 @@ var pdfDocGenerator = pdfMake.createPdf(docDefinition);
 
 ### CSS class and style
 
-The classed passed to the elements will be added, as well as the `style`.
+The `class` and `styles` for the elements will also be added.
 
 ```javascript
 var html = htmlToPdfMake(`
