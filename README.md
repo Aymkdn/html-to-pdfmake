@@ -22,7 +22,8 @@ var html = htmlToPdfMake(`
   <div>
     <h1>My title</h1>
     <p>
-      This is a sentence with a <strong>bold word</strong>, <em>one in italic</em>, and <u>one with underline</u>. And finally <a href="https://www.somewhere.com">a link</a>.
+      This is a sentence with a <strong>bold word</strong>, <em>one in italic</em>, 
+      and <u>one with underline</u>. And finally <a href="https://www.somewhere.com">a link</a>.
     </p>
   </div>
   `);
@@ -80,7 +81,7 @@ The below HTML tags are supported:
 
 I've defined some default styles for the supported element.
 
-For example, using a <STRONG> will display the word in **bold**. Or, a link will appear in blue with an underline...
+For example, using a &lt;STRONG&gt; will display the word in **bold**. Or, a link will appear in blue with an underline, and so on...
 
 ### Customize style
 
