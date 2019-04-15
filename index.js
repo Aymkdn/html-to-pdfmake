@@ -18,7 +18,7 @@
  * // but you can pass your own styles if you prefer
  * htmlToPdfMake('<div><h1>My Title</h1><p>My paragraph</p></div>')
  */
-var util = require("util"); // to debug
+//var util = require("util"); // to debug
 module.exports = function(htmlText, wndw) {
   wndw = wndw || window;
 
@@ -66,7 +66,7 @@ module.exports = function(htmlText, wndw) {
       if (ret) {
         // to reduce the amount of code
         if (Array.isArray(ret) && ret.length === 1) ret=ret[0];
-        console.log(util.inspect(ret, {showHidden: false, depth: null})); // to debug
+        //console.log(util.inspect(ret, {showHidden: false, depth: null})); // to debug
         docDef.push(ret);
       }
     });
