@@ -100,6 +100,7 @@ The below HTML tags are supported:
   - UL / OL / LI
   - TABLE / THEAD / TBODY / TFOOTER / TR / TH / TD
   - H1 to H6
+  - IMG
 
 ### Default style
 
@@ -179,6 +180,12 @@ var docDefinition = {
 
 var pdfDocGenerator = pdfMake.createPdf(docDefinition);
 ```
+
+## `<img>`
+
+The `<img>` tag is supported, however the `src` attribute must already be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)).
+
+This is too complex and out of the scope of this module to find and convert the image source to a base64 format. You can check [this Stackoverflow question](https://stackoverflow.com/questions/934012/get-image-data-in-javascript/42916772#42916772) to know the different ways to get a base64 encoded content from an image.
 
 ## Examples
 
