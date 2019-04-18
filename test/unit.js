@@ -242,3 +242,17 @@ test("table",function(t) {
 
   t.finish();
 })
+
+test("img",function(t) {
+  var ret = htmlToPdfMake('<img width="10" style="height:10px" src="data:image/jpeg;base64,...encodedContent...">', window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.image === "data:image/jpeg;base64,...encodedContent..." &&
+    ret.width === 10 && ret.height === 10 &&
+    Array.isArray(ret.style) &&
+    ret.style[0] === 'html-img',
+  "<img>");
+
+  t.finish();
+})

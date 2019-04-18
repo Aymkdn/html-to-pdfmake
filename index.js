@@ -85,7 +85,7 @@ module.exports = function(htmlText, wndw) {
   var parseElement = function(element, parentNode) {
     var nodeName = element.nodeName.toLowerCase();
     var parentNodeName = (parentNode ? parentNode.nodeName.toLowerCase() : '');
-    var ret, text, cssClass, cssStyle;
+    var ret, text, cssClass;
 
     // check the node type
     switch(element.nodeType) {
@@ -102,7 +102,7 @@ module.exports = function(htmlText, wndw) {
               }
 
               // for links
-              if (parentNodeName === 'a') {
+              if (parentNodeName === "a") {
                 ret.link = parentNode.getAttribute("href");
               }
 
@@ -114,13 +114,7 @@ module.exports = function(htmlText, wndw) {
 
               // check if the element has a "style" attribute
               if (ret.text) {
-                cssStyle = parentNode.getAttribute("style");
-                if (cssStyle) {
-                  cssStyle = computeStyle(cssStyle);
-                  cssStyle.forEach(function(style) {
-                    ret[style.key] = style.value;
-                  })
-                }
+                setComputedStyle(ret, parentNode.getAttribute("style"));
               }
             } else {
               ret = text;
@@ -165,6 +159,8 @@ module.exports = function(htmlText, wndw) {
             if (cssClass) {
               ret.style = ret.style.concat(cssClass.split(' '));
             }
+            // check if the element has a "style" attribute
+            setComputedStyle(ret, element.getAttribute("style"));
             break;
           }
           case "table":{
@@ -183,6 +179,26 @@ module.exports = function(htmlText, wndw) {
               }
             });
             delete ret._;
+            // check if the element has a "style" attribute
+            setComputedStyle(ret, element.getAttribute("style"));
+            break;
+          }
+          case "img": {
+            ret = {image:element.getAttribute("src")};
+            ret.style = ['html-img'];
+            cssClass = element.getAttribute("class");
+            if (cssClass) {
+              ret.style = ret.style.concat(cssClass.split(' '));
+            }
+            // check if we have 'width' and 'height'
+            if (element.getAttribute("width")) {
+              ret.width = parseFloat(element.getAttribute("width"))
+            }
+            if (element.getAttribute("height")) {
+              ret.height = parseFloat(element.getAttribute("height"))
+            }
+            // check if the element has a "style" attribute
+            setComputedStyle(ret, element.getAttribute("style"));
             break;
           }
         }
@@ -287,6 +303,20 @@ module.exports = function(htmlText, wndw) {
       }
     });
     return ret;
+  }
+
+  /**
+   * Go throught the CSS styles for the element and apply them
+   * @param {Object} ret Our pdfmake object
+   * @param {String} cssStyle The CSS style string
+   */
+  var setComputedStyle = function(ret, cssStyle) {
+    if (cssStyle) {
+      cssStyle = computeStyle(cssStyle);
+      cssStyle.forEach(function(style) {
+        ret[style.key] = style.value;
+      })
+    }
   }
 
   var toCamelCase = function(str) {
