@@ -181,7 +181,7 @@ var docDefinition = {
 var pdfDocGenerator = pdfMake.createPdf(docDefinition);
 ```
 
-## `<img>`
+### `<img>`
 
 The `<img>` tag is supported, however the `src` attribute must already be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)).
 
