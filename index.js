@@ -41,7 +41,14 @@ module.exports = function(htmlText, wndw) {
     ul: {marginBottom:5},
     li: {marginLeft:5},
     table: {marginBottom:5},
-    th: {bold:true, fillColor:'#EEEEEE'}
+    th: {bold:true, fillColor:'#EEEEEE'},
+    code: {
+      background: '#F5F5F5',
+      padding: '0.25em 0.5em 0.25em',
+      color: '#ff3860',
+      fontSize: 10,
+      margin: [0, 10, 0, 10]
+    }
   }
 
   /**
