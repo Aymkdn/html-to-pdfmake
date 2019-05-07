@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "pretest": "eslint index.js",
-    "test": "node test/unit.js",
-    "pdf": "node test/create_pdf.js"
+    "test": "node test/unit.js"
   },
   "repository": {
     "type": "git",
