@@ -2,6 +2,10 @@
 
 [pdfmake](https://pdfmake.github.io/docs/) permits to easily create a PDF with JavaScript, but the support of HTML was missing. After [reviewing issue #205](https://github.com/bpampuch/pdfmake/issues/205) I decided to create a module to handle this feature.
 
+## Online Demo
+
+You can find the online demo at <a href="https://aymkdn.github.io/html-to-pdfmake/">https://aymkdn.github.io/html-to-pdfmake/</a>
+
 ## Install
 
 ```bash

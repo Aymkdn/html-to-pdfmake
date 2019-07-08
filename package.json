@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "pretest": "eslint index.js",
-    "test": "node test/unit.js"
+    "test": "node test/unit.js",
+    "browser":"browserify index.js --standalone htmlToPdfmake > docs/browser.js"
   },
   "repository": {
     "type": "git",

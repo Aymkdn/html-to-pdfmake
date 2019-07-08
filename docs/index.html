@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HTML to PDFmake online convertor</title>
+</head>
+<body>
+  <h1>HTML to PDFMake convertor</h1>
+  <p><a href="https://github.com/Aymkdn/html-to-pdfmake">Read the documentation</a></p>
+  <p>Paste your HTML code below and click on the button to convert it to the <a href="http://pdfmake.org/">PDFmake</a> format:</p>
+  <div>
+    <textarea style="height:40vh;width:100%" id="code">
+&lt;div>
+  &lt;h1>My title&lt;/h1>
+  &lt;p>
+    This is a sentence with a &lt;strong>bold word&lt;/strong>, &lt;em>one in italic&lt;/em>,
+    and &lt;u>one with underline&lt;/u>. And finally &lt;a href="https://www.somewhere.com">a link&lt;/a>.
+  &lt;/p>
+&lt;/div>
+    </textarea>
+  </div>
+  <div><button type="button" onclick="convert()">Convert</button></div>
+  <p>Result:</p>
+  <div style="display:flex">
+    <textarea id="result" style="flex:1;height:40vh"></textarea>
+    <iframe id="pdf" style="flex:1;height:40vh"></iframe>
+  </div>
+  <script src="browser.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.1.57/build/pdfmake.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.1.57/build/vfs_fonts.js"></script>
+  <script>
+    function convert () {
+      var val = htmlToPdfmake(document.querySelector('#code').value);
+      document.querySelector('#result').value = JSON.stringify(val, null, '  ');
+      var dd = {content:val};
+      pdfMake.createPdf(dd).getDataUrl(function(outDoc) {
+        document.getElementById('pdf').src = outDoc;
+      });
+    }
+    convert();
+  </script>
+</body>
+</html>
