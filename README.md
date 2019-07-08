@@ -4,7 +4,7 @@
 
 ## Online Demo
 
-You can find the online demo at <a href="https://aymkdn.github.io/html-to-pdfmake/">https://aymkdn.github.io/html-to-pdfmake/</a>
+You can find the online demo at <a href="https://aymkdn.github.io/html-to-pdfmake/index.html">https://aymkdn.github.io/html-to-pdfmake/index.html</a>
 
 ## Install
 
