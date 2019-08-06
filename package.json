@@ -1,12 +1,12 @@
 {
   "name": "html-to-pdfmake",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Convert HTML code to PDFMake",
   "main": "index.js",
   "scripts": {
     "pretest": "eslint index.js",
     "test": "node test/unit.js",
-    "browser":"browserify index.js --standalone htmlToPdfmake > docs/browser.js"
+    "browser": "browserify index.js --standalone htmlToPdfmake > docs/browser.js"
   },
   "repository": {
     "type": "git",
@@ -20,8 +20,8 @@
   "homepage": "https://github.com/Aymkdn/html-to-pdfmake#readme",
   "devDependencies": {
     "eslint": "^5.16.0",
-    "jsdom": "^14.0.0",
-    "pdfmake": "^0.1.54",
+    "jsdom": "^14.1.0",
+    "pdfmake": "^0.1.58",
     "simple-test-framework": "^0.1.7"
   }
 }

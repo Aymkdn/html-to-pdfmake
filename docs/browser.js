@@ -168,15 +168,18 @@ module.exports = function(htmlText, wndw) {
             ret = {"_":ret, table:{body:[]}};
             ret._.forEach(function(re) {
               if (re.stack) {
-                var tr=[];
+                var td = []
                 re.stack.forEach(function(r) {
                   if (r.stack) {
                     ret.table.body.push(r.stack)
                   } else {
-                    tr.push(r);
+                    td.push(r);
                   }
                 });
-                if (tr.length>0) ret.table.body.push(tr);
+                if (td.length>0) ret.table.body.push(td);
+              } else {
+                // only one row
+                ret.table.body.push([re]);
               }
             });
             delete ret._;
@@ -207,9 +210,12 @@ module.exports = function(htmlText, wndw) {
         if (ret) {
           if (Array.isArray(ret)) {
             // add a custom class to let the user customize the element
-            if (ret.length === 1) {
+              // "tr" elements should always contain an array
+            if (ret.length === 1 && nodeName !== "tr") {
               ret=ret[0];
               ret.style = (ret.style||[]).concat(['html-'+nodeName]);
+              // for TD and TH we want to include the style from TR
+              if (nodeName === "td" || nodeName === "th") ret.style.push('html-tr');
             } else {
               ret = (nodeName==='p' ? {text:ret} : {stack:ret});
               // we apply the default style if it's a "p"

@@ -234,11 +234,92 @@ test("table",function(t) {
     ret.table.body.length === 3 &&
     ret.table.body[0][0].text === "Header Column A" &&
     ret.table.body[0][0].style[0] === 'html-th' &&
+    ret.table.body[0][0].style[1] === 'html-tr' &&
     ret.table.body[1][1].text === "Value Cell B2" &&
     ret.table.body[1][1].style[0] === 'html-td' &&
+    ret.table.body[1][1].style[1] === 'html-tr' &&
     Array.isArray(ret.style) &&
     ret.style[0] === 'html-table',
   "<table>");
+
+  t.finish();
+})
+
+// { table:  { body: [ [ { text: 'Cell1', style: [ 'html-td', 'html-tr' ] } ] ] },  style: [ 'html-table' ],  marginBottom: 5 }
+test("table (one row/one column)",function(t) {
+  var html = `<table>
+      <tr>
+        <td>Cell1</td>
+      </tr>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table &&
+    Array.isArray(ret.table.body) &&
+    ret.table.body.length === 1 &&
+    ret.table.body[0][0].text === "Cell1" &&
+    ret.table.body[0][0].style[0] === 'html-td' &&
+    ret.table.body[0][0].style[1] === 'html-tr' &&
+    Array.isArray(ret.style) &&
+    ret.style[0] === 'html-table',
+  "table (one row/one column)");
+
+  t.finish();
+})
+
+test("table (one row/two columns)",function(t) {
+  var html = `<table>
+      <tr>
+        <td>Cell1</td><td>Cell2</td>
+      </tr>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table &&
+    Array.isArray(ret.table.body) &&
+    ret.table.body.length === 1 &&
+    ret.table.body[0][0].text === "Cell1" &&
+    ret.table.body[0][0].style[0] === 'html-td' &&
+    ret.table.body[0][0].style[1] === 'html-tr' &&
+    ret.table.body[0][1].text === "Cell2" &&
+    ret.table.body[0][1].style[0] === 'html-td' &&
+    ret.table.body[0][1].style[1] === 'html-tr' &&
+    Array.isArray(ret.style) &&
+    ret.style[0] === 'html-table',
+  "table (one row/two columns)");
+
+  t.finish();
+})
+
+test("table (two rows/one column)",function(t) {
+  var html = `<table>
+      <tr>
+        <td>Cell1</td>
+      </tr>
+      <tr>
+        <td>Cell2</td>
+      </tr>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table &&
+    Array.isArray(ret.table.body) &&
+    ret.table.body.length === 2 &&
+    ret.table.body[0][0].text === "Cell1" &&
+    ret.table.body[0][0].style[0] === 'html-td' &&
+    ret.table.body[0][0].style[1] === 'html-tr' &&
+    ret.table.body[1][0].text === "Cell2" &&
+    ret.table.body[1][0].style[0] === 'html-td' &&
+    ret.table.body[1][0].style[1] === 'html-tr' &&
+    Array.isArray(ret.style) &&
+    ret.style[0] === 'html-table',
+  "table (two rows/one column)");
 
   t.finish();
 })
