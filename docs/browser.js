@@ -92,7 +92,7 @@ module.exports = function(htmlText, wndw) {
     switch(element.nodeType) {
       case 3: { // TEXT_NODE
         if (element.textContent) {
-          text = element.textContent.replace(/\n(\s+)?/g, "");
+          text = element.textContent.replace(/\n(\s+)?/g, "").trim();
           if (text) {
             ret = {'text': text};
             if (parentNodeName) {
@@ -213,6 +213,12 @@ module.exports = function(htmlText, wndw) {
               // "tr" elements should always contain an array
             if (ret.length === 1 && nodeName !== "tr") {
               ret=ret[0];
+              // check if we have a default css style to apply when a text is inside several <tag>
+              // e.g. <strong><em>text</em></strong>
+              if (ret.text) {
+                applyDefaultStyle(ret, nodeName);
+                setComputedStyle(ret, element.getAttribute("style"));
+              }
               ret.style = (ret.style||[]).concat(['html-'+nodeName]);
               // for TD and TH we want to include the style from TR
               if (nodeName === "td" || nodeName === "th") ret.style.push('html-tr');
