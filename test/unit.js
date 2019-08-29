@@ -337,3 +337,23 @@ test("img",function(t) {
 
   t.finish();
 })
+
+test("cascade_tags", function(t) {
+  var ret = htmlToPdfMake('<p style="text-align: center;"> <span style="font-size: 14px;"><em><strong>test</strong></em></span> </p>', window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.text === "test" &&
+    ret.bold &&
+    ret.italics &&
+    ret.fontSize === 14 &&
+    ret.alignment === 'center' &&
+    Array.isArray(ret.style) &&
+    ret.style.includes('html-strong') &&
+    ret.style.includes('html-em') &&
+    ret.style.includes('html-span') &&
+    ret.style.includes('html-p'),
+  "cascade_tags");
+
+  t.finish();
+})
