@@ -245,12 +245,11 @@ module.exports = function(htmlText, wndw) {
           
           // prevent null or non object
           if (cssClass && typeof ret === 'object') {
-              ret.style = (ret.style || [])
-                .concat(cssClass.split(' '))
-                .filter(function (value, index, self) { 
-                  return self.indexOf(value) === index;
-                });
-            }
+            ret.style = (ret.style || [])
+              .concat(cssClass.split(' '))
+              .filter(function (value, index, self) { 
+                return self.indexOf(value) === index;
+              });
           }
         }
 
