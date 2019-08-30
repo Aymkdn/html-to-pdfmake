@@ -239,6 +239,19 @@ module.exports = function(htmlText, wndw) {
             // do we have a default style to apply?
             applyDefaultStyle(ret, 'table');
           }
+
+          // set class to its children
+          cssClass = element.getAttribute("class");
+          
+          // prevent null or non object
+          if (cssClass && typeof ret === 'object') {
+              ret.style = (ret.style || [])
+                .concat(cssClass.split(' '))
+                .filter(function (value, index, self) { 
+                  return self.indexOf(value) === index;
+                });
+            }
+          }
         }
 
         return ret;
