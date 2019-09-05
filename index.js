@@ -91,7 +91,7 @@ module.exports = function(htmlText, wndw) {
     switch(element.nodeType) {
       case 3: { // TEXT_NODE
         if (element.textContent) {
-          text = element.textContent.replace(/\n(\s+)?/g, "").trim();
+          text = element.textContent.replace(/\n(\s+)?/g, "");
           if (text) {
             ret = {'text': text};
             if (parentNodeName) {
