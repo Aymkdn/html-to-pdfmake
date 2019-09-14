@@ -324,6 +324,80 @@ test("table (two rows/one column)",function(t) {
   t.finish();
 })
 
+test("table (rowspan/colspan)", function(t) {
+  var html = `<table>
+    <tr>
+      <th>Col A</th>
+      <th>Col B</th>
+      <th>Col C</th>
+      <th>Col D</th>
+    </tr>
+    <tr>
+      <td>Cell A1</td>
+      <td rowspan="2">
+        Cell B1 & B2
+      </td>
+      <td>Cell C1</td>
+      <td rowspan="2">
+        Cell D1 & D2
+      </td>
+    </tr>
+    <tr>
+      <td>Cell A2</td>
+      <td>Cell C2</td>
+    </tr>
+    <tr>
+      <td>Cell A3</td>
+      <td colspan="2">Cell B3 & C3</td>
+      <td>Cell D3</td>
+    </tr>
+    <tr>
+      <td rowspan="2" colspan="3">
+        Cell A4 & A5 & B4 & B5 & C4 & C5
+      </td>
+      <td>Cell D4</td>
+    </tr>
+    <tr>
+      <td>Cell D5</td>
+    </tr>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+
+  t.check(
+    ret.table &&
+    Array.isArray(ret.table.body) &&
+    ret.table.body.length === 6 &&
+    ret.table.body[1][0].text === "Cell A1" &&
+    ret.table.body[1][0].style[0] === 'html-td' &&
+    ret.table.body[1][0].style[1] === 'html-tr' &&
+    ret.table.body[1][1].text === "Cell B1 & B2" &&
+    ret.table.body[1][2].text === "Cell C1" &&
+    ret.table.body[1][3].text === "Cell D1 & D2" &&
+    ret.table.body[2][0].text === "Cell A2" &&
+    ret.table.body[2][1].text === "" &&
+    ret.table.body[2][2].text === "Cell C2" &&
+    ret.table.body[2][3].text === "" &&
+    ret.table.body[3][0].text === "Cell A3" &&
+    ret.table.body[3][1].text === "Cell B3 & C3" &&
+    ret.table.body[3][2].text === "" &&
+    ret.table.body[3][3].text === "Cell D3" &&
+    ret.table.body[4][0].text === "Cell A4 & A5 & B4 & B5 & C4 & C5" &&
+    ret.table.body[4][1].text === "" &&
+    ret.table.body[4][2].text === "" &&
+    ret.table.body[4][3].text === "Cell D4" &&
+    ret.table.body[5][0].text === "" &&
+    ret.table.body[5][1].text === "" &&
+    ret.table.body[5][2].text === "" &&
+    ret.table.body[5][3].text === "Cell D5" &&
+    Array.isArray(ret.style) &&
+    ret.style[0] === 'html-table',
+  "table (rowspan/colspan)");
+
+  t.finish();
+})
+
 test("img",function(t) {
   var ret = htmlToPdfMake('<img width="10" style="height:10px" src="data:image/jpeg;base64,...encodedContent...">', window);
   t.check(Array.isArray(ret) && ret.length===1, "return is OK");
@@ -339,7 +413,7 @@ test("img",function(t) {
 })
 
 test("cascade_tags", function(t) {
-  var ret = htmlToPdfMake('<p style="text-align: center;"> <span style="font-size: 14px;"><em><strong>test</strong></em></span> </p>', window);
+  var ret = htmlToPdfMake('<p style="text-align: center;"><span style="font-size: 14px;"><em><strong>test</strong></em></span></p>', window);
   t.check(Array.isArray(ret) && ret.length===1, "return is OK");
   ret = ret[0];
   t.check(

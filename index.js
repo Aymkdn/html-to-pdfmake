@@ -44,6 +44,8 @@ module.exports = function(htmlText, wndw) {
     th: {bold:true, fillColor:'#EEEEEE'}
   }
 
+  var inlineTags = [ 'p', 'li', 'span', 'strong', 'em', 'b', 'i', 'u' ];
+
   /**
    * Takes an HTML string, converts to HTML using a DOM parser and recursivly parses
    * the content into pdfmake compatible doc definition
@@ -53,8 +55,6 @@ module.exports = function(htmlText, wndw) {
    */
   var convertHtml = function(htmlText) {
     var docDef = [];
-
-    // Cleanup of dirty html would happen here
 
     // Create a HTML DOM tree out of html string
     var parser = new wndw.DOMParser();
@@ -91,19 +91,22 @@ module.exports = function(htmlText, wndw) {
     switch(element.nodeType) {
       case 3: { // TEXT_NODE
         if (element.textContent) {
-          text = element.textContent.replace(/\n(\s+)?/g, "").trim();
+          text = element.textContent.replace(/\n(\s+)?/g, "");
           if (text) {
             ret = {'text': text};
             if (parentNodeName) {
-              // do we have a default style to apply?
-              // for 'p' we want to apply it from the parent
-              if (parentNodeName !== 'p') {
-                applyDefaultStyle(ret, parentNodeName);
-              }
+              // check if we have inherent styles to apply when a text is inside several <tag>
+              applyParentsStyle(ret, element);
 
               // for links
               if (parentNodeName === "a") {
                 ret.link = parentNode.getAttribute("href");
+              }
+
+              // for 'td' and 'th' we check if we have "rowspan" or "colspan"
+              if (parentNodeName === "td" || parentNodeName === "th") {
+                if (parentNode.getAttribute("rowspan")) ret.rowSpan = parentNode.getAttribute("rowspan")*1;
+                if (parentNode.getAttribute("colspan")) ret.colSpan = parentNode.getAttribute("colspan")*1;
               }
 
               // is there any class to this element?
@@ -129,8 +132,6 @@ module.exports = function(htmlText, wndw) {
 
         // check children
         [].forEach.call(element.childNodes, function(child) {
-          // for THEAD and TBODY we go straight to the TR
-          //if (child.nodeName === "THEAD" || child.nodeName === "TBODY" || child.nodeName === "TFOOTER") continue;
           child = parseElement(child, element);
           if (child) {
             if (Array.isArray(child) && child.length === 1) child=child[0];
@@ -167,9 +168,39 @@ module.exports = function(htmlText, wndw) {
             ret = {"_":ret, table:{body:[]}};
             ret._.forEach(function(re) {
               if (re.stack) {
-                var td = []
-                re.stack.forEach(function(r) {
+                var td = [],
+                    rowspan = {};
+                re.stack.forEach(function(r, indexRow) {
                   if (r.stack) {
+                    // do we have a rowspan to apply from previous rows?
+                    if (rowspan[indexRow]) {
+                      // insert empty cell due to rowspan
+                      rowspan[indexRow].forEach(function(cell) {
+                        r.stack.splice(cell.index, 0, {text:'', style: ['html-td', 'html-tr'], colSpan:cell.colspan});
+                      });
+                    }
+
+                    // insert empty cells due to colspan
+                    r.stack.forEach(function(cell, index) {
+                      if (cell.colSpan > 1) {
+                        for (var i=0; i<cell.colSpan-1; i++) {
+                          r.stack.splice(index+1, 0, {text:'', style: ['html-td', 'html-tr']})
+                        }
+                      }
+                    })
+
+                    // check rowspan for the current row in order to then apply it to the next ones
+                    var indexCell = 0;
+                    r.stack.forEach(function(cell) {
+                      if (cell.rowSpan) {
+                        for (var i=0; i<cell.rowSpan; i++) {
+                          if (!rowspan[indexRow+i]) rowspan[indexRow+i] = [];
+                          // we also remember the colSpan for cells with both rowspan and colspan
+                          rowspan[indexRow+i].push({index:indexCell, colspan:cell.colSpan||1});
+                        }
+                      }
+                      indexCell += cell.colSpan || 1;
+                    });
                     ret.table.body.push(r.stack)
                   } else {
                     td.push(r);
@@ -209,11 +240,9 @@ module.exports = function(htmlText, wndw) {
         if (ret) {
           if (Array.isArray(ret)) {
             // add a custom class to let the user customize the element
-              // "tr" elements should always contain an array
+            // "tr" elements should always contain an array
             if (ret.length === 1 && nodeName !== "tr") {
               ret=ret[0];
-              // check if we have a default css style to apply when a text is inside several <tag>
-              // e.g. <strong><em>text</em></strong>
               if (ret.text) {
                 applyDefaultStyle(ret, nodeName);
                 setComputedStyle(ret, element.getAttribute("style"));
@@ -222,11 +251,16 @@ module.exports = function(htmlText, wndw) {
               // for TD and TH we want to include the style from TR
               if (nodeName === "td" || nodeName === "th") ret.style.push('html-tr');
             } else {
-              ret = (nodeName==='p' ? {text:ret} : {stack:ret});
-              // we apply the default style if it's a "p"
-              if (nodeName === 'p') {
-                applyDefaultStyle(ret, 'p');
+              var isInlineTag = (inlineTags.indexOf(nodeName) > -1);
+
+              // if we have an inline tag, then we check if we have a non-inline tag in its section
+              ret = (!isInlineTag || /{"(stack|table|ol|ul|image)"/.test(JSON.stringify(ret)) ? {stack:ret} : {text:ret});
+
+              // we apply the default style for the inline tags
+              if (isInlineTag) {
+                applyDefaultStyle(ret, nodeName);
               }
+
               ret.style = ['html-'+nodeName];
             }
           } else if (ret.table || ret.ol || ret.ul) { // for TABLE / UL / OL
@@ -238,6 +272,17 @@ module.exports = function(htmlText, wndw) {
             }
             // do we have a default style to apply?
             applyDefaultStyle(ret, 'table');
+          }
+
+          // retrieve the class from the parent
+          cssClass = element.getAttribute("class");
+          if (cssClass && typeof ret === 'object') {
+            // apply all the classes not there yet
+            ret.style = (ret.style || [])
+                        .concat(cssClass.split(' '))
+                        .filter(function (value, index, self) {
+                          return self.indexOf(value) === index;
+                        });
           }
         }
 
@@ -255,6 +300,30 @@ module.exports = function(htmlText, wndw) {
         }
       }
     }
+  }
+
+  var applyParentsStyle = function(ret, node) {
+    // while the parents are an inline tag, we want to apply the default style and the class to the children too
+    var classes = [], defaultStyles = [], cssClass;
+    var inlineParentNode=node.parentNode;
+    while (inlineParentNode) {
+      var defaultStyle = {};
+      var inlineParentNodeName=inlineParentNode.nodeName.toLowerCase();
+      if (inlineTags.indexOf(inlineParentNodeName) > -1) {
+        cssClass = inlineParentNode.getAttribute("class");
+        classes = classes.concat(['html-'+inlineParentNodeName], cssClass||[]);
+        applyDefaultStyle(defaultStyle, inlineParentNodeName);
+        defaultStyles.push(defaultStyle);
+
+        inlineParentNode=inlineParentNode.parentNode;
+      } else break;
+    }
+    ret.style = (ret.style||[]).concat(classes);
+    defaultStyles.forEach(function(defaultStyle) {
+      for (var key in defaultStyle) {
+        if (key.indexOf("margin") === -1 && ret[key] === undefined) ret[key] = defaultStyle[key];
+      }
+    })
   }
 
   /**
