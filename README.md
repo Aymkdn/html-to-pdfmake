@@ -30,7 +30,7 @@ var html = htmlToPdfMake(`
       and <u>one with underline</u>. And finally <a href="https://www.somewhere.com">a link</a>.
     </p>
   </div>
-  `);
+`);
 
 /*
 it will return:
@@ -101,16 +101,44 @@ The below HTML tags are supported:
   - BR
   - B / STRONG
   - I / EM
+  - S
   - UL / OL / LI
   - TABLE / THEAD / TBODY / TFOOTER / TR / TH / TD
   - H1 to H6
   - IMG
 
-### Default style
+### Default styles
 
 I've defined some default styles for the supported element.
 
 For example, using a &lt;STRONG&gt; will display the word in **bold**. Or, a link will appear in blue with an underline, and so on...
+
+Here is the list of defaults styles:
+```javascript
+{
+    b: {bold:true},
+    strong: {bold:true},
+    u: {decoration:'underline'},
+    s: {decoration: 'lineThrough'},
+    em: {italics:true},
+    i: {italics:true},
+    h1: {fontSize:24, bold:true, marginBottom:5},
+    h2: {fontSize:22, bold:true, marginBottom:5},
+    h3: {fontSize:20, bold:true, marginBottom:5},
+    h4: {fontSize:18, bold:true, marginBottom:5},
+    h5: {fontSize:16, bold:true, marginBottom:5},
+    h6: {fontSize:14, bold:true, marginBottom:5},
+    a: {color:'blue', decoration:'underline'},
+    strike: {decoration: 'lineThrough'},
+    p: {margin:[0, 5, 0, 10]},
+    ul: {marginBottom:5},
+    li: {marginLeft:5},
+    table: {marginBottom:5},
+    th: {bold:true, fillColor:'#EEEEEE'}
+  }
+```
+
+**Please, note that the above default styles are stronger than the ones defined in the style classes.** Read below how to overwrite them.
 
 ### Customize style
 
@@ -185,6 +213,48 @@ var docDefinition = {
 var pdfDocGenerator = pdfMake.createPdf(docDefinition);
 ```
 
+**Please, note that the default styles are stronger than the ones defined in the style classes.** For example, if you define a class `html-a` to change all links in *purple*, then it won't work because the default styles will overwrite it:
+
+```javascript
+var docDefinition = {
+ content: [
+   html
+ ],
+ styles:{
+   'html-a':{
+     color:'purple' // it won't work: all links will remain 'blue'
+   }
+ }
+};
+
+```
+
+To make it work, you have to either delete the default styles, or change it with a new value. Starting `v1.1.0`, an option parameter is available as a second parameter.
+
+Example: you want `<li>` to not have a margin-left, and `<a>` to be 'purple' and without 'underline' style:
+```javascript
+var html = htmlToPdfMake('<ul><li>this is <a href="...">a link</a></li><li>another item</li><li class="with-margin">3rd item with a margin</li></ul>', {
+  defaultStyles:{ // change the default styles
+    a:{ // for <A>
+      color:'purple', // all links should be 'purple'
+      decoration:'' // remove underline
+    },
+    li:'' // remove all default styles for <LI>
+  }
+});
+
+var docDefinition = {
+ content: [
+   html
+ ],
+ styles:{
+   'with-margin':{
+     marginLeft: 30 // apply a margin with the specific class is used
+   }
+ }
+};
+```
+
 ### `<img>`
 
 The `<img>` tag is supported, however the `src` attribute must already be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)).
@@ -198,3 +268,7 @@ You can find more examples in [example.js](example.js) which will create [exampl
 ```bash
 node example.js
 ```
+
+## Donate
+
+You can support my work by [making a donation](https://www.paypal.me/aymkdn). Thank you!

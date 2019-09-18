@@ -150,7 +150,7 @@ var html = htmlToPdfMake(`
   <p style="text-align: center;"> <span style="font-size: 14px;"><em><strong>Bold italic centered text</strong></em></span> </p>
 
   <span class="a">text "bold" <span class="b">text "bold & italic" <span class="c">text "bold & italic & red"</span> text "bold & italic"</span> text "bold"</span>
-`, window);
+`, {window:window});
 
 var docDefinition = {
   content: [
