@@ -11,23 +11,37 @@
 /**
  * Transform HTML code to a PdfMake object
  * @param  {String} htmlText The HTML code to transform
- * @param  {Object} [window] The `window` object (only used for the tests)
+ * @param  {Object} [options]
+ *   @param  {Object} [defaultStyles] An object with the default styles for each elements
+ *   @param  {Object} [window] The `window` object (only used for the tests)
  * @return {Object} it returns a PdfMake object
  *
  * @example
  * // Some styles are applied by defaults for the supported HTML elements
  * // but you can pass your own styles if you prefer
- * htmlToPdfMake('<div><h1>My Title</h1><p>My paragraph</p></div>')
+ * htmlToPdfMake('<div><h1>My Title</h1><p>My paragraph</p></div>');
+ *
+ * // If you want to overwrite the default styles, e.g. you want <li> to not have a margin-left, and links to be 'purple' and not 'blue', and links without 'underline'
+ * htmlToPdfMake('<ul><li>this is <a href="...">a link</a></li><li>another item</li></ul>', {
+ *   defaultStyles:{
+ *     a:{
+ *       color:'purple',
+ *       decoration:null
+ *     },
+ *     li:null
+ *   }
+ * });
  */
 //var util = require("util"); // to debug
-module.exports = function(htmlText, wndw) {
-  wndw = wndw || window;
+module.exports = function(htmlText, options) {
+  var wndw = (options && options.window ? options.window : window);
 
   // set default styles
   var defaultStyles = {
     b: {bold:true},
     strong: {bold:true},
     u: {decoration:'underline'},
+    s: {decoration: 'lineThrough'},
     em: {italics:true},
     i: {italics:true},
     h1: {fontSize:24, bold:true, marginBottom:5},
@@ -46,6 +60,31 @@ module.exports = function(htmlText, wndw) {
   }
 
   var inlineTags = [ 'p', 'li', 'span', 'strong', 'em', 'b', 'i', 'u' ];
+
+  /**
+   * Permit to change the default styles based on the options
+   * @return {[type]} [description]
+   */
+  function changeDefaultStyles () {
+    for (var keyStyle in options.defaultStyles) {
+      if (defaultStyles.hasOwnProperty(keyStyle)) {
+        // if we want to remove a default style
+        if (options.defaultStyles.hasOwnProperty(keyStyle) && !options.defaultStyles[keyStyle]) {
+          delete defaultStyles[keyStyle];
+        } else {
+          for (var k in options.defaultStyles[keyStyle]) {
+            // if we want to delete a specific property
+            if (!options.defaultStyles[keyStyle][k]) delete defaultStyles[keyStyle][k];
+            else defaultStyles[keyStyle][k] = options.defaultStyles[keyStyle][k];
+          }
+        }
+      }
+    }
+  }
+
+  if (options && options.defaultStyles) {
+    changeDefaultStyles();
+  }
 
   /**
    * Takes an HTML string, converts to HTML using a DOM parser and recursivly parses
@@ -261,7 +300,6 @@ module.exports = function(htmlText, wndw) {
               if (isInlineTag) {
                 applyDefaultStyle(ret, nodeName);
               }
-
               ret.style = ['html-'+nodeName];
             }
           } else if (ret.table || ret.ol || ret.ul) { // for TABLE / UL / OL
@@ -281,6 +319,11 @@ module.exports = function(htmlText, wndw) {
             // apply all the classes not there yet
             ret.style = (ret.style || [])
                         .concat(cssClass.split(' '))
+          }
+
+          // remove doublon in classes
+          if (typeof ret === 'object' && Array.isArray(ret.style)) {
+            ret.style = ret.style
                         .filter(function (value, index, self) {
                           return self.indexOf(value) === index;
                         });
