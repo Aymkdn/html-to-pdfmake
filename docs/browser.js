@@ -310,7 +310,7 @@ module.exports = function(htmlText, options) {
               ret.style = ret.style.concat(cssClass.split(' '));
             }
             // do we have a default style to apply?
-            applyDefaultStyle(ret, 'table');
+            applyDefaultStyle(ret, nodeName);
           }
 
           // retrieve the class from the parent
