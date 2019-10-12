@@ -383,7 +383,7 @@ module.exports = function(htmlText, options) {
       var value = styleDef[1];
       switch (key) {
         case "margin": {
-          value = value.replace(/(\d+)([^\d]+)/g,"$1 ").trim().split(' ');
+          value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim().split(' ');
           // pdfMake uses a different order than CSS
           if (value.length===1) value=+value[0]; // single value
           else if (value.length===2) value=[+value[1], +value[0]]; // vertical | horizontal ==> horizontal | vertical
@@ -419,7 +419,7 @@ module.exports = function(htmlText, options) {
         default: {
           if (key.indexOf("-") > -1) key=toCamelCase(key);
           if (value) {
-            value = value.replace(/(\d+)([^\d]+)/g,"$1 ").trim();
+            value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
             if (!isNaN(value)) value=+value; // turn it into a number
             ret.push({key:key, value:value});
           }
