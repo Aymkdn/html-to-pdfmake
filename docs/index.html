@@ -2,6 +2,23 @@
 <html>
 <head>
   <title>HTML to PDFmake online convertor</title>
+  <style>
+    .button {
+      background-color: #4CAF50; /* Green */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor:pointer;
+      box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    }
+    .button:hover {
+      box-shadow: none;
+    }
+  </style>
 </head>
 <body>
   <h1>HTML to PDFMake convertor</h1>
@@ -25,7 +42,7 @@
       <div style="padding:5px;border:2px solid #CCC;height:100%" id="html"></div>
     </div>
   </div>
-  <div><button type="button" onclick="convert()">Convert</button></div>
+  <div style="text-align:center;font-size:18px;margin-top:10px"><button type="button" onclick="convert()" class="button">Generate PDF</button></div>
   <div style="display:flex;height:40vh;margin-top:1em">
     <div style="flex:1;display:flex;flex-direction:column;">
       <b>Result:</b>
