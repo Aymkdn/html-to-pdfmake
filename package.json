@@ -1,12 +1,13 @@
 {
   "name": "html-to-pdfmake",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Convert HTML code to PDFMake",
   "main": "index.js",
   "scripts": {
     "pretest": "eslint index.js",
     "test": "node test/unit.js",
-    "browser": "browserify index.js --standalone htmlToPdfmake > docs/browser.js"
+    "browser": "browserify index.js --standalone htmlToPdfmake > docs/browser.js",
+    "build": "npm run test && node example.js && npm run browser"
   },
   "repository": {
     "type": "git",

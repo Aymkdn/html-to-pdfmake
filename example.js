@@ -152,7 +152,6 @@ var html = htmlToPdfMake(`
   <span class="a">text "bold" <span class="b">text "bold & italic" <span class="c">text "bold & italic & red"</span> text "bold & italic"</span> text "bold"</span>
 `, {window:window});
 
-
 var docDefinition = {
   content: [
     html

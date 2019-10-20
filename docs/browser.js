@@ -133,6 +133,9 @@ module.exports = function(htmlText, options) {
         if (element.textContent) {
           text = element.textContent.replace(/\n(\s+)?/g, "");
           if (text) {
+            // if 'text' is just blank and parentNodeName is a TABLE/THEAD/TBODY/TR, then ignore it
+            if (/^\s+$/.test(text) && ['table','thead','tbody','tr'].indexOf(parentNodeName) > -1) return ret;
+
             ret = {'text': text};
             if (parentNodeName) {
               // check if we have inherent styles to apply when a text is inside several <tag>
@@ -171,13 +174,17 @@ module.exports = function(htmlText, options) {
         ret = [];
 
         // check children
-        [].forEach.call(element.childNodes, function(child) {
-          child = parseElement(child, element);
-          if (child) {
-            if (Array.isArray(child) && child.length === 1) child=child[0];
-            ret.push(child);
-          }
-        });
+        // if it's a table cell (TH/TD) with an empty content, we need to count it
+        if (element.childNodes.length === 0 && (nodeName==="th" || nodeName ==="td")) ret.push({text:''});
+        else {
+          [].forEach.call(element.childNodes, function(child) {
+            child = parseElement(child, element);
+            if (child) {
+              if (Array.isArray(child) && child.length === 1) child=child[0];
+              ret.push(child);
+            }
+          });
+        }
 
         if (ret.length===0) ret="";
 
@@ -224,7 +231,7 @@ module.exports = function(htmlText, options) {
                     r.stack.forEach(function(cell, index) {
                       if (cell.colSpan > 1) {
                         for (var i=0; i<cell.colSpan-1; i++) {
-                          r.stack.splice(index+1, 0, {text:'', style: ['html-td', 'html-tr']})
+                          r.stack.splice(index+1, 0, "")
                         }
                       }
                     })
@@ -244,6 +251,12 @@ module.exports = function(htmlText, options) {
                     ret.table.body.push(r.stack)
                   } else {
                     td.push(r);
+                    // insert empty cells due to colspan
+                    if (r.colSpan > 1) {
+                      for (var i=0; i<r.colSpan-1; i++) {
+                        td.push("");
+                      }
+                    }
                   }
                 });
                 if (td.length>0) ret.table.body.push(td);
@@ -384,7 +397,7 @@ module.exports = function(htmlText, options) {
       var value = styleDef[1];
       switch (key) {
         case "margin": {
-          value = value.replace(/(\d+)([^\d]+)/g,"$1 ").trim().split(' ');
+          value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim().split(' ');
           // pdfMake uses a different order than CSS
           if (value.length===1) value=+value[0]; // single value
           else if (value.length===2) value=[+value[1], +value[0]]; // vertical | horizontal ==> horizontal | vertical
@@ -420,7 +433,7 @@ module.exports = function(htmlText, options) {
         default: {
           if (key.indexOf("-") > -1) key=toCamelCase(key);
           if (value) {
-            value = value.replace(/(\d+)([^\d]+)/g,"$1 ").trim();
+            value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
             if (!isNaN(value)) value=+value; // turn it into a number
             ret.push({key:key, value:value});
           }
