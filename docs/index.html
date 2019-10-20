@@ -7,8 +7,10 @@
   <h1>HTML to PDFMake convertor</h1>
   <p><a href="https://github.com/Aymkdn/html-to-pdfmake">Read the documentation</a></p>
   <p>Paste your HTML code below and click on the button to convert it to the <a href="http://pdfmake.org/">PDFmake</a> format:</p>
-  <div>
-    <textarea style="height:40vh;width:100%" id="code">
+  <div style="display:flex;height:35vh">
+    <div style="flex:1;display:flex;flex-direction:column;">
+      <b>Your HTML code here:</b>
+      <textarea style="height:100%" id="code" onkeyup="toHTML()">
 &lt;div>
   &lt;h1>My title&lt;/h1>
   &lt;p>
@@ -18,18 +20,29 @@
 &lt;/div>
     </textarea>
   </div>
+    <div style="flex:1;display:flex;flex-direction:column;">
+      <b>HTML Preview:</b>
+      <div style="padding:5px;border:2px solid #CCC;height:100%" id="html"></div>
+    </div>
+  </div>
   <div><button type="button" onclick="convert()">Convert</button></div>
-  <p>Result:</p>
-  <div style="display:flex">
-    <textarea id="result" style="flex:1;height:40vh"></textarea>
-    <iframe id="pdf" style="flex:1;height:40vh"></iframe>
+  <div style="display:flex;height:40vh;margin-top:1em">
+    <div style="flex:1;display:flex;flex-direction:column;">
+      <b>Result:</b>
+      <textarea id="result" style="height:100%"></textarea>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;">
+      <b>PDF:</b>
+      <iframe id="pdf" style="height:100%"></iframe>
+    </div>
   </div>
   <script src="browser.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.1.57/build/pdfmake.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.1.57/build/vfs_fonts.js"></script>
   <script>
+    var codeBag = document.querySelector('#code');
     function convert () {
-      var val = htmlToPdfmake(document.querySelector('#code').value);
+      var val = htmlToPdfmake(code.value);
       document.querySelector('#result').value = JSON.stringify(val, null, '  ');
       var dd = {content:val};
       pdfMake.createPdf(dd).getDataUrl(function(outDoc) {
@@ -37,6 +50,12 @@
       });
     }
     convert();
+
+    var htmlBag = document.querySelector('#html');
+    function toHTML() {
+      htmlBag.innerHTML = codeBag.value;
+    }
+    toHTML();
   </script>
 </body>
 </html>
