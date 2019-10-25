@@ -215,9 +215,9 @@ module.exports = function(htmlText, options) {
             ret = {"_":ret, table:{body:[]}};
             ret._.forEach(function(re) {
               if (re.stack) {
-                var td = [],
-                    rowspan = {};
+                var td = [], rowspan = {};
                 re.stack.forEach(function(r, indexRow) {
+                  var c, cell, i, indexCell;
                   if (r.stack) {
                     // do we have a rowspan to apply from previous rows?
                     if (rowspan[indexRow]) {
@@ -228,16 +228,18 @@ module.exports = function(htmlText, options) {
                     }
 
                     // insert empty cells due to colspan
-                    r.stack.forEach(function(cell, index) {
+                    for (c=0, cell; c<r.stack.length;) {
+                      cell = r.stack[c];
                       if (cell.colSpan > 1) {
-                        for (var i=0; i<cell.colSpan-1; i++) {
-                          r.stack.splice(index+1, 0, "")
+                        for (i=0; i<cell.colSpan-1; i++) {
+                          r.stack.splice(c+1, 0, "")
                         }
-                      }
-                    })
+                        c += cell.colSpan;
+                      } else c++;
+                    }
 
                     // check rowspan for the current row in order to then apply it to the next ones
-                    var indexCell = 0;
+                    indexCell = 0;
                     r.stack.forEach(function(cell) {
                       if (cell.rowSpan) {
                         for (var i=0; i<cell.rowSpan; i++) {
@@ -253,7 +255,7 @@ module.exports = function(htmlText, options) {
                     td.push(r);
                     // insert empty cells due to colspan
                     if (r.colSpan > 1) {
-                      for (var i=0; i<r.colSpan-1; i++) {
+                      for (i=0; i<r.colSpan-1; i++) {
                         td.push("");
                       }
                     }

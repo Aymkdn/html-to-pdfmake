@@ -21,6 +21,8 @@ var pdfMake = require("pdfmake/build/pdfmake");
 var pdfFonts = require("pdfmake/build/vfs_fonts");
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 var htmlToPdfMake = require("html-to-pdfmake");
+// or:
+// import htmlToPdfMake from "html-to-pdfmake"
 
 var html = htmlToPdfMake(`
   <div>
