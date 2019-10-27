@@ -68,7 +68,8 @@ var html = htmlToPdfMake(`
       <span class="red">This is a red span</span>
     </p>
   </div>
-  <table>
+
+  <table class="pdf-pagebreak-before">
     <thead>
       <tr>
         <th>Region</th>
@@ -156,6 +157,10 @@ var docDefinition = {
   content: [
     html
   ],
+  pageBreakBefore: function(currentNode) {
+    // we add a page break before elements with the classname "pdf-pagebreak-before"
+    return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
+  },
   styles:{
     red:{
       color:'red'
