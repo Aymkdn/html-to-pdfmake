@@ -266,6 +266,12 @@ module.exports = function(htmlText, options) {
                 ret.table.body.push([re]);
               }
             });
+            if (element.dataset && element.dataset.widths) {
+              var widthsStr = element.dataset.widths;
+              var widths = JSON.parse(widthsStr.replace(new RegExp("'", 'g'), '"'));
+              if (Array.isArray(widths) && ret.table.body.length > 0 && ret.table.body[0].length <= widths.length)
+                ret.table.widths = widths;
+            }
             delete ret._;
             // check if the element has a "style" attribute
             setComputedStyle(ret, element.getAttribute("style"));

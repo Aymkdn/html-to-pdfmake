@@ -450,6 +450,73 @@ test("table (colspan + empty cell)", function(t) {
   t.finish();
 })
 
+test("table (column widths)",function(t) {
+  var html = `<table data-widths='[100, "*", "auto"]'>
+      <tr>
+        <td>Cell1</td>
+        <td>Cell2</td>
+        <td>Cell3</td>
+      </tr>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table &&
+    'widths' in ret.table &&
+    Array.isArray(ret.table.widths) &&
+    ret.table.widths.length === 3 &&
+    ret.table.widths[0] === 100 &&
+    ret.table.widths[1] === "*" &&
+    ret.table.widths[2] === "auto",
+  "table (column widths)");
+
+  t.finish();
+})
+
+test("table (column widths escaped)",function(t) {
+  var html = `<table data-widths="[100, '*', 'auto']">
+      <tr>
+        <td>Cell1</td>
+        <td>Cell2</td>
+        <td>Cell3</td>
+      </tr>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table &&
+    'widths' in ret.table &&
+    Array.isArray(ret.table.widths) &&
+    ret.table.widths.length === 3 &&
+    ret.table.widths[0] === 100 &&
+    ret.table.widths[1] === "*" &&
+    ret.table.widths[2] === "auto",
+  "table (column widths escaped)");
+
+  t.finish();
+})
+
+test("table (column widths wrong lengths)",function(t) {
+  var html = `<table data-widths='[100, "*"]'>
+      <tr>
+        <td>Cell1</td>
+        <td>Cell2</td>
+        <td>Cell3</td>
+      </tr>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table &&
+    !('widths' in ret.table),
+  "table (column widths wrong lengths)");
+
+  t.finish();
+})
+
 test("img",function(t) {
   var ret = htmlToPdfMake('<img width="10" style="height:10px" src="data:image/jpeg;base64,...encodedContent...">', window);
   t.check(Array.isArray(ret) && ret.length===1, "return is OK");
