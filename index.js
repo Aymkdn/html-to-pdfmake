@@ -189,6 +189,13 @@ module.exports = function(htmlText, options) {
 
         // check which kind of tag we have
         switch (nodeName) {
+          case "svg": {
+            ret = {
+              svg: element.outerHTML
+            }
+            ret.style = ['html-'+nodeName];
+            break;
+          }
           case "br": {
             // for BR we return '\n'
             ret = '\n';
