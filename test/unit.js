@@ -464,6 +464,29 @@ test("img",function(t) {
   t.finish();
 })
 
+test("svg",function(t) {
+  var ret = htmlToPdfMake(`
+    <svg version="1.1" baseProfile="full" width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="red" />
+      <circle cx="150" cy="100" r="80" fill="green" />
+      <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">SVG</text>
+    </svg>`, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+
+  t.check(
+    'svg' in ret && 
+    ret.svg.length > 0, 
+  "return has svg property")
+
+  t.check(
+    Array.isArray(ret.style) &&
+    ret.style[0] === 'html-svg',
+  "svg style");
+
+  t.finish();
+})
+
 test("cascade_tags", function(t) {
   var ret = htmlToPdfMake('<p style="text-align: center;"><span style="font-size: 14px;"><em><strong>test</strong></em></span></p>', window);
   t.check(Array.isArray(ret) && ret.length===1, "return is OK");
