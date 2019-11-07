@@ -24,6 +24,5 @@
     "jsdom": "^14.1.0",
     "pdfmake": "^0.1.59",
     "simple-test-framework": "^0.1.7"
-  },
-  "dependencies": {}
+  }
 }
