@@ -110,6 +110,7 @@ The below HTML tags are supported:
   - TABLE / THEAD / TBODY / TFOOTER / TR / TH / TD
   - H1 to H6
   - IMG
+  - SVG
 
 ### Default styles
 
