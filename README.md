@@ -294,7 +294,7 @@ var pdfDocGenerator = pdfMake.createPdf(docDefinition);
 
 See [example.js](example.js) to see another example.
 
-## Special properties
+### Special properties
 
 PDFMake provides some special attributes, like `widths` or `heights` for `table`, or `fit` for `image`, and more.
 To apply these special attributes, you have to use the attribute `data-pdfmake` on your HTML elements, and then pass the special attributes as a JSON string.
@@ -313,6 +313,8 @@ To apply these special attributes, you have to use the attribute `data-pdfmake` 
   </tr>
 </table>
 ```
+
+The expression provided by `data-pdfmake` must be a valid JSON string because it will be translated with `JSON.parse()`.
 
 ## Examples
 
