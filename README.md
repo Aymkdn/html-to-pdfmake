@@ -294,11 +294,32 @@ var pdfDocGenerator = pdfMake.createPdf(docDefinition);
 
 See [example.js](example.js) to see another example.
 
+## Special properties
+
+PDFMake provides some special attributes, like `widths` or `heights` for `table`, or `fit` for `image`, and more.
+To apply these special attributes, you have to use the attribute `data-pdfmake` on your HTML elements, and then pass the special attributes as a JSON string.
+
+```html
+<!-- Example with `widths:[100,"*","auto"]` and `heights:40` to apply to a `table`. -->
+
+<table data-pdfmake="{&quot;widths&quot;:[100,&quot;*&quot;,&quot;auto&quot;],&quot;heights&quot;:40}">
+  <tr>
+    <td colspan="3">Table with <b>widths=[100,"*","auto"]</b> and <b>heights=40</b></th>
+  </tr>
+  <tr>
+    <td>Cell1</td>
+    <td>Cell2</td>
+    <td>Cell3</td>
+  </tr>
+</table>
+```
+
 ## Examples
 
 You can find more examples in [example.js](example.js) which will create [example.pdf](example.pdf):
 
 ```bash
+npm install
 node example.js
 ```
 

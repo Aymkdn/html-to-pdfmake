@@ -58,7 +58,7 @@ module.exports = function(htmlText, options) {
     th: {bold:true, fillColor:'#EEEEEE'}
   }
 
-  var inlineTags = [ 'p', 'li', 'span', 'strong', 'em', 'b', 'i', 'u' ];
+  var inlineTags = [ 'p', 'li', 'span', 'strong', 'em', 'b', 'i', 'u', 'th', 'td' ];
 
   /**
    * Permit to change the default styles based on the options
@@ -117,14 +117,15 @@ module.exports = function(htmlText, options) {
    * Converts a single HTML element to pdfmake, calls itself recursively for child html elements
    *
    * @param element can be an HTML element (<p>) or plain text ("Hello World")
-   * @param currentParagraph usually holds the parent element, to allow nested structures
-   * @param styles holds the style attributes of HTML elements (`<div style="color: green">...`)
+   * @param parentNode the parent node for the current element
+   * @param parents Array of node names of all the parents for the element
    * @returns the doc def to the given element in consideration to the given paragraph and styles
    */
-  var parseElement = function(element, parentNode) {
+  var parseElement = function(element, parentNode, parents) {
     var nodeName = element.nodeName.toLowerCase();
     var parentNodeName = (parentNode ? parentNode.nodeName.toLowerCase() : '');
-    var ret, text, cssClass;
+    var ret, text, cssClass, dataset, key, dist, isInlineTag;
+    parents = parents || [];
 
     // check the node type
     switch(element.nodeType) {
@@ -144,23 +145,6 @@ module.exports = function(htmlText, options) {
               if (parentNodeName === "a") {
                 ret.link = parentNode.getAttribute("href");
               }
-
-              // for 'td' and 'th' we check if we have "rowspan" or "colspan"
-              if (parentNodeName === "td" || parentNodeName === "th") {
-                if (parentNode.getAttribute("rowspan")) ret.rowSpan = parentNode.getAttribute("rowspan")*1;
-                if (parentNode.getAttribute("colspan")) ret.colSpan = parentNode.getAttribute("colspan")*1;
-              }
-
-              // is there any class to this element?
-              cssClass = parentNode.getAttribute("class");
-              if (cssClass) {
-                ret.style = cssClass.split(' ');
-              }
-
-              // check if the element has a "style" attribute
-              if (ret.text) {
-                setComputedStyle(ret, parentNode.getAttribute("style"));
-              }
             } else {
               ret = text;
             }
@@ -171,18 +155,19 @@ module.exports = function(htmlText, options) {
       }
       case 1: { // ELEMENT_NODE
         ret = [];
-
+        parents.push(nodeName);
         // check children
         // if it's a table cell (TH/TD) with an empty content, we need to count it
         if (element.childNodes.length === 0 && (nodeName==="th" || nodeName ==="td")) ret.push({text:''});
         else {
           [].forEach.call(element.childNodes, function(child) {
-            child = parseElement(child, element);
+            child = parseElement(child, element, parents);
             if (child) {
               if (Array.isArray(child) && child.length === 1) child=child[0];
               ret.push(child);
             }
           });
+          parents.pop();
         }
 
         if (ret.length===0) ret="";
@@ -300,7 +285,6 @@ module.exports = function(htmlText, options) {
         // add a custom class to let the user customize the element
         if (ret) {
           if (Array.isArray(ret)) {
-            // add a custom class to let the user customize the element
             // "tr" elements should always contain an array
             if (ret.length === 1 && nodeName !== "tr") {
               ret=ret[0];
@@ -312,7 +296,7 @@ module.exports = function(htmlText, options) {
               // for TD and TH we want to include the style from TR
               if (nodeName === "td" || nodeName === "th") ret.style.push('html-tr');
             } else {
-              var isInlineTag = (inlineTags.indexOf(nodeName) > -1);
+              isInlineTag = (inlineTags.indexOf(nodeName) > -1);
 
               // if we have an inline tag, then we check if we have a non-inline tag in its section
               ret = (!isInlineTag || /{"(stack|table|ol|ul|image)"/.test(JSON.stringify(ret)) ? {stack:ret} : {text:ret});
@@ -322,6 +306,26 @@ module.exports = function(htmlText, options) {
                 applyDefaultStyle(ret, nodeName);
               }
               ret.style = ['html-'+nodeName];
+            }
+
+            // check if we have inherent styles to apply when a text is inside several <tag>
+            applyParentsStyle(ret, element);
+
+            // for 'td' and 'th' we check if we have "rowspan" or "colspan"
+            if (nodeName === "td" || nodeName === "th") {
+              if (element.getAttribute("rowspan")) ret.rowSpan = element.getAttribute("rowspan")*1;
+              if (element.getAttribute("colspan")) ret.colSpan = element.getAttribute("colspan")*1;
+            }
+
+            // is there any class to this element?
+            cssClass = element.getAttribute("class");
+            if (cssClass) {
+              ret.style = (ret.style||[]).concat(cssClass.split(' '));
+            }
+
+            // check if the element has a "style" attribute
+            if (ret.text) {
+              setComputedStyle(ret, element.getAttribute("style"));
             }
           } else if (ret.table || ret.ol || ret.ul) { // for TABLE / UL / OL
             ret.style = ['html-'+nodeName];
@@ -334,10 +338,17 @@ module.exports = function(htmlText, options) {
             applyDefaultStyle(ret, nodeName);
           }
 
+          if (element.dataset && element.dataset.pdfmake) {
+            dataset = JSON.parse(element.dataset.pdfmake);
+            dist = ret[nodeName] || ret;
+            for (key in dataset) {
+              dist[key] = dataset[key];
+            }
+          }
+
           // retrieve the class from the parent
           cssClass = element.getAttribute("class");
           if (cssClass && typeof ret === 'object') {
-            // apply all the classes not there yet
             ret.style = (ret.style || [])
                         .concat(cssClass.split(' '))
           }
