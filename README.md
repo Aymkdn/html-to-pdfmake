@@ -328,4 +328,4 @@ node example.js
 
 ## Donate
 
-You can support my work by [making a donation](https://www.paypal.me/aymkdn). Thank you!
+You can support my work by [making a donation](https://www.paypal.me/aymkdn), or by visiting my [Github Sponsors page](https://github.com/sponsors/Aymkdn). Thank you!
