@@ -288,11 +288,14 @@ module.exports = function(htmlText, options) {
             // "tr" elements should always contain an array
             if (ret.length === 1 && nodeName !== "tr") {
               ret=ret[0];
+              if (typeof ret === "string") ret={text:ret};
               if (ret.text) {
                 applyDefaultStyle(ret, nodeName);
                 setComputedStyle(ret, element.getAttribute("style"));
               }
+
               ret.style = (ret.style||[]).concat(['html-'+nodeName]);
+
               // for TD and TH we want to include the style from TR
               if (nodeName === "td" || nodeName === "th") ret.style.push('html-tr');
             } else {
