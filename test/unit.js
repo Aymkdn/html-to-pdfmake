@@ -190,6 +190,30 @@ test("a",function(t) {
   t.finish();
 })
 
+test("ol without type",function(t) {
+  var ret = htmlToPdfMake('<ol><li>Numbered list</li></ol>', window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    !ret.hasOwnProperty("type") &&
+    Array.isArray(ret.ol) && ret.ol[0].text === "Numbered list",
+  "<ol>");
+
+  t.finish();
+})
+
+test("ol with type",function(t) {
+  var ret = htmlToPdfMake('<ol type="a"><li>Numbered list</li></ol>', window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.type === "lower-alpha" &&
+    Array.isArray(ret.ol) && ret.ol[0].text === "Numbered list",
+  "<ol type='a'>");
+
+  t.finish();
+})
+
 // { text: 'strike', decoration: 'lineThrough', style: [ 'html-strike' ] }
 test("strike",function(t) {
   var ret = htmlToPdfMake("<strike>strike</strike>", window);

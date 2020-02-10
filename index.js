@@ -60,6 +60,17 @@ module.exports = function(htmlText, options) {
 
   var inlineTags = [ 'p', 'li', 'span', 'strong', 'em', 'b', 'i', 'u', 'th', 'td' ];
 
+  var listTypes = {
+    'a': 'lower-alpha',
+    'A': 'upper-alpha',
+    'i': 'lower-roman',
+    'I': 'upper-roman',
+    '1': 'decimal',
+    'circle': 'circle',
+    'square': 'square',
+    'disc': 'disc'
+  };
+
   /**
    * Permit to change the default styles based on the options
    * @return {[type]} [description]
@@ -200,6 +211,11 @@ module.exports = function(htmlText, options) {
             }
             // check if the element has a "style" attribute
             setComputedStyle(ret, element.getAttribute("style"));
+            // set list type if present
+            var listType = element.getAttribute('type');
+            if (listType && listTypes[listType]) {
+              ret.type = listTypes[listType];
+            }
             break;
           }
           case "table":{
