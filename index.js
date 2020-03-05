@@ -213,10 +213,10 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "hr": {
-            var length = 514;
+            var length = 540;
 
             ret = {
-              margin: [0, 12, 0, 0],
+              margin: [0, 0, 0, 0],
               canvas: [
                 {
                   type: "line",
