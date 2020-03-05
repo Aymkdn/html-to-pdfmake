@@ -8,7 +8,8 @@ var { window } = new JSDOM("");
 var htmlToPdfMake = require("./index.js");
 //var util = require("util");
 
-var html = htmlToPdfMake(`
+var html = htmlToPdfMake(
+  `
   Simple text
   <div>
     <h1>Title Level 1</h1>
@@ -18,6 +19,9 @@ var html = htmlToPdfMake(`
     <h5>Title Level 5</h5>
     <h6>Title Level 6</h6>
   </div>
+  <span>HR is Here </span>
+  <hr>
+  <span>HR is Here </span>
   <p>
     This is a sentence with a <strong>bold and purple word</strong>, <em>one in italic</em>, and <u>one with underline</u>. And finally <a href="https://somewhere">a link</a>.
   </p>
@@ -169,39 +173,42 @@ var html = htmlToPdfMake(`
   <p style="text-align: center;"> <span style="font-size: 14px;"><em><strong>Bold italic centered text</strong></em></span> </p>
 
   <span class="a">text "bold" <span class="b">text "bold & italic" <span class="c">text "bold & italic & red"</span> text "bold & italic"</span> text "bold"</span>
-`, {window:window});
+`,
+  { window: window }
+);
 
 //console.log(util.inspect(html, {showHidden: false, depth: null}))
 
 var docDefinition = {
-  content: [
-    html
-  ],
+  content: [html],
   pageBreakBefore: function(currentNode) {
     // we add a page break before elements with the classname "pdf-pagebreak-before"
-    return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
+    return (
+      currentNode.style &&
+      currentNode.style.indexOf("pdf-pagebreak-before") > -1
+    );
   },
-  styles:{
-    red:{
-      color:'red'
+  styles: {
+    red: {
+      color: "red"
     },
-    bold:{
-      bold:true
+    bold: {
+      bold: true
     },
-    'html-h6':{
-      color:'purple'
+    "html-h6": {
+      color: "purple"
     },
-    'html-strong':{
-      color:'purple'
+    "html-strong": {
+      color: "purple"
     },
-    'a':{
-      bold:true
+    a: {
+      bold: true
     },
-    'b':{
+    b: {
       italics: true
     },
-    'c':{
-      color:'red',
+    c: {
+      color: "red",
       italics: false
     }
   }
@@ -209,6 +216,6 @@ var docDefinition = {
 
 var pdfDocGenerator = pdfMake.createPdf(docDefinition);
 pdfDocGenerator.getBuffer(function(buffer) {
-  fs.writeFileSync('example.pdf', buffer);
-  console.log('--> example.pdf')
+  fs.writeFileSync("example.pdf", buffer);
+  console.log("--> example.pdf");
 });

@@ -33,48 +33,64 @@
  */
 //var util = require("util"); // to debug
 module.exports = function(htmlText, options) {
-  var wndw = (options && options.window ? options.window : window);
+  var wndw = options && options.window ? options.window : window;
 
   // set default styles
   var defaultStyles = {
-    b: {bold:true},
-    strong: {bold:true},
-    u: {decoration:'underline'},
-    s: {decoration: 'lineThrough'},
-    em: {italics:true},
-    i: {italics:true},
-    h1: {fontSize:24, bold:true, marginBottom:5},
-    h2: {fontSize:22, bold:true, marginBottom:5},
-    h3: {fontSize:20, bold:true, marginBottom:5},
-    h4: {fontSize:18, bold:true, marginBottom:5},
-    h5: {fontSize:16, bold:true, marginBottom:5},
-    h6: {fontSize:14, bold:true, marginBottom:5},
-    a: {color:'blue', decoration:'underline'},
-    strike: {decoration: 'lineThrough'},
-    p: {margin:[0, 5, 0, 10]},
-    ul: {marginBottom:5},
-    li: {marginLeft:5},
-    table: {marginBottom:5},
-    th: {bold:true, fillColor:'#EEEEEE'}
-  }
+    b: { bold: true },
+    strong: { bold: true },
+    u: { decoration: "underline" },
+    s: { decoration: "lineThrough" },
+    em: { italics: true },
+    i: { italics: true },
+    h1: { fontSize: 24, bold: true, marginBottom: 5 },
+    h2: { fontSize: 22, bold: true, marginBottom: 5 },
+    h3: { fontSize: 20, bold: true, marginBottom: 5 },
+    h4: { fontSize: 18, bold: true, marginBottom: 5 },
+    h5: { fontSize: 16, bold: true, marginBottom: 5 },
+    h6: { fontSize: 14, bold: true, marginBottom: 5 },
+    a: { color: "blue", decoration: "underline" },
+    strike: { decoration: "lineThrough" },
+    p: { margin: [0, 5, 0, 10] },
+    ul: { marginBottom: 5 },
+    li: { marginLeft: 5 },
+    table: { marginBottom: 5 },
+    th: { bold: true, fillColor: "#EEEEEE" }
+  };
 
-  var inlineTags = [ 'p', 'li', 'span', 'strong', 'em', 'b', 'i', 'u', 'th', 'td' ];
+  var inlineTags = [
+    "p",
+    "li",
+    "span",
+    "strong",
+    "em",
+    "b",
+    "i",
+    "u",
+    "th",
+    "td"
+  ];
 
   /**
    * Permit to change the default styles based on the options
    * @return {[type]} [description]
    */
-  function changeDefaultStyles () {
+  function changeDefaultStyles() {
     for (var keyStyle in options.defaultStyles) {
       if (defaultStyles.hasOwnProperty(keyStyle)) {
         // if we want to remove a default style
-        if (options.defaultStyles.hasOwnProperty(keyStyle) && !options.defaultStyles[keyStyle]) {
+        if (
+          options.defaultStyles.hasOwnProperty(keyStyle) &&
+          !options.defaultStyles[keyStyle]
+        ) {
           delete defaultStyles[keyStyle];
         } else {
           for (var k in options.defaultStyles[keyStyle]) {
             // if we want to delete a specific property
-            if (!options.defaultStyles[keyStyle][k]) delete defaultStyles[keyStyle][k];
-            else defaultStyles[keyStyle][k] = options.defaultStyles[keyStyle][k];
+            if (!options.defaultStyles[keyStyle][k])
+              delete defaultStyles[keyStyle][k];
+            else
+              defaultStyles[keyStyle][k] = options.defaultStyles[keyStyle][k];
           }
         }
       }
@@ -97,21 +113,21 @@ module.exports = function(htmlText, options) {
 
     // Create a HTML DOM tree out of html string
     var parser = new wndw.DOMParser();
-    var parsedHtml = parser.parseFromString(htmlText, 'text/html');
+    var parsedHtml = parser.parseFromString(htmlText, "text/html");
 
     // Go thru each child
     [].forEach.call(parsedHtml.body.childNodes, function(child) {
       var ret = parseElement(child);
       if (ret) {
         // to reduce the amount of code
-        if (Array.isArray(ret) && ret.length === 1) ret=ret[0];
+        if (Array.isArray(ret) && ret.length === 1) ret = ret[0];
         //console.log(util.inspect(ret, {showHidden: false, depth: null})); // to debug
         docDef.push(ret);
       }
     });
 
     return docDef;
-  }
+  };
 
   /**
    * Converts a single HTML element to pdfmake, calls itself recursively for child html elements
@@ -123,20 +139,25 @@ module.exports = function(htmlText, options) {
    */
   var parseElement = function(element, parentNode, parents) {
     var nodeName = element.nodeName.toLowerCase();
-    var parentNodeName = (parentNode ? parentNode.nodeName.toLowerCase() : '');
+    var parentNodeName = parentNode ? parentNode.nodeName.toLowerCase() : "";
     var ret, text, cssClass, dataset, key, dist, isInlineTag;
     parents = parents || [];
 
     // check the node type
-    switch(element.nodeType) {
-      case 3: { // TEXT_NODE
+    switch (element.nodeType) {
+      case 3: {
+        // TEXT_NODE
         if (element.textContent) {
           text = element.textContent.replace(/\n(\s+)?/g, "");
           if (text) {
             // if 'text' is just blank and parentNodeName is a TABLE/THEAD/TBODY/TR, then ignore it
-            if (/^\s+$/.test(text) && ['table','thead','tbody','tr'].indexOf(parentNodeName) > -1) return ret;
+            if (
+              /^\s+$/.test(text) &&
+              ["table", "thead", "tbody", "tr"].indexOf(parentNodeName) > -1
+            )
+              return ret;
 
-            ret = {'text': text};
+            ret = { text: text };
             if (parentNodeName) {
               // check if we have inherent styles to apply when a text is inside several <tag>
               applyParentsStyle(ret, element);
@@ -153,60 +174,86 @@ module.exports = function(htmlText, options) {
 
         return ret;
       }
-      case 1: { // ELEMENT_NODE
+      case 1: {
+        // ELEMENT_NODE
         ret = [];
         parents.push(nodeName);
         // check children
         // if it's a table cell (TH/TD) with an empty content, we need to count it
-        if (element.childNodes.length === 0 && (nodeName==="th" || nodeName ==="td")) ret.push({text:''});
+        if (
+          element.childNodes.length === 0 &&
+          (nodeName === "th" || nodeName === "td")
+        )
+          ret.push({ text: "" });
         else {
           [].forEach.call(element.childNodes, function(child) {
             child = parseElement(child, element, parents);
             if (child) {
-              if (Array.isArray(child) && child.length === 1) child=child[0];
+              if (Array.isArray(child) && child.length === 1) child = child[0];
               ret.push(child);
             }
           });
           parents.pop();
         }
 
-        if (ret.length===0) ret="";
+        if (ret.length === 0) ret = "";
 
         // check which kind of tag we have
         switch (nodeName) {
           case "svg": {
             ret = {
               svg: element.outerHTML
-            }
-            ret.style = ['html-'+nodeName];
+            };
+            ret.style = ["html-" + nodeName];
             break;
           }
           case "br": {
             // for BR we return '\n'
-            ret = '\n';
+            ret = "\n";
+            break;
+          }
+          case "hr": {
+            var length = 514;
+
+            ret = {
+              margin: [0, 12, 0, 0],
+              canvas: [
+                {
+                  type: "line",
+                  x1: 0,
+                  y1: 0,
+                  x2: length,
+                  y2: 0,
+                  lineWidth: 0.5,
+                  lineColor: "#000000"
+                }
+              ]
+            };
+
             break;
           }
           case "ol":
           case "ul": {
-            ret = {"_":ret};
+            ret = { _: ret };
             ret[nodeName] = ret._;
             delete ret._;
             // add a custom class to let the user customize the element
-            ret.style = ['html-'+nodeName];
+            ret.style = ["html-" + nodeName];
             // is there any class to this element?
             cssClass = element.getAttribute("class");
             if (cssClass) {
-              ret.style = ret.style.concat(cssClass.split(' '));
+              ret.style = ret.style.concat(cssClass.split(" "));
             }
             // check if the element has a "style" attribute
             setComputedStyle(ret, element.getAttribute("style"));
             break;
           }
-          case "table":{
-            ret = {"_":ret, table:{body:[]}};
+          case "table": {
+            ret = { _: ret, table: { body: [] } };
             ret._.forEach(function(re) {
               if (re.stack) {
-                var td = [], rowspan = {};
+                var td = [],
+                  rowspan = {};
                 re.stack.forEach(function(r, indexRow) {
                   var c, cell, i, indexCell;
                   if (r.stack) {
@@ -214,16 +261,20 @@ module.exports = function(htmlText, options) {
                     if (rowspan[indexRow]) {
                       // insert empty cell due to rowspan
                       rowspan[indexRow].forEach(function(cell) {
-                        r.stack.splice(cell.index, 0, {text:'', style: ['html-td', 'html-tr'], colSpan:cell.colspan});
+                        r.stack.splice(cell.index, 0, {
+                          text: "",
+                          style: ["html-td", "html-tr"],
+                          colSpan: cell.colspan
+                        });
                       });
                     }
 
                     // insert empty cells due to colspan
-                    for (c=0, cell; c<r.stack.length;) {
+                    for (c = 0, cell; c < r.stack.length; ) {
                       cell = r.stack[c];
                       if (cell.colSpan > 1) {
-                        for (i=0; i<cell.colSpan-1; i++) {
-                          r.stack.splice(c+1, 0, "")
+                        for (i = 0; i < cell.colSpan - 1; i++) {
+                          r.stack.splice(c + 1, 0, "");
                         }
                         c += cell.colSpan;
                       } else c++;
@@ -233,26 +284,30 @@ module.exports = function(htmlText, options) {
                     indexCell = 0;
                     r.stack.forEach(function(cell) {
                       if (cell.rowSpan) {
-                        for (var i=0; i<cell.rowSpan; i++) {
-                          if (!rowspan[indexRow+i]) rowspan[indexRow+i] = [];
+                        for (var i = 0; i < cell.rowSpan; i++) {
+                          if (!rowspan[indexRow + i])
+                            rowspan[indexRow + i] = [];
                           // we also remember the colSpan for cells with both rowspan and colspan
-                          rowspan[indexRow+i].push({index:indexCell, colspan:cell.colSpan||1});
+                          rowspan[indexRow + i].push({
+                            index: indexCell,
+                            colspan: cell.colSpan || 1
+                          });
                         }
                       }
                       indexCell += cell.colSpan || 1;
                     });
-                    ret.table.body.push(r.stack)
+                    ret.table.body.push(r.stack);
                   } else {
                     td.push(r);
                     // insert empty cells due to colspan
                     if (r.colSpan > 1) {
-                      for (i=0; i<r.colSpan-1; i++) {
+                      for (i = 0; i < r.colSpan - 1; i++) {
                         td.push("");
                       }
                     }
                   }
                 });
-                if (td.length>0) ret.table.body.push(td);
+                if (td.length > 0) ret.table.body.push(td);
               } else {
                 // only one row
                 ret.table.body.push([re]);
@@ -264,18 +319,18 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "img": {
-            ret = {image:element.getAttribute("src")};
-            ret.style = ['html-img'];
+            ret = { image: element.getAttribute("src") };
+            ret.style = ["html-img"];
             cssClass = element.getAttribute("class");
             if (cssClass) {
-              ret.style = ret.style.concat(cssClass.split(' '));
+              ret.style = ret.style.concat(cssClass.split(" "));
             }
             // check if we have 'width' and 'height'
             if (element.getAttribute("width")) {
-              ret.width = parseFloat(element.getAttribute("width"))
+              ret.width = parseFloat(element.getAttribute("width"));
             }
             if (element.getAttribute("height")) {
-              ret.height = parseFloat(element.getAttribute("height"))
+              ret.height = parseFloat(element.getAttribute("height"));
             }
             // check if the element has a "style" attribute
             setComputedStyle(ret, element.getAttribute("style"));
@@ -287,28 +342,33 @@ module.exports = function(htmlText, options) {
           if (Array.isArray(ret)) {
             // "tr" elements should always contain an array
             if (ret.length === 1 && nodeName !== "tr") {
-              ret=ret[0];
-              if (typeof ret === "string") ret={text:ret};
+              ret = ret[0];
+              if (typeof ret === "string") ret = { text: ret };
               if (ret.text) {
                 applyDefaultStyle(ret, nodeName);
                 setComputedStyle(ret, element.getAttribute("style"));
               }
 
-              ret.style = (ret.style||[]).concat(['html-'+nodeName]);
+              ret.style = (ret.style || []).concat(["html-" + nodeName]);
 
               // for TD and TH we want to include the style from TR
-              if (nodeName === "td" || nodeName === "th") ret.style.push('html-tr');
+              if (nodeName === "td" || nodeName === "th")
+                ret.style.push("html-tr");
             } else {
-              isInlineTag = (inlineTags.indexOf(nodeName) > -1);
+              isInlineTag = inlineTags.indexOf(nodeName) > -1;
 
               // if we have an inline tag, then we check if we have a non-inline tag in its section
-              ret = (!isInlineTag || /{"(stack|table|ol|ul|image)"/.test(JSON.stringify(ret)) ? {stack:ret} : {text:ret});
+              ret =
+                !isInlineTag ||
+                /{"(stack|table|ol|ul|image)"/.test(JSON.stringify(ret))
+                  ? { stack: ret }
+                  : { text: ret };
 
               // we apply the default style for the inline tags
               if (isInlineTag) {
                 applyDefaultStyle(ret, nodeName);
               }
-              ret.style = ['html-'+nodeName];
+              ret.style = ["html-" + nodeName];
             }
 
             // check if we have inherent styles to apply when a text is inside several <tag>
@@ -316,26 +376,29 @@ module.exports = function(htmlText, options) {
 
             // for 'td' and 'th' we check if we have "rowspan" or "colspan"
             if (nodeName === "td" || nodeName === "th") {
-              if (element.getAttribute("rowspan")) ret.rowSpan = element.getAttribute("rowspan")*1;
-              if (element.getAttribute("colspan")) ret.colSpan = element.getAttribute("colspan")*1;
+              if (element.getAttribute("rowspan"))
+                ret.rowSpan = element.getAttribute("rowspan") * 1;
+              if (element.getAttribute("colspan"))
+                ret.colSpan = element.getAttribute("colspan") * 1;
             }
 
             // is there any class to this element?
             cssClass = element.getAttribute("class");
             if (cssClass) {
-              ret.style = (ret.style||[]).concat(cssClass.split(' '));
+              ret.style = (ret.style || []).concat(cssClass.split(" "));
             }
 
             // check if the element has a "style" attribute
             if (ret.text) {
               setComputedStyle(ret, element.getAttribute("style"));
             }
-          } else if (ret.table || ret.ol || ret.ul) { // for TABLE / UL / OL
-            ret.style = ['html-'+nodeName];
+          } else if (ret.table || ret.ol || ret.ul) {
+            // for TABLE / UL / OL
+            ret.style = ["html-" + nodeName];
             // is there any class to this element?
             cssClass = element.getAttribute("class");
             if (cssClass) {
-              ret.style = ret.style.concat(cssClass.split(' '));
+              ret.style = ret.style.concat(cssClass.split(" "));
             }
             // do we have a default style to apply?
             applyDefaultStyle(ret, nodeName);
@@ -351,17 +414,15 @@ module.exports = function(htmlText, options) {
 
           // retrieve the class from the parent
           cssClass = element.getAttribute("class");
-          if (cssClass && typeof ret === 'object') {
-            ret.style = (ret.style || [])
-                        .concat(cssClass.split(' '))
+          if (cssClass && typeof ret === "object") {
+            ret.style = (ret.style || []).concat(cssClass.split(" "));
           }
 
           // remove doublon in classes
-          if (typeof ret === 'object' && Array.isArray(ret.style)) {
-            ret.style = ret.style
-                        .filter(function (value, index, self) {
-                          return self.indexOf(value) === index;
-                        });
+          if (typeof ret === "object" && Array.isArray(ret.style)) {
+            ret.style = ret.style.filter(function(value, index, self) {
+              return self.indexOf(value) === index;
+            });
           }
         }
 
@@ -369,7 +430,7 @@ module.exports = function(htmlText, options) {
       }
     }
     return "";
-  }
+  };
 
   var applyDefaultStyle = function(ret, nodeName) {
     if (defaultStyles[nodeName]) {
@@ -379,31 +440,37 @@ module.exports = function(htmlText, options) {
         }
       }
     }
-  }
+  };
 
   var applyParentsStyle = function(ret, node) {
     // while the parents are an inline tag, we want to apply the default style and the class to the children too
-    var classes = [], defaultStyles = [], cssClass;
-    var inlineParentNode=node.parentNode;
+    var classes = [],
+      defaultStyles = [],
+      cssClass;
+    var inlineParentNode = node.parentNode;
     while (inlineParentNode) {
       var defaultStyle = {};
-      var inlineParentNodeName=inlineParentNode.nodeName.toLowerCase();
+      var inlineParentNodeName = inlineParentNode.nodeName.toLowerCase();
       if (inlineTags.indexOf(inlineParentNodeName) > -1) {
         cssClass = inlineParentNode.getAttribute("class");
-        classes = classes.concat(['html-'+inlineParentNodeName], cssClass||[]);
+        classes = classes.concat(
+          ["html-" + inlineParentNodeName],
+          cssClass || []
+        );
         applyDefaultStyle(defaultStyle, inlineParentNodeName);
         defaultStyles.push(defaultStyle);
 
-        inlineParentNode=inlineParentNode.parentNode;
+        inlineParentNode = inlineParentNode.parentNode;
       } else break;
     }
-    ret.style = (ret.style||[]).concat(classes);
+    ret.style = (ret.style || []).concat(classes);
     defaultStyles.forEach(function(defaultStyle) {
       for (var key in defaultStyle) {
-        if (key.indexOf("margin") === -1 && ret[key] === undefined) ret[key] = defaultStyle[key];
+        if (key.indexOf("margin") === -1 && ret[key] === undefined)
+          ret[key] = defaultStyle[key];
       }
-    })
-  }
+    });
+  };
 
   /**
    * Transform a CSS expression (e.g. 'margin:10px') in the PDFMake version
@@ -412,58 +479,71 @@ module.exports = function(htmlText, options) {
    * @returns {Array} array of {key, value}
    */
   var computeStyle = function(style) {
-    var styleDefs = style.split(';').map(function(style) { return style.replace(/\s/g, '').toLowerCase().split(':') });
+    var styleDefs = style.split(";").map(function(style) {
+      return style
+        .replace(/\s/g, "")
+        .toLowerCase()
+        .split(":");
+    });
     var ret = [];
     styleDefs.forEach(function(styleDef) {
       var key = styleDef[0];
       var value = styleDef[1];
       switch (key) {
         case "margin": {
-          value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim().split(' ');
+          value = value
+            .replace(/(\d+)(\.\d+)?([^\d]+)/g, "$1$2 ")
+            .trim()
+            .split(" ");
           // pdfMake uses a different order than CSS
-          if (value.length===1) value=+value[0]; // single value
-          else if (value.length===2) value=[+value[1], +value[0]]; // vertical | horizontal ==> horizontal | vertical
-          else if (value.length===3) value=[+value[1], +value[0], +value[1], +value[2]]; // top | horizontal | bottom ==> left | top | right | bottom
-          else if (value.length===4) value=[+value[3], +value[0], +value[1], +value[2]]; // top | right | bottom | left ==> left | top | right | bottom
-          ret.push({key:key, value:value});
+          if (value.length === 1) value = +value[0];
+          // single value
+          else if (value.length === 2) value = [+value[1], +value[0]];
+          // vertical | horizontal ==> horizontal | vertical
+          else if (value.length === 3)
+            value = [+value[1], +value[0], +value[1], +value[2]];
+          // top | horizontal | bottom ==> left | top | right | bottom
+          else if (value.length === 4)
+            value = [+value[3], +value[0], +value[1], +value[2]]; // top | right | bottom | left ==> left | top | right | bottom
+          ret.push({ key: key, value: value });
           break;
         }
         case "text-align": {
-          ret.push({key:"alignment", value:value})
+          ret.push({ key: "alignment", value: value });
           break;
         }
         case "font-weight": {
-          if (value === "bold") ret.push({key:"bold", value:true});
+          if (value === "bold") ret.push({ key: "bold", value: true });
           break;
         }
         case "text-decoration": {
-          ret.push({key:"decoration", value:toCamelCase(value)})
+          ret.push({ key: "decoration", value: toCamelCase(value) });
           break;
         }
         case "font-style": {
-          if (value==="italic") ret.push({key:"italics", value:true});
+          if (value === "italic") ret.push({ key: "italics", value: true });
           break;
         }
         case "color": {
-          ret.push({key:"color", value:parseColor(value)})
+          ret.push({ key: "color", value: parseColor(value) });
           break;
         }
         case "background-color": {
-          ret.push({key:"background", value:parseColor(value)})
+          ret.push({ key: "background", value: parseColor(value) });
           break;
         }
         default: {
-          if (key.indexOf("-") > -1) key=toCamelCase(key);
+          if (key.indexOf("-") > -1) key = toCamelCase(key);
           if (value) {
-            value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
-            if (!isNaN(value)) value=+value; // turn it into a number
-            ret.push({key:key, value:value});
+            value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g, "$1$2 ").trim();
+            if (!isNaN(value)) value = +value; // turn it into a number
+            ret.push({ key: key, value: value });
           }
         }
       }
     });
     return ret;
-  }
+  };
 
   /**
    * Go throught the CSS styles for the element and apply them
@@ -475,13 +555,15 @@ module.exports = function(htmlText, options) {
       cssStyle = computeStyle(cssStyle);
       cssStyle.forEach(function(style) {
         ret[style.key] = style.value;
-      })
+      });
     }
-  }
+  };
 
   var toCamelCase = function(str) {
-    return str.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase() });
-  }
+    return str.replace(/-([a-z])/g, function(g) {
+      return g[1].toUpperCase();
+    });
+  };
 
   /**
    * Returns the color in a hex format (e.g. #12ff00).
@@ -491,13 +573,13 @@ module.exports = function(htmlText, options) {
    * @returns color as hex values for pdfmake
    */
   var parseColor = function(color) {
-    var haxRegex = new RegExp('^#([0-9a-f]{3}|[0-9a-f]{6})$');
+    var haxRegex = new RegExp("^#([0-9a-f]{3}|[0-9a-f]{6})$");
 
     // e.g. `#fff` or `#ff0048`
-    var rgbRegex = new RegExp('^rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\)$');
+    var rgbRegex = new RegExp("^rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\)$");
 
     // e.g. rgb(0,255,34) or rgb(22, 0, 0)
-    var nameRegex = new RegExp('^[a-z]+$');
+    var nameRegex = new RegExp("^[a-z]+$");
 
     if (haxRegex.test(color)) {
       return color;
@@ -508,18 +590,18 @@ module.exports = function(htmlText, options) {
         if (decimalValue > 255) {
           decimalValue = 255;
         }
-        var hexString = '0' + decimalValue.toString(16);
+        var hexString = "0" + decimalValue.toString(16);
         hexString = hexString.slice(-2);
         decimalColors[i] = hexString;
       }
-      return '#' + decimalColors.join('');
+      return "#" + decimalColors.join("");
     } else if (nameRegex.test(color)) {
       return color;
     } else {
       console.error('Could not parse color "' + color + '"');
       return color;
     }
-  }
+  };
 
-  return convertHtml(htmlText)
-}
+  return convertHtml(htmlText);
+};
