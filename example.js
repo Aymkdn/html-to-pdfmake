@@ -69,7 +69,10 @@ var html = htmlToPdfMake(`
       <span class="red">This is a red span</span>
     </p>
   </div>
-
+  <span>&lt;HR&gt; with the default style:</span>
+  <hr>
+  <span>Below, another &lt;HR&gt; but with different style: left=120, width=300, color='red', margin=[0,20,0,20], thickness=2</span>
+  <hr data-pdfmake="{&quot;left&quot;:120, &quot;width&quot;:300, &quot;color&quot;:&quot;red&quot;, &quot;margin&quot;:[0,20,0,20], &quot;thickness&quot;:2}">
   <table class="pdf-pagebreak-before">
     <thead>
       <tr>

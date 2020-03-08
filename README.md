@@ -317,6 +317,21 @@ To apply these special attributes, you have to use the attribute `data-pdfmake` 
 
 The expression provided by `data-pdfmake` must be a valid JSON string because it will be translated with `JSON.parse()`.
 
+#### `<hr>`
+
+An `<hr>` can also be customized using `data-pdfmake`. Some default styles are applied to this element:
+```javascript
+{
+  left:0, // the left position
+  width:514, // should be OK with a A4 page
+  color:'black', // the color of the line
+  thickness:0.5, // how thick the line must be
+  margin:[0,12,0,12] // same order as PDFMake, meaning: [left, top, right, bottom]
+}
+```
+
+See the [example.js](example.js) file to see a `<hr>` example.
+
 ## Examples
 
 You can find more examples in [example.js](example.js) which will create [example.pdf](example.pdf):
