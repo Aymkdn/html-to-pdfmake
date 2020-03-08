@@ -506,3 +506,16 @@ test("cascade_tags", function(t) {
 
   t.finish();
 })
+
+test("hr", function(t) {
+  var ret = htmlToPdfMake("<hr>", window);
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+
+  t.check(
+    !!ret.canvas && ret.canvas.length === 1 && ret.canvas[0].type === "line",
+    "hr tag"
+  );
+
+  t.finish();
+})
