@@ -475,8 +475,8 @@ test("svg",function(t) {
   ret = ret[0];
 
   t.check(
-    'svg' in ret && 
-    ret.svg.length > 0, 
+    'svg' in ret &&
+    ret.svg.length > 0,
   "return has svg property")
 
   t.check(
@@ -516,6 +516,68 @@ test("hr", function(t) {
     !!ret.canvas && ret.canvas.length === 1 && ret.canvas[0].type === "line",
     "hr tag"
   );
+
+  t.finish();
+})
+
+test("table non empty inside div styles",function(t) {
+  var html = `<table>
+    <thead>
+      <tr>
+        <th><div> </div></th>
+        <th><div>Header Column B</div></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Value Cell A2</td>
+        <td>Value Cell B2</td>
+      </tr>
+      <tr>
+        <td>Value Cell A3</td>
+        <td>Value Cell B3</td>
+      </tr>
+    </tbody>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table &&
+    Array.isArray(ret.table.body) &&
+    ret.table.body[0].length === ret.table.body[1].length,
+    "global");
+
+  t.finish();
+})
+
+test("table empty inside div header",function(t) {
+  var html = `<table>
+    <thead>
+      <tr>
+        <th><div></div></th>
+        <th><div>Header Column B</div></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Value Cell A2</td>
+        <td>Value Cell B2</td>
+      </tr>
+      <tr>
+        <td>Value Cell A3</td>
+        <td>Value Cell B3</td>
+      </tr>
+    </tbody>
+  </table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table &&
+    Array.isArray(ret.table.body) &&
+    ret.table.body[0].length === ret.table.body[1].length,
+    "global");
 
   t.finish();
 })

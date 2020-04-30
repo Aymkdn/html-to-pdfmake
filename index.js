@@ -157,8 +157,21 @@ module.exports = function(htmlText, options) {
         ret = [];
         parents.push(nodeName);
         // check children
-        // if it's a table cell (TH/TD) with an empty content, we need to count it
-        if (element.childNodes.length === 0 && (nodeName==="th" || nodeName ==="td")) ret.push({text:''});
+        // if it's a table cell (TH/TD) with an empty content
+        if (element.childNodes.length === 0 && (parents.indexOf('th') > -1 || parents.indexOf('td') > -1)) {
+          // if one of the parents is a TH or a TD, then we go up until them to see if all ancestors are empty too
+          var ancestor = element;
+          var allEmpty = true;
+          while (ancestor.nodeName !== "TH" && ancestor.nodeName !== "TD") {
+            if (ancestor.textContent !== '') {
+              allEmpty=false;
+              break;
+            }
+            ancestor = ancestor.parentNode;
+          }
+          // if empty, we need to add it
+          if (allEmpty) ret.push({text:''});
+        }
         else {
           [].forEach.call(element.childNodes, function(child) {
             child = parseElement(child, element, parents);
