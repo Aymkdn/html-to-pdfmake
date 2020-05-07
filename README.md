@@ -332,6 +332,38 @@ An `<hr>` can also be customized using `data-pdfmake`. Some default styles are a
 
 See the [example.js](example.js) file to see a `<hr>` example.
 
+## Use with Node
+
+To use it in a Node script you need to install `jsdom`:
+```bash
+npm install jsdom
+```
+
+Then in your JS file:
+```javascript
+var pdfMake = require("pdfmake/build/pdfmake");
+var pdfFonts = require("pdfmake/build/vfs_fonts");
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+var fs = require('fs');
+var jsdom = require("jsdom");
+var { JSDOM } = jsdom;
+var { window } = new JSDOM("");
+var htmlToPdfMake = require("html-to-pdfmake");
+
+var html = htmlToPdfMake(`<div>the html code</div>`, {window:window});
+
+var docDefinition = {
+  content: [
+    html
+  ]
+};
+
+var pdfDocGenerator = pdfMake.createPdf(docDefinition);
+pdfDocGenerator.getBuffer(function(buffer) {
+  fs.writeFileSync('example.pdf', buffer);
+});
+```
+
 ## Examples
 
 You can find more examples in [example.js](example.js) which will create [example.pdf](example.pdf):
