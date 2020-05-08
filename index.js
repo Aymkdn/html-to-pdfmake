@@ -124,7 +124,7 @@ module.exports = function(htmlText, options) {
   var parseElement = function(element, parentNode, parents) {
     var nodeName = element.nodeName.toLowerCase();
     var parentNodeName = (parentNode ? parentNode.nodeName.toLowerCase() : '');
-    var ret, text, cssClass, dataset, key, dist, isInlineTag;
+    var ret, text, cssClass, dataset, key, dist, isInlineTag, hasStackTags;
     parents = parents || [];
 
     // check the node type
@@ -140,7 +140,6 @@ module.exports = function(htmlText, options) {
             if (parentNodeName) {
               // check if we have inherent styles to apply when a text is inside several <tag>
               applyParentsStyle(ret, element);
-
               // for links
               if (parentNodeName === "a") {
                 ret.link = parentNode.getAttribute("href");
@@ -328,6 +327,25 @@ module.exports = function(htmlText, options) {
             setComputedStyle(ret, element.getAttribute("style"));
             break;
           }
+          case "h1":
+          case "h2":
+          case "h3":
+          case "h4":
+          case "h5":
+          case "h6": {
+            // encapsule in a stack
+            ret = {stack:[{text:ret}]};
+            ret.stack[0].style = ['html-'+nodeName];
+            cssClass = element.getAttribute("class");
+            if (cssClass) {
+              ret.stack[0].style = ret.stack[0].style.concat(cssClass.split(' '));
+            }
+            // apply default style
+            applyDefaultStyle(ret.stack[0], nodeName);
+            // check if the element has a "style" attribute
+            setComputedStyle(ret.stack[0], element.getAttribute("style"));
+            break;
+          }
         }
         // add a custom class to let the user customize the element
         if (ret) {
@@ -347,9 +365,15 @@ module.exports = function(htmlText, options) {
               if (nodeName === "td" || nodeName === "th") ret.style.push('html-tr');
             } else {
               isInlineTag = (inlineTags.indexOf(nodeName) > -1);
-
-              // if we have an inline tag, then we check if we have a non-inline tag in its section
-              ret = (!isInlineTag || /{"(stack|table|ol|ul|image)"/.test(JSON.stringify(ret)) ? {stack:ret} : {text:ret});
+              hasStackTags = /{"(stack|table|ol|ul|image)"/.test(JSON.stringify(ret));
+              // if it's a DIV and only inline tags in its section, then we want to use 'text' instead of 'stack'
+              if (nodeName === 'div' && !hasStackTags) ret = {text:ret};
+              // if we have an inline tag with stack tags in its section, then we want to use 'stack'
+              else if (isInlineTag && hasStackTags) ret = {stack:ret};
+              // if it's not an inline tag, then we use 'stack'
+              else if (!isInlineTag) ret = {stack:ret};
+              // otherwise, for inline tags, we use 'text'
+              else ret = {text:ret};
 
               // we apply the default style for the inline tags
               if (isInlineTag) {
@@ -449,7 +473,8 @@ module.exports = function(htmlText, options) {
       for (var key in defaultStyle) {
         if (key.indexOf("margin") === -1 && ret[key] === undefined) ret[key] = defaultStyle[key];
       }
-    })
+    });
+    if (ret.style.length===0) delete ret.style;
   }
 
   /**

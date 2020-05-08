@@ -76,13 +76,14 @@ test("i",function(t) {
   t.finish();
 })
 
-// [{"text":"level 1","fontSize":24,"bold":true,"marginBottom":5,"style":["html-h1"]}]
+// [{stack:[{text:[{text:'level 1'}],style:[ 'html-h1' ],fontSize:24,bold:true,marginBottom:5}]]
 test("h1",function(t) {
   var ret = htmlToPdfMake("<h1>level 1</h1>", window);
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+  t.check(Array.isArray(ret) && ret[0].stack && Array.isArray(ret[0].stack), "return is OK");
+  ret = ret[0].stack[0];
   t.check(
-    ret.text === "level 1" &&
+    Array.isArray(ret.text) &&
+    ret.text[0].text === "level 1" &&
     ret.fontSize === 24 &&
     ret.bold === true &&
     ret.marginBottom === 5 &&
@@ -95,10 +96,11 @@ test("h1",function(t) {
 
 test("h2",function(t) {
   var ret = htmlToPdfMake("<h2>level 2</h2>", window);
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+  t.check(Array.isArray(ret) && ret[0].stack && Array.isArray(ret[0].stack), "return is OK");
+  ret = ret[0].stack[0];
   t.check(
-    ret.text === "level 2" &&
+    Array.isArray(ret.text) &&
+    ret.text[0].text === "level 2" &&
     ret.fontSize === 22 &&
     ret.bold === true &&
     ret.marginBottom === 5 &&
@@ -111,10 +113,11 @@ test("h2",function(t) {
 
 test("h3",function(t) {
   var ret = htmlToPdfMake("<h3>level 3</h3>", window);
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+  t.check(Array.isArray(ret) && ret[0].stack && Array.isArray(ret[0].stack), "return is OK");
+  ret = ret[0].stack[0];
   t.check(
-    ret.text === "level 3" &&
+    Array.isArray(ret.text) &&
+    ret.text[0].text === "level 3" &&
     ret.fontSize === 20 &&
     ret.bold === true &&
     ret.marginBottom === 5 &&
@@ -127,10 +130,11 @@ test("h3",function(t) {
 
 test("h4",function(t) {
   var ret = htmlToPdfMake("<h4>level 4</h4>", window);
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+  t.check(Array.isArray(ret) && ret[0].stack && Array.isArray(ret[0].stack), "return is OK");
+  ret = ret[0].stack[0];
   t.check(
-    ret.text === "level 4" &&
+    Array.isArray(ret.text) &&
+    ret.text[0].text === "level 4" &&
     ret.fontSize === 18 &&
     ret.bold === true &&
     ret.marginBottom === 5 &&
@@ -143,10 +147,11 @@ test("h4",function(t) {
 
 test("h5",function(t) {
   var ret = htmlToPdfMake("<h5>level 5</h5>", window);
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+  t.check(Array.isArray(ret) && ret[0].stack && Array.isArray(ret[0].stack), "return is OK");
+  ret = ret[0].stack[0];
   t.check(
-    ret.text === "level 5" &&
+    Array.isArray(ret.text) &&
+    ret.text[0].text === "level 5" &&
     ret.fontSize === 16 &&
     ret.bold === true &&
     ret.marginBottom === 5 &&
@@ -159,10 +164,11 @@ test("h5",function(t) {
 
 test("h6",function(t) {
   var ret = htmlToPdfMake("<h6>level 6</h6>", window);
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+  t.check(Array.isArray(ret) && ret[0].stack && Array.isArray(ret[0].stack), "return is OK");
+  ret = ret[0].stack[0];
   t.check(
-    ret.text === "level 6" &&
+    Array.isArray(ret.text) &&
+    ret.text[0].text === "level 6" &&
     ret.fontSize === 14 &&
     ret.bold === true &&
     ret.marginBottom === 5 &&
