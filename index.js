@@ -454,7 +454,8 @@ module.exports = function(htmlText, options) {
 
   var applyParentsStyle = function(ret, node) {
     // while the parents are an inline tag, we want to apply the default style and the class to the children too
-    var classes = [], defaultStyles = [], cssClass;
+    var classes = [], defaultStyles = [], cssClass, cssStyles=[];
+    var parentNode=node.parentNode;
     var inlineParentNode=node.parentNode;
     while (inlineParentNode) {
       var defaultStyle = {};
@@ -474,6 +475,15 @@ module.exports = function(htmlText, options) {
         if (key.indexOf("margin") === -1 && ret[key] === undefined) ret[key] = defaultStyle[key];
       }
     });
+    // all the css 'style' of the parents must be transferred to the children
+    while (parentNode.nodeType === 1) {
+      cssStyles = cssStyles.concat(computeStyle(parentNode.getAttribute('style')));
+      parentNode = parentNode.parentNode;
+    }
+    cssStyles.reverse();
+    cssStyles.forEach(function(stl) {
+      ret[stl.key] = stl.value;
+    })
     if (ret.style.length===0) delete ret.style;
   }
 
@@ -484,6 +494,7 @@ module.exports = function(htmlText, options) {
    * @returns {Array} array of {key, value}
    */
   var computeStyle = function(style) {
+    if (!style) return [];
     var styleDefs = style.split(';').map(function(style) { return style.replace(/\s/g, '').toLowerCase().split(':') });
     var ret = [];
     styleDefs.forEach(function(styleDef) {

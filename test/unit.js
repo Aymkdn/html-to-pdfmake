@@ -587,3 +587,29 @@ test("table empty inside div header",function(t) {
 
   t.finish();
 })
+
+test("inherit css styles",function(t) {
+  var html = `<div style="color:red;"><span style="color:blue">blue<strong style="color:green">green</strong>blue</span><span>red</span></div>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.color === 'red' &&
+    Array.isArray(ret.style) &&
+    ret.style.includes('html-div') &&
+    Array.isArray(ret.text) &&
+    Array.isArray(ret.text[0].text) &&
+    ret.text[0].text[0].text === 'blue' &&
+    ret.text[0].text[0].color === 'blue' &&
+    ret.text[0].text[1].text === 'green' &&
+    ret.text[0].text[1].color === 'green' &&
+    ret.text[0].text[1].bold &&
+    ret.text[0].text[2].text === 'blue' &&
+    ret.text[0].text[2].color === 'blue' &&
+    ret.text[0].color === 'blue' &&
+    ret.text[1].text === 'red' &&
+    ret.text[1].color === 'red',
+  "inherit");
+
+  t.finish();
+})
