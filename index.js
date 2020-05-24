@@ -539,7 +539,7 @@ module.exports = function(htmlText, options) {
           }
           default: {
             // for borders
-            if (key === 'border' || key.startsWith('border-left') || key.startsWith('border-top') || key.startsWith('border-right') || key.startsWith('border-bottom')) {
+            if (key === 'border' || key.indexOf('border-left') === 0 || key.indexOf('border-top') === 0 || key.indexOf('border-right') === 0 || key.indexOf('border-bottom') === 0) {
               borders.push({key:key, value:value});
             } else {
               if (key.indexOf("-") > -1) key=toCamelCase(key);
