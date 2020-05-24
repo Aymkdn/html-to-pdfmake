@@ -495,56 +495,101 @@ module.exports = function(htmlText, options) {
    */
   var computeStyle = function(style) {
     if (!style) return [];
-    var styleDefs = style.split(';').map(function(style) { return style.replace(/\s/g, '').toLowerCase().split(':') });
+    var styleDefs = style.split(';').map(function(style) { return style.toLowerCase().split(':') });
     var ret = [];
+    var borders = []; // special treatment for borders
     styleDefs.forEach(function(styleDef) {
-      var key = styleDef[0];
-      var value = styleDef[1];
-      switch (key) {
-        case "margin": {
-          value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim().split(' ');
-          // pdfMake uses a different order than CSS
-          if (value.length===1) value=+value[0]; // single value
-          else if (value.length===2) value=[+value[1], +value[0]]; // vertical | horizontal ==> horizontal | vertical
-          else if (value.length===3) value=[+value[1], +value[0], +value[1], +value[2]]; // top | horizontal | bottom ==> left | top | right | bottom
-          else if (value.length===4) value=[+value[3], +value[0], +value[1], +value[2]]; // top | right | bottom | left ==> left | top | right | bottom
-          ret.push({key:key, value:value});
-          break;
-        }
-        case "text-align": {
-          ret.push({key:"alignment", value:value})
-          break;
-        }
-        case "font-weight": {
-          if (value === "bold") ret.push({key:"bold", value:true});
-          break;
-        }
-        case "text-decoration": {
-          ret.push({key:"decoration", value:toCamelCase(value)})
-          break;
-        }
-        case "font-style": {
-          if (value==="italic") ret.push({key:"italics", value:true});
-          break;
-        }
-        case "color": {
-          ret.push({key:"color", value:parseColor(value)})
-          break;
-        }
-        case "background-color": {
-          ret.push({key:"background", value:parseColor(value)})
-          break;
-        }
-        default: {
-          if (key.indexOf("-") > -1) key=toCamelCase(key);
-          if (value) {
-            value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
-            if (!isNaN(value)) value=+value; // turn it into a number
+      if (styleDef.length===2) {
+        var key = styleDef[0].trim();
+        var value = styleDef[1].trim();
+        switch (key) {
+          case "margin": {
+            value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim().split(' ');
+            // pdfMake uses a different order than CSS
+            if (value.length===1) value=+value[0]; // single value
+            else if (value.length===2) value=[+value[1], +value[0]]; // vertical | horizontal ==> horizontal | vertical
+            else if (value.length===3) value=[+value[1], +value[0], +value[1], +value[2]]; // top | horizontal | bottom ==> left | top | right | bottom
+            else if (value.length===4) value=[+value[3], +value[0], +value[1], +value[2]]; // top | right | bottom | left ==> left | top | right | bottom
             ret.push({key:key, value:value});
+            break;
+          }
+          case "text-align": {
+            ret.push({key:"alignment", value:value})
+            break;
+          }
+          case "font-weight": {
+            if (value === "bold") ret.push({key:"bold", value:true});
+            break;
+          }
+          case "text-decoration": {
+            ret.push({key:"decoration", value:toCamelCase(value)})
+            break;
+          }
+          case "font-style": {
+            if (value==="italic") ret.push({key:"italics", value:true});
+            break;
+          }
+          case "color": {
+            ret.push({key:"color", value:parseColor(value)})
+            break;
+          }
+          case "background-color": {
+            ret.push({key:"background", value:parseColor(value)})
+            break;
+          }
+          default: {
+            // for borders
+            if (key === 'border' || key.startsWith('border-left') || key.startsWith('border-top') || key.startsWith('border-right') || key.startsWith('border-bottom')) {
+              borders.push({key:key, value:value});
+            } else {
+              if (key.indexOf("-") > -1) key=toCamelCase(key);
+              if (value) {
+                value = value.replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
+                if (!isNaN(value)) value=+value; // turn it into a number
+                ret.push({key:key, value:value});
+              }
+            }
           }
         }
       }
     });
+    // for borders
+    if (borders.length > 0) {
+      // we have to merge together the borders in two properties
+      var border = []; // array of boolean
+      var borderColor = []; // array of colors
+      borders.forEach(function(b) {
+        // we have 3 properties: width style color
+        var properties = b.value.split(' ');
+        var width = properties[0].replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
+        var index = -1, i;
+        if (b.key.indexOf('-left') > -1) index=0;
+        else if (b.key.indexOf('-top') > -1) index=1;
+        else if (b.key.indexOf('-right') > -1) index=2;
+        else if (b.key.indexOf('-bottom') > -1) index=3;
+        // for the width
+        if (index > -1) {
+          border[index] = (width > 0);
+        } else {
+          for (i=0; i<4; i++) border[i] = (width > 0);
+        }
+        // for the color
+        if (properties[2]) {
+          if (index > -1) {
+            borderColor[index] = parseColor(properties[2]);
+          } else {
+            for (i=0; i<4; i++) borderColor[i] = parseColor(properties[2]);
+          }
+        }
+      });
+      // fill the gaps
+      for (var i=0; i<4; i++) {
+        if (border.length > 0 && typeof border[i] === "undefined") border[i]=true;
+        if (borderColor.length > 0 && typeof borderColor[i] === "undefined") borderColor[i]='#000000';
+      }
+      if (border.length > 0) ret.push({key:'border', value:border});
+      if (borderColor.length > 0) ret.push({key:'borderColor', value:borderColor});
+    }
     return ret;
   }
 

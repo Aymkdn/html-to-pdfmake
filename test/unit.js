@@ -613,3 +613,25 @@ test("inherit css styles",function(t) {
 
   t.finish();
 })
+
+test("colored borders", function(t) {
+  var html = `<table><tr><td style="border-top-width: 0; border-right: 1pt solid #0080C0; border-bottom: 0; border-left: 1px solid #0080C0;">Cell with border left and right in blue</td></tr></table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table.body[0][0].text === "Cell with border left and right in blue" &&
+    Array.isArray(ret.table.body[0][0].border) &&
+    ret.table.body[0][0].border[0] &&
+    !ret.table.body[0][0].border[1] &&
+    ret.table.body[0][0].border[2] &&
+    !ret.table.body[0][0].border[3] &&
+    Array.isArray(ret.table.body[0][0].borderColor) &&
+    ret.table.body[0][0].borderColor[0] === '#0080c0' &&
+    ret.table.body[0][0].borderColor[1] === '#000000' &&
+    ret.table.body[0][0].borderColor[2] === '#0080c0' &&
+    ret.table.body[0][0].borderColor[3] === '#000000',
+  "colored borders");
+
+  t.finish();
+})
