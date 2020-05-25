@@ -529,6 +529,10 @@ module.exports = function(htmlText, options) {
             if (value==="italic") ret.push({key:"italics", value:true});
             break;
           }
+          case "font-family": {
+            ret.push({key:"font", value:value.replace(/"|^'|'$/g,"")});
+            break;
+          }
           case "color": {
             ret.push({key:"color", value:parseColor(value)})
             break;
