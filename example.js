@@ -159,6 +159,14 @@ var html = htmlToPdfMake(`
     </tr>
   </table>
 
+  <table>
+    <tr>
+      <td style="background-color:red">Cell with red background</td>
+      <td>Cell</td>
+      <td style="border:1px solid red">Cell with red borders</td>
+    </tr>
+  </table>
+
   <svg version="1.1" baseProfile="full" width="300" height="200" xmlns="http://www.w3.org/2000/svg">
     <rect width="100%" height="100%" fill="red" />
     <circle cx="150" cy="100" r="80" fill="green" />

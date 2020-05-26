@@ -245,7 +245,7 @@ module.exports = function(htmlText, options) {
               ret.style = ret.style.concat(cssClass.split(' '));
             }
             // check if the element has a "style" attribute
-            setComputedStyle(ret, element.getAttribute("style"));
+            setComputedStyle(ret, element);
             break;
           }
           case "table":{
@@ -306,7 +306,7 @@ module.exports = function(htmlText, options) {
             });
             delete ret._;
             // check if the element has a "style" attribute
-            setComputedStyle(ret, element.getAttribute("style"));
+            setComputedStyle(ret, element);
             break;
           }
           case "img": {
@@ -324,7 +324,7 @@ module.exports = function(htmlText, options) {
               ret.height = parseFloat(element.getAttribute("height"))
             }
             // check if the element has a "style" attribute
-            setComputedStyle(ret, element.getAttribute("style"));
+            setComputedStyle(ret, element);
             break;
           }
           case "h1":
@@ -343,7 +343,7 @@ module.exports = function(htmlText, options) {
             // apply default style
             applyDefaultStyle(ret.stack[0], nodeName);
             // check if the element has a "style" attribute
-            setComputedStyle(ret.stack[0], element.getAttribute("style"));
+            setComputedStyle(ret.stack[0], element);
             break;
           }
         }
@@ -356,7 +356,7 @@ module.exports = function(htmlText, options) {
               if (typeof ret === "string") ret={text:ret};
               if (ret.text) {
                 applyDefaultStyle(ret, nodeName);
-                setComputedStyle(ret, element.getAttribute("style"));
+                setComputedStyle(ret, element);
               }
 
               ret.style = (ret.style||[]).concat(['html-'+nodeName]);
@@ -399,7 +399,7 @@ module.exports = function(htmlText, options) {
 
             // check if the element has a "style" attribute
             if (ret.text) {
-              setComputedStyle(ret, element.getAttribute("style"));
+              setComputedStyle(ret, element);
             }
           } else if (ret.table || ret.ol || ret.ul) { // for TABLE / UL / OL
             ret.style = ['html-'+nodeName];
@@ -477,7 +477,7 @@ module.exports = function(htmlText, options) {
     });
     // all the css 'style' of the parents must be transferred to the children
     while (parentNode.nodeType === 1) {
-      cssStyles = cssStyles.concat(computeStyle(parentNode.getAttribute('style')));
+      cssStyles = cssStyles.concat(computeStyle(parentNode.getAttribute('style'), parentNode));
       parentNode = parentNode.parentNode;
     }
     cssStyles.reverse();
@@ -491,13 +491,15 @@ module.exports = function(htmlText, options) {
    * Transform a CSS expression (e.g. 'margin:10px') in the PDFMake version
    *
    * @param {String} style The CSS expression to transform
+   * @param {DOMElement} element
    * @returns {Array} array of {key, value}
    */
-  var computeStyle = function(style) {
+  var computeStyle = function(style, element) {
     if (!style) return [];
     var styleDefs = style.split(';').map(function(style) { return style.toLowerCase().split(':') });
     var ret = [];
     var borders = []; // special treatment for borders
+    var nodeName = element.nodeName.toUpperCase();
     styleDefs.forEach(function(styleDef) {
       if (styleDef.length===2) {
         var key = styleDef[0].trim();
@@ -538,7 +540,8 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "background-color": {
-            ret.push({key:"background", value:parseColor(value)})
+            // if TH/TD and key is 'background', then we use 'fillColor' instead
+            ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:parseColor(value)})
             break;
           }
           default: {
@@ -600,11 +603,12 @@ module.exports = function(htmlText, options) {
   /**
    * Go throught the CSS styles for the element and apply them
    * @param {Object} ret Our pdfmake object
-   * @param {String} cssStyle The CSS style string
+   * @param {DOMElement} element The DOM elemnet
    */
-  var setComputedStyle = function(ret, cssStyle) {
+  var setComputedStyle = function(ret, element) {
+    var cssStyle = element.getAttribute("style");
     if (cssStyle) {
-      cssStyle = computeStyle(cssStyle);
+      cssStyle = computeStyle(cssStyle, element);
       cssStyle.forEach(function(style) {
         ret[style.key] = style.value;
       })
