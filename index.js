@@ -307,6 +307,60 @@ module.exports = function(htmlText, options) {
             delete ret._;
             // check if the element has a "style" attribute
             setComputedStyle(ret, element);
+            // if we have P or DIV in a table cell TD or TH, then we need to add \n
+            var insertBreakLine = function(content, prevContent, firstStyleOnly) {
+              var breakLine=false, i;
+              // if the previous content was not P or DIV, then we need to add a \n too
+              if (prevContent && Array.isArray(content.style)) {
+                for (i=0; i<content.style.length; i++) {
+                  if (firstStyleOnly && i>0) break;
+                  if (content.style[i] === 'html-p' || content.style[i] === 'html-div') {
+                    breakLine=true;
+                    break;
+                  }
+                  else if (content.style[i] === 'html-td') break;
+                }
+
+                if (breakLine) {
+                  if (typeof prevContent.text === 'string') {
+                    prevContent.text += "\n";
+                  }
+                  else if (Array.isArray(prevContent.text)) {
+                    prevContent.text.push({text:"\n"});
+                  }
+                } else if (!firstStyleOnly && Array.isArray(prevContent.style)) {
+                  for (i=0; i<prevContent.style.length; i++) {
+                    if (prevContent.style[i] === 'html-p' || prevContent.style[i] === 'html-div') {
+                      breakLine=true;
+                      break;
+                    }
+                    else if (prevContent.style[i] === 'html-td') break;
+                  }
+                  if (breakLine) {
+                    if (typeof prevContent.text === 'string') {
+                      prevContent.text += "\n";
+                    }
+                    else if (Array.isArray(prevContent.text)) {
+                      prevContent.text.push({text:"\n"});
+                    }
+                  }
+                }
+              }
+              if (Array.isArray(content.text)) {
+                for (i=0; i<content.text.length; i++) {
+                  insertBreakLine(content.text[i], content.text[i-1], true)
+                }
+              }
+            }
+            ret.table.body.forEach(function(row) {
+              row.forEach(function(cell) {
+                if (Array.isArray(cell.text)) {
+                  for (var i=0; i<cell.text.length; i++) {
+                    insertBreakLine(cell.text[i], cell.text[i-1]);
+                  }
+                }
+              })
+            })
             break;
           }
           case "img": {

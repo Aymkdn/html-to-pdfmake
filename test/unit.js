@@ -635,3 +635,164 @@ test("colored borders", function(t) {
 
   t.finish();
 })
+
+/*[
+  {
+    "table": {
+      "body": [
+        [
+          {
+            "text": [
+              {
+                "text": "some text\n",
+                "style": [
+                  "html-td"
+                ]
+              },
+              {
+                "text": [
+                  {
+                    "text": "p1",
+                    "style": [
+                      "html-p",
+                      "html-td"
+                    ]
+                  },
+                  {
+                    "text": "span1",
+                    "style": [
+                      "html-span",
+                      "html-p",
+                      "html-td"
+                    ]
+                  },
+                  {
+                    "text": "span2",
+                    "style": [
+                      "html-span",
+                      "html-p",
+                      "html-td"
+                    ]
+                  },
+                  {
+                    "text": "\n"
+                  }
+                ],
+                "margin": [
+                  0,
+                  5,
+                  0,
+                  10
+                ],
+                "style": [
+                  "html-p",
+                  "html-td"
+                ]
+              },
+              {
+                "text": "p2\n",
+                "style": [
+                  "html-p",
+                  "html-td"
+                ],
+                "margin": [
+                  0,
+                  5,
+                  0,
+                  10
+                ]
+              },
+              {
+                "text": "span3\n",
+                "style": [
+                  "html-span",
+                  "html-td"
+                ]
+              },
+              {
+                "text": "p3span4\n",
+                "style": [
+                  "html-span",
+                  "html-p",
+                  "html-td"
+                ],
+                "margin": [
+                  0,
+                  5,
+                  0,
+                  10
+                ]
+              },
+              {
+                "text": [
+                  {
+                    "text": "span5\n",
+                    "style": [
+                      "html-span"
+                    ]
+                  },
+                  {
+                    "text": "p4",
+                    "style": [
+                      "html-p"
+                    ],
+                    "margin": [
+                      0,
+                      5,
+                      0,
+                      10
+                    ]
+                  },
+                  {
+                    "text": "\n"
+                  }
+                ],
+                "style": [
+                  "html-div",
+                  "html-td"
+                ]
+              },
+              {
+                "text": "strong",
+                "style": [
+                  "html-strong",
+                  "html-td"
+                ],
+                "bold": true
+              }
+            ],
+            "style": [
+              "html-td"
+            ]
+          }
+        ]
+      ]
+    },
+    "style": [
+      "html-table"
+    ],
+    "marginBottom": 5
+  }
+]*/
+test("cell with P and DIV", function(t) {
+  var html = `<table><tr><td>some text<p>p1<span>span1</span><span>span2</span></p><p>p2</p><span>span3</span><p><span>p3span4</span></p><div><span>span5</span><p>p4</p></div><strong>strong</strong></td></tr></table>`;
+  var ret = htmlToPdfMake(html, window);
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  ret = ret[0];
+  t.check(
+    ret.table.body[0][0].text[0].text === "some text\n" &&
+    ret.table.body[0][0].text[1].text[0].text === "p1" &&
+    ret.table.body[0][0].text[1].text[1].text === "span1" &&
+    ret.table.body[0][0].text[1].text[2].text === "span2" &&
+    ret.table.body[0][0].text[1].text[3].text === "\n" &&
+    ret.table.body[0][0].text[2].text === "p2\n" &&
+    ret.table.body[0][0].text[3].text === "span3\n" &&
+    ret.table.body[0][0].text[4].text === "p3span4\n" &&
+    ret.table.body[0][0].text[5].text[0].text === "span5\n" &&
+    ret.table.body[0][0].text[5].text[1].text === "p4" &&
+    ret.table.body[0][0].text[5].text[2].text === "\n" &&
+    ret.table.body[0][0].text[6].text === "strong",
+  "cell with P and DIV");
+
+  t.finish();
+})
