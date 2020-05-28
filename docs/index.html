@@ -62,9 +62,15 @@
       var val = htmlToPdfmake(code.value);
       document.querySelector('#result').value = JSON.stringify(val, null, '  ');
       var dd = {content:val};
-      pdfMake.createPdf(dd).getDataUrl(function(outDoc) {
-        document.getElementById('pdf').src = outDoc;
-      });
+      // is IE ?
+      var isIE = '-ms-scroll-limit' in document.documentElement.style && '-ms-ime-align' in document.documentElement.style;
+      if (isIE) {
+        pdfMake.createPdf(dd).open();
+      } else {
+        pdfMake.createPdf(dd).getDataUrl(function(outDoc) {
+          document.getElementById('pdf').src = outDoc;
+        });
+      }
     }
     convert();
 
