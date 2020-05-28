@@ -65,7 +65,7 @@
       // is IE ?
       var isIE = '-ms-scroll-limit' in document.documentElement.style && '-ms-ime-align' in document.documentElement.style;
       if (isIE) {
-        pdfMake.createPdf(dd).open();
+        pdfMake.createPdf(dd).download();
       } else {
         pdfMake.createPdf(dd).getDataUrl(function(outDoc) {
           document.getElementById('pdf').src = outDoc;
