@@ -635,11 +635,12 @@ module.exports = function(htmlText, options) {
           for (i=0; i<4; i++) border[i] = (width > 0);
         }
         // for the color
-        if (properties[2]) {
+        if (properties.length > 2) {
+          var color = properties.slice(2).join(' ');
           if (index > -1) {
-            borderColor[index] = parseColor(properties[2]);
+            borderColor[index] = parseColor(color);
           } else {
-            for (i=0; i<4; i++) borderColor[i] = parseColor(properties[2]);
+            for (i=0; i<4; i++) borderColor[i] = parseColor(color);
           }
         }
       });
