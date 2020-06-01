@@ -150,12 +150,12 @@ var html = htmlToPdfMake(`
 
   <table data-pdfmake="{&quot;widths&quot;:[100,&quot;*&quot;,&quot;auto&quot;],&quot;heights&quot;:40}">
     <tr>
-      <td colspan="3">Table with <b>widths=[100,"*","auto"]</b> and <b>heights=40</b></th>
+      <td colspan="3">Table with <b>widths=[100,"*","auto"]</b> and <b>heights=40</b> using "data-pdfmake" attribute</th>
     </tr>
     <tr>
       <td>Cell1</td>
-      <td>Cell2</td>
-      <td>Cell3</td>
+      <td style="text-align:center">Cell2</td>
+      <td style="text-align:right">Cell3</td>
     </tr>
   </table>
 
@@ -164,6 +164,18 @@ var html = htmlToPdfMake(`
       <td style="background-color:red">Cell with red background</td>
       <td>Cell</td>
       <td style="border:1px solid red">Cell with red borders</td>
+    </tr>
+  </table>
+
+  <p>Table autosized based on style "height" and "width" using "tableAutoSize:true" option:</p>
+  <table>
+    <tr style="height:100px">
+      <td style="width:250px">height:100px / width:250px</td>
+      <td>height:100px / width:'auto'</td>
+    </tr>
+    <tr>
+      <td style="width:100px">Here "&lt;td width="100"&gt;" will use 250px for the width because we have to use the largest col's width</td>
+      <td style="height:200px">height:200px / width:'auto'</td>
     </tr>
   </table>
 
@@ -180,19 +192,30 @@ var html = htmlToPdfMake(`
   <p style="text-align: center;"> <span style="font-size: 14px;"><em><strong>Bold italic centered text</strong></em></span> </p>
 
   <span class="a">text "bold" <span class="b">text "bold & italic" <span class="c">text "bold & italic & red"</span> text "bold & italic"</span> text "bold"</span>
-`, {window:window});
+
+  <div style="margin-top:20px">
+    Below we preserve the spaces:
+    <p class="with-spaces">     this    is     just     an     example.</p>
+  </div>
+`, {window:window, tableAutoSize:true});
+
+//var html = htmlToPdfMake(``, {window:window, tableAutoSize:true});
+//console.log(JSON.stringify(html))
 
 var docDefinition = {
   content: [
     html
   ],
   pageBreakBefore: function(currentNode) {
-    // we add a page break before elements with the classname "pdf-pagebreak-before"
-    return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
+    // we add a page break before TABLE with the classname "pdf-pagebreak-before"
+    return currentNode.table && currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
   },
   styles:{
     red:{
       color:'red'
+    },
+    blue:{
+      color:'blue'
     },
     bold:{
       bold:true
@@ -212,6 +235,9 @@ var docDefinition = {
     'c':{
       color:'red',
       italics: false
+    },
+    'with-spaces':{
+      preserveLeadingSpaces: true
     }
   }
 };

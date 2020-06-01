@@ -98,6 +98,38 @@ it will return:
 
 ## Documentation
 
+### Options
+
+Some options can be passed to `htmlToPdfmake` function as a second argument.
+
+#### `window`
+
+If you use Node, then you'll have to pass the `window` object ([see below](https://github.com/Aymkdn/html-to-pdfmake#use-with-node)).
+
+#### `defaultStyles`
+
+You can overwrite the default stles using `defaultStyles` ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
+
+#### `tableAutoSize`
+
+By pass `tableAutoSize` with `true`, then the program will try to define `widths` and `heights` for the tables, based on CSS properties `width` and `height` that have been provided to `TH` or `TD`.
+
+Example:
+```javascript
+var html = htmlToPdfmake(`<table>
+  <tr style="height:100px">
+    <td style="width:250px">height:100px / width:250px</td>
+    <td>height:100px / width:'auto'</td>
+  </tr>
+  <tr>
+    <td style="width:100px">Here it will use 250px for the width because we have to use the largest col's width</td>
+    <td style="height:200px">height:200px / width:'auto'</td>
+  </tr>
+</table>`, {
+  tableAutoSize:true
+});
+```
+
 ### HTML tags supported
 
 The below HTML tags are supported:
