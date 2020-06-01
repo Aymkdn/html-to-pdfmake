@@ -128,6 +128,15 @@ var html = htmlToPdfmake(`<table>
 </table>`, {
   tableAutoSize:true
 });
+
+// it will return something like:
+[ {
+    "table": {
+      "body": [ [ … ] ],
+      "widths": [ 188, "auto" ],
+      "heights": [ 75, 151 ]
+    }
+} ]
 ```
 
 ### HTML tags supported
@@ -291,6 +300,16 @@ var docDefinition = {
  }
 };
 ```
+
+#### Units
+
+PDFMake uses `pt` units for the numbers. `html-to-pdfmake` will check the inline style to see if a number with unit is provided, then it will convert it to `pt`.
+
+It only works for `px`, `pt` and `rem` (for `rem` it's based on `1rem = 16px`);
+
+Examples:
+  - `font-size:16px` will be converted to `fontSize:12`
+  - `margin:1em` will be ignored because it's not a valid unit
 
 ### `<img>`
 
