@@ -2,7 +2,11 @@
 <html>
 <head>
   <title>HTML to PDFmake online convertor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"> 
   <style>
+    body {
+      font-family: Roboto
+    }
     .button {
       background-color: #4CAF50; /* Green */
       border: none;
@@ -18,7 +22,31 @@
     .button:hover {
       box-shadow: none;
     }
-  </style>
+    .error {
+      color:red;
+    }
+    /* html-to-pdfmake default style */
+    p {
+      margin:5pt 0 10pt 0;
+    }
+    ul {
+      margin-bottom:5pt;
+      margin-left:5pt;
+    }
+    table {
+      margin-bottom:5pt;
+      border-collapse: collapse;
+    }
+    th {
+      font-weight:bold;
+      background-color:#EEEEEE
+    }
+    th, td {
+      border:1px solid black;
+      text-align: left;
+      vertical-align: top;
+    }
+    </style>
 </head>
 <body>
   <h1>HTML to PDFMake convertor</h1>
@@ -34,18 +62,52 @@
     This is a sentence with a &lt;strong>bold word&lt;/strong>, &lt;em>one in italic&lt;/em>,
     and &lt;u>one with underline&lt;/u>. And finally &lt;a href="https://www.somewhere.com">a link&lt;/a>.
   &lt;/p>
+  &lt;table&gt;
+    &lt;tr&gt;
+      &lt;th style="width:150px"&gt;Header 1&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td style="text-align:center" height="50"&gt;Cell A1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+  &lt;span class="green"&gt;Text in green using the styles from PDFMake&lt;/small&gt;
 &lt;/div>
-    </textarea>
-  </div>
+      </textarea>
+    </div>
     <div style="flex:1;display:flex;flex-direction:column;">
       <b>HTML Preview:</b>
       <div style="padding:5px;border:2px solid #CCC;height:100%; overflow: auto" id="html"></div>
     </div>
   </div>
+
+  <div style="display:flex;height:15vh">
+    <div style="flex:1;display:flex;flex-direction:column;">
+      <b><a href="https://pdfmake.github.io/docs/document-definition-object/styling/">Styles</a> for PDFMake:</b>
+      <div class="error" id="styles_error" style="display:none"></div>
+      <textarea style="height:100%" id="styles">
+{
+  "green": {
+    "color": "green"
+  }
+}
+      </textarea>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;">
+      <b>htmlToPdfmake <a href="https://github.com/Aymkdn/html-to-pdfmake#options">options</a>:</b>
+      <div class="error" id="options_error" style="display:none"></div>
+      <textarea style="height:100%" id="options">
+{
+  "tableAutoSize":true
+}
+      </textarea>
+    </div>
+  </div>
+
   <div style="text-align:center;font-size:18px;margin-top:10px"><button type="button" onclick="convert()" class="button">Generate PDF</button></div>
+
   <div style="display:flex;height:40vh;margin-top:1em">
     <div style="flex:1;display:flex;flex-direction:column;">
-      <b>Result:</b>
+      <b>Result that can directly be copied in <a href="http://pdfmake.org/playground.html">PDFMake Playground</a>:</b>
       <textarea id="result" style="height:100%"></textarea>
     </div>
     <div style="flex:1;display:flex;flex-direction:column;">
@@ -55,14 +117,35 @@
     </div>
   </div>
   <script src="browser.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.1.57/build/pdfmake.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pdfmake@0.1.57/build/vfs_fonts.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake@latest/build/pdfmake.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfmake@latest/build/vfs_fonts.js"></script>
   <script>
     var codeBag = document.querySelector('#code');
     function convert () {
-      var val = htmlToPdfmake(code.value);
-      document.querySelector('#result').value = JSON.stringify(val, null, '  ');
+      var errorStyles = document.querySelector('#styles_error');
+      var errorOptions = document.querySelector('#options_error');
+      // hide errors
+      errorStyles.style.display="none";
+      errorOptions.style.display="none";
+      // retrieve options
+      try {
+        var p = document.querySelector('#options').value.trim() || '{}';
+        var options = JSON.parse(document.querySelector('#options').value.trim() || '{}');
+      } catch(err) {
+        errorOptions.style.display='block';
+        errorOptions.innerHTML = err;
+      }
+      // retrieve styles
+      try {
+        var styles = JSON.parse(document.querySelector('#styles').value.trim() || '{}');
+      } catch(err) {
+        errorStyles.style.display='block';
+        errorStyles.innerHTML = err;
+      }
+      var val = htmlToPdfmake(code.value, options);
       var dd = {content:val};
+      if (typeof styles === 'object') dd.styles = styles;
+      document.querySelector('#result').value = "var dd = " + JSON.stringify(dd, null, '  ');
       // is IE ?
       var isIE = '-ms-scroll-limit' in document.documentElement.style && '-ms-ime-align' in document.documentElement.style;
       if (isIE) {

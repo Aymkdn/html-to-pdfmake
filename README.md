@@ -108,11 +108,11 @@ If you use Node, then you'll have to pass the `window` object ([see below](https
 
 #### `defaultStyles`
 
-You can overwrite the default stles using `defaultStyles` ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
+You can overwrite the default styles using `defaultStyles` ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
 
 #### `tableAutoSize`
 
-By pass `tableAutoSize` with `true`, then the program will try to define `widths` and `heights` for the tables, based on CSS properties `width` and `height` that have been provided to `TH` or `TD`.
+By passing `tableAutoSize` with `true`, then the program will try to define `widths` and `heights` for the tables, based on CSS properties `width` and `height` that have been provided to `TH` or `TD`.
 
 Example:
 ```javascript
