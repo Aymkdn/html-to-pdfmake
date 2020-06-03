@@ -265,11 +265,11 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "SVG": {
-            ret.svg = element.outerHTML.replace(/\n(\s+)?/g, "");
-            delete ret.stack;
-            delete ret.text;
-            // apply all the inhirent classes and styles from the parents, or for the current element
-            ret = applyStyle({ret:ret, parents:parents.concat([element])});
+            ret = {
+              svg:element.outerHTML.replace(/\n(\s+)?/g, ""),
+              nodeName:'SVG',
+              style:['html-svg']
+            }
             break;
           }
           case "BR": {
@@ -438,8 +438,7 @@ module.exports = function(htmlText, options) {
    * @returns {Array} array of {key, value}
    */
   var parseStyle = function(element, ignoreProperties) {
-    var style = element.getAttribute("style");
-    if (!style) return [];
+    var style = element.getAttribute("style") || "";
     style = style.split(';');
     // check if we have "width" or "height"
     if (element.getAttribute("width")) {
