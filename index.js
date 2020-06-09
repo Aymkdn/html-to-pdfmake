@@ -162,10 +162,14 @@ module.exports = function(htmlText, options) {
             // the format for the table is table.body[[], [], …]
             ret.table = {body:[]};
             rowIndex = 0;
+            // Array with All Rows including THEAD
+            var allRows = [];
             // for each THEAD / TBODY
             (ret.stack || ret.text).forEach(function(tbody) {
               // for each row
               var rows = (tbody.stack || tbody.text);
+              // Add rows to allRows
+              allRows = allRows.concat(rows);
               rows.forEach(function(row) {
                 ret.table.body[rowIndex] = [];
                 var cells = (row.stack || row.text);
@@ -179,16 +183,16 @@ module.exports = function(htmlText, options) {
                   if (cell.colSpan) {
                     i = cell.colSpan;
                     // do we have a rowSpan in addition of the colSpan?
-                    setRowSpan({rows:rows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                    setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                     while (--i > 0) {
                       ret.table.body[rowIndex].push({text:''});
                       // keep adding empty cell due to rowspan
-                      setRowSpan({rows:rows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                      setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                       cellIndex++;
                     }
                   } else {
                     // do we have a rowSpan ?
-                    setRowSpan({rows:rows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                    setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                   }
 
                   cellIndex++;
