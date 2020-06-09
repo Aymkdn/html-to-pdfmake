@@ -218,8 +218,15 @@ module.exports = function(htmlText, options) {
                   var width = typeof cell.width !== 'undefined' ? cell.width : 'auto';
                   var height = typeof cell.height !== 'undefined' ? cell.height : 'auto';
                   // check if we have colspan or rowspan
-                  if (width !== 'auto' && cell.colSpan) width /= cell.colSpan;
-                  if (height !== 'auto' && cell.rowSpan) height /= cell.colSpan;
+                  // if yes, and if width/height is a number, we divide by the col/rowspan, otherwise we use 'auto'
+                  if (width !== 'auto' && cell.colSpan) {
+                    if (!isNaN(width)) width /= cell.colSpan;
+                    else width = 'auto';
+                  }
+                  if (height !== 'auto' && cell.rowSpan) {
+                    if (!isNaN(height)) height /= cell.colSpan;
+                    else height = 'auto';
+                  }
                   cellsWidths[rowIndex].push(width);
                   cellsHeights[rowIndex].push(height);
                 });
