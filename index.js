@@ -329,6 +329,8 @@ module.exports = function(htmlText, options) {
             delete ret.text;
             // apply all the inhirent classes and styles from the parents, or for the current element
             ret = applyStyle({ret:ret, parents:parents.concat([element])});
+            // check if we have `list-style-type` or `list-style`
+            if (ret.listStyle || ret.listStyleType) ret.type = ret.listStyle || ret.listStyleType;
             break;
           }
           case "IMG": {
@@ -349,7 +351,7 @@ module.exports = function(htmlText, options) {
         }
 
         // chekck if we have some data-pdfmake to apply
-        if (nodeName !== 'HR' && nodeName !== 'TABLE' && element.dataset && element.dataset.pdfmake) {
+        if (['HR','TABLE'].indexOf(nodeName) === -1 && element.dataset && element.dataset.pdfmake) {
           dataset = JSON.parse(element.dataset.pdfmake);
           for (key in dataset) {
             ret[key] = dataset[key];
