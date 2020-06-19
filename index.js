@@ -262,7 +262,11 @@ module.exports = function(htmlText, options) {
             if (element.dataset && element.dataset.pdfmake) {
               dataset = JSON.parse(element.dataset.pdfmake);
               for (key in dataset) {
-                ret.table[key] = dataset[key];
+                if (key === "layout") {
+                  ret.layout = dataset[key];
+                } else {
+                  ret.table[key] = dataset[key];
+                }
               }
             }
             break;
