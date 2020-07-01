@@ -33,7 +33,11 @@
  * });
  */
 //var util = require("util"); // to debug
-module.exports = function(htmlText, options) {
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory :
+      typeof define === 'function' && define.amd ? define(factory) :
+      (global = global || self, global.htmlToPdfmake = factory);
+  }(this, function (htmlText, options) {
   var wndw = (options && options.window ? options.window : window);
   var tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
 
@@ -649,4 +653,4 @@ module.exports = function(htmlText, options) {
   }
 
   return convertHtml(htmlText)
-}
+}));
