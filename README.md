@@ -6,25 +6,29 @@
 
 You can find the online demo at <a href="https://aymkdn.github.io/html-to-pdfmake/index.html">https://aymkdn.github.io/html-to-pdfmake/index.html</a>
 
-## Install
+## How to use
+
+This module will convert some basic and valid HTML code to its equivalent in *pdfmake*.
+
+### Node
 
 ```bash
 npm install html-to-pdfmake
 ```
 
-## How to use
+```javascript
+var htmlToPdfmake = require("html-to-pdfmake");
+// or:
+// import htmlToPdfmake from "html-to-pdfmake"
+```
 
-This module will convert some basic and valid HTML code to its equivalent in *pdfmake*.
+Example:
 
 ```javascript
 var pdfMake = require("pdfmake/build/pdfmake");
 var pdfFonts = require("pdfmake/build/vfs_fonts");
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 var htmlToPdfmake = require("html-to-pdfmake");
-// or:
-// import htmlToPdfmake from "html-to-pdfmake"
-// or, if used directly in a web browser:
-// <script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/docs/browser.js"></scrpipt>
 
 var html = htmlToPdfmake(`
   <div>
@@ -94,6 +98,36 @@ it will return:
   style: ['html-div']
 }
  */
+```
+
+### Browser
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/docs/browser.js"></script>
+```
+
+Example:
+```html
+<!doctype html>
+<html lang='en'>
+<head>
+  <meta charset='utf-8'>
+  <title>my example</title>
+  <!-- pdfmake files: -->
+  <script src='https://cdnjs.com/libraries/pdfmake/build/pdfmake.min.js'></script>
+  <script src='https://cdnjs.com/libraries/pdfmake/build/vfs_fonts.js'></script>
+  <!-- html-to-pdfmake file: -->
+  <script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/docs/browser.js"></script>
+</head>
+<body>
+  […]
+  <script>
+    var val = htmlToPdfmake("your html code here");
+    var dd = {content:val};
+    pdfMake.createPdf(dd).download();
+  </script>
+</body>
+</html>
 ```
 
 ## Documentation
