@@ -123,6 +123,8 @@ module.exports = function(htmlText, options) {
         if (element.textContent) {
           text = element.textContent.replace(/\n(\s+)?/g, "");
 
+          // for table, thead, tbody, tfoot, tr: remove all empty space
+          if (['TABLE','THEAD','TBODY','TFOOT','TR'].indexOf(parents[parents.length-1].nodeName) > -1) text = text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
           if (text) {
             ret = {'text':text};
             ret = applyStyle({ret:ret, parents:parents});
@@ -161,49 +163,52 @@ module.exports = function(htmlText, options) {
             var rowIndex, cellIndex;
             // the format for the table is table.body[[], [], …]
             ret.table = {body:[]};
-            rowIndex = 0;
-            // Array with All Rows including THEAD
-            var allRows = [];
-            // for each THEAD / TBODY
-            (ret.stack || ret.text).forEach(function(tbody) {
-              // for each row
-              var rows = (tbody.stack || tbody.text);
-              if (Array.isArray(rows)) {
-                // Add rows to allRows
-                allRows = allRows.concat(rows);
-                rows.forEach(function(row) {
-                  var cells = (row.stack || row.text);
-                  // for each cell
-                  cellIndex = 0;
-                  if (Array.isArray(cells)) {
-                    ret.table.body[rowIndex] = [];
-                    cells.forEach(function(cell) {
-                      ret.table.body[rowIndex].push(cell);
+            var tbodies = (ret.stack || ret.text);
+            if (Array.isArray(tbodies)) {
+              rowIndex = 0;
+              // Array with All Rows including THEAD
+              var allRows = [];
+              // for each THEAD / TBODY
+              tbodies.forEach(function(tbody) {
+                // for each row
+                var rows = (tbody.stack || tbody.text);
+                if (Array.isArray(rows)) {
+                  // Add rows to allRows
+                  allRows = allRows.concat(rows);
+                  rows.forEach(function(row) {
+                    var cells = (row.stack || row.text);
+                    // for each cell
+                    if (Array.isArray(cells)) {
+                      cellIndex = 0;
+                      ret.table.body[rowIndex] = [];
+                      cells.forEach(function(cell) {
+                        ret.table.body[rowIndex].push(cell);
 
-                      // do we have a colSpan?
-                      // if yes, insert empty cells due to colspan
-                      if (cell.colSpan) {
-                        i = cell.colSpan;
-                        // do we have a rowSpan in addition of the colSpan?
-                        setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
-                        while (--i > 0) {
-                          ret.table.body[rowIndex].push({text:''});
-                          // keep adding empty cell due to rowspan
+                        // do we have a colSpan?
+                        // if yes, insert empty cells due to colspan
+                        if (cell.colSpan) {
+                          i = cell.colSpan;
+                          // do we have a rowSpan in addition of the colSpan?
                           setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
-                          cellIndex++;
+                          while (--i > 0) {
+                            ret.table.body[rowIndex].push({text:''});
+                            // keep adding empty cell due to rowspan
+                            setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                            cellIndex++;
+                          }
+                        } else {
+                          // do we have a rowSpan ?
+                          setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                         }
-                      } else {
-                        // do we have a rowSpan ?
-                        setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
-                      }
 
-                      cellIndex++;
-                    });
-                    rowIndex++;
-                  }
-                });
-              }
-            });
+                        cellIndex++;
+                      });
+                      rowIndex++;
+                    }
+                 });
+                }
+              });
+            }
 
             delete ret.stack;
             delete ret.text;
