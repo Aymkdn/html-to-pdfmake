@@ -171,34 +171,35 @@ module.exports = function(htmlText, options) {
               // Add rows to allRows
               allRows = allRows.concat(rows);
               rows.forEach(function(row) {
-                ret.table.body[rowIndex] = [];
                 var cells = (row.stack || row.text);
                 // for each cell
                 cellIndex = 0;
-                cells.forEach(function(cell) {
-                  ret.table.body[rowIndex].push(cell);
+                if (Array.isArray(cells)) {
+                  ret.table.body[rowIndex] = [];
+                  cells.forEach(function(cell) {
+                    ret.table.body[rowIndex].push(cell);
 
-                  // do we have a colSpan?
-                  // if yes, insert empty cells due to colspan
-                  if (cell.colSpan) {
-                    i = cell.colSpan;
-                    // do we have a rowSpan in addition of the colSpan?
-                    setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
-                    while (--i > 0) {
-                      ret.table.body[rowIndex].push({text:''});
-                      // keep adding empty cell due to rowspan
+                    // do we have a colSpan?
+                    // if yes, insert empty cells due to colspan
+                    if (cell.colSpan) {
+                      i = cell.colSpan;
+                      // do we have a rowSpan in addition of the colSpan?
                       setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
-                      cellIndex++;
+                      while (--i > 0) {
+                        ret.table.body[rowIndex].push({text:''});
+                        // keep adding empty cell due to rowspan
+                        setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                        cellIndex++;
+                      }
+                    } else {
+                      // do we have a rowSpan ?
+                      setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                     }
-                  } else {
-                    // do we have a rowSpan ?
-                    setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
-                  }
 
-                  cellIndex++;
-                });
-
-                rowIndex++;
+                    cellIndex++;
+                  });
+                  rowIndex++;
+                }
              });
             });
 
