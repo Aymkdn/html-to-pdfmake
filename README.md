@@ -114,8 +114,8 @@ Example:
   <meta charset='utf-8'>
   <title>my example</title>
   <!-- pdfmake files: -->
-  <script src='https://cdnjs.com/libraries/pdfmake/build/pdfmake.min.js'></script>
-  <script src='https://cdnjs.com/libraries/pdfmake/build/vfs_fonts.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/pdfmake.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.66/vfs_fonts.min.js'></script>
   <!-- html-to-pdfmake file: -->
   <script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/docs/browser.js"></script>
 </head>
