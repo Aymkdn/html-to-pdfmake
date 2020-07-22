@@ -42,7 +42,7 @@ test("u",function(t) {
   ret = ret[0];
   t.check(
     ret.text === "underline word" &&
-    ret.decoration === "underline" &&
+    Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] &&
     Array.isArray(ret.style) &&
     ret.style[0] === 'html-u',
   "<u>");
@@ -187,14 +187,12 @@ test("a",function(t) {
   if (debug) console.log(JSON.stringify(ret));
   t.check(Array.isArray(ret) && ret.length===1, "return is OK");
   ret = ret[0];
-  t.check(
-    ret.text === "link" &&
-    ret.color === "blue" &&
-    ret.decoration === "underline" &&
-    ret.link === "https://www.somewhere.com" &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-a',
-  "<a>");
+  t.check(ret.text === "link", "text");
+  t.check(ret.color === "blue", "color");
+  t.check(Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] === "underline", "decoration");
+  t.check(ret.link === "https://www.somewhere.com", "href");
+  t.check(Array.isArray(ret.style), "style is array");
+  t.check(ret.style[0] === 'html-a', "class");
 
   t.finish();
 })
@@ -206,7 +204,7 @@ test("strike",function(t) {
   ret = ret[0];
   t.check(
     ret.text === "strike" &&
-    ret.decoration === "lineThrough" &&
+    Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] === "lineThrough" &&
     Array.isArray(ret.style) &&
     ret.style[0] === 'html-strike',
   "<strike>");
@@ -789,5 +787,35 @@ test("convertUnit and stack", function(t) {
     ret.stack[0].fontSize===12 &&
     ret.stack[1].marginLeft===12
   , "convertUnit");
+  t.finish();
+})
+
+test("'decoration' style", function(t) {
+  var html = `<p><u><s>Test</s></u></p>`;
+  var ret = htmlToPdfMake(html, {window:window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  t.check(Array.isArray(ret[0].text) && ret[0].text.length===1 && Array.isArray(ret[0].text[0].text) && ret[0].text[0].text.length===1, "structure is OK");
+  ret = ret[0].text[0].text[0];
+  t.check(ret.text === "Test", "text is 'Test'");
+  t.check(ret.nodeName === "S", "nodeName is 'S'");
+  t.check(Array.isArray(ret.decoration), "'decoration' is array");
+  t.check(ret.decoration.includes("underline"), "includes 'underline'");
+  t.check(ret.decoration.includes("lineThrough"), "includes 'lineThrough'");
+  t.finish();
+})
+
+test("'decoration' style 2", function(t) {
+  var html = `<p><span style="text-decoration:underline"><span style="text-decoration:line-through">Test</span></span></p>`;
+  var ret = htmlToPdfMake(html, {window:window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+  t.check(Array.isArray(ret[0].text) && ret[0].text.length===1 && Array.isArray(ret[0].text[0].text) && ret[0].text[0].text.length===1, "structure is OK");
+  ret = ret[0].text[0].text[0];
+  t.check(ret.text === "Test", "text is 'Test'");
+  t.check(ret.nodeName === "SPAN", "nodeName is 'SPAN'");
+  t.check(Array.isArray(ret.decoration), "'decoration' is array");
+  t.check(ret.decoration.includes("underline"), "includes 'underline'");
+  t.check(ret.decoration.includes("lineThrough"), "includes 'lineThrough'");
   t.finish();
 })

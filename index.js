@@ -437,8 +437,15 @@ module.exports = function(htmlText, options) {
                   style.indexOf('margin') === -1 &&
                   style.indexOf('border') === -1
                 )
-               )
-            params.ret[style] = defaultStyles[parentNodeName][style];
+               ) {
+              // 'decoration' can be an array
+              if (style === 'decoration') {
+                if (!Array.isArray(params.ret[style])) params.ret[style]=[];
+                params.ret[style].push(defaultStyles[parentNodeName][style]);
+              } else {
+                params.ret[style] = defaultStyles[parentNodeName][style];
+              }
+            }
           }
         }
       }
@@ -447,7 +454,13 @@ module.exports = function(htmlText, options) {
       if (parentNodeName === 'tr') ignoreNonDescendentProperties=false;
       style = parseStyle(parent, ignoreNonDescendentProperties);
       style.forEach(function(stl) {
-        params.ret[stl.key] = stl.value;
+        // 'decoration' can be an array
+        if (stl.key === "decoration") {
+          if (!Array.isArray(params.ret[stl.key])) params.ret[stl.key]=[];
+          params.ret[stl.key].push(stl.value);
+        } else {
+          params.ret[stl.key] = stl.value;
+        }
       });
     });
     params.ret.style = cssClass;
