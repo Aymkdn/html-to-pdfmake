@@ -42,6 +42,7 @@ module.exports = function(htmlText, options) {
     b: {bold:true},
     strong: {bold:true},
     u: {decoration:'underline'},
+    del: {decoration:'lineThrough'},
     s: {decoration: 'lineThrough'},
     em: {italics:true},
     i: {italics:true},
@@ -651,7 +652,7 @@ module.exports = function(htmlText, options) {
    */
   var convertToUnit = function(val) {
     // if it's just a number, then return it
-    if (!isNaN(parseFloat(val)) && isFinite(val)) return val;
+    if (!isNaN(parseFloat(val)) && isFinite(val)) return val*1;
     var mtch = (val+"").trim().match(/^(\d+(\.\d+)?)(pt|px|rem)$/);
     // if we don't have a number with supported units, then return false
     if (!mtch) return false;
