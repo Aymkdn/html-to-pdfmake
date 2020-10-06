@@ -35,6 +35,13 @@
 //var util = require("util"); // to debug
 module.exports = function (htmlText, options) {
 	var wndw = options && options.window ? options.window : window;
+
+	// Used with the size attribute on the font elements to calculate relative font size
+	var fontSizes =
+		options && Array.isArray(options.fontSizes)
+			? options.fontSizes
+			: [10, 14, 16, 18, 20, 24, 28];
+
 	var tableAutoSize =
 		options && typeof options.tableAutoSize === "boolean"
 			? options.tableAutoSize
@@ -408,13 +415,35 @@ module.exports = function (htmlText, options) {
 						break;
 					}
 					case "FONT": {
+						// Checking if the element has a color attribute
 						if (element.getAttribute("color")) {
+							// Assinging the color
 							ret.color = parseColor(element.getAttribute("color"));
-							ret = applyStyle({
-								ret: ret,
-								parents: parents.concat([element]),
-							});
 						}
+
+						// Checking if the element has a size attribute
+						if (element.getAttribute("size")) {
+							// Getting and sanitizing the size value
+							var size = Math.min(
+								Math.max(1, parseInt(element.getAttribute("size"))),
+								7
+							);
+
+							// Getting the relatiev fontsize
+							var fontSize = Math.min(
+								fontSizes[6],
+								Math.max(fontSizes[0], fontSizes[size - 1])
+							);
+
+							// Assigning the font size
+							ret.fontSize = fontSize;
+						}
+
+						// Applying inherited styles
+						ret = applyStyle({
+							ret: ret,
+							parents: parents.concat([element]),
+						});
 						break;
 					}
 				}
