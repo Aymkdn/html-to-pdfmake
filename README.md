@@ -144,6 +144,10 @@ If you use Node, then you'll have to pass the `window` object ([see below](https
 
 You can overwrite the default styles using `defaultStyles` ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
 
+#### `fontSizes`
+
+You can overwrite the default sizes for the old HTML4 tag `<font>` by using `fontSizes`. It must be an array with 7 values ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
+
 #### `tableAutoSize`
 
 By passing `tableAutoSize` with `true`, then the program will try to define `widths` and `heights` for the tables, based on CSS properties `width` and `height` that have been provided to `TH` or `TD`.
@@ -184,6 +188,7 @@ The below HTML tags are supported:
   - UL / OL / LI
   - TABLE / THEAD / TBODY / TFOOTER / TR / TH / TD
   - H1 to H6
+  - FONT
   - IMG
   - SVG
 
@@ -217,6 +222,8 @@ Here is the list of defaults styles:
     th: {bold:true, fillColor:'#EEEEEE'}
   }
 ```
+
+For the old HTML4 tag `<font>`, the `size` attributes can have a value from 1 to 7, which will be converted to 10pt, 14pt, 16pt, 18pt, 20pt, 24pt, or 28pt.
 
 **Please, note that the above default styles are stronger than the ones defined in the style classes.** Read below how to overwrite them.
 
