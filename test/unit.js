@@ -1,220 +1,258 @@
-var htmlToPdfMake = require('../index.js');
+var htmlToPdfMake = require("../index.js");
 var test = require("simple-test-framework");
 var jsdom = require("jsdom");
 var { JSDOM } = jsdom;
 var { window } = new JSDOM("");
 var debug = false;
 
-test("b",function(t) {
-  var ret = htmlToPdfMake("<b>bold word</b>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "bold word" &&
-    ret.bold === true &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-b',
-  "<b>");
+test("b", function (t) {
+	var ret = htmlToPdfMake("<b>bold word</b>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "bold word" &&
+			ret.bold === true &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-b",
+		"<b>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("strong",function(t) {
-  var ret = htmlToPdfMake("<strong>bold word</strong>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "bold word" &&
-    ret.bold === true &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-strong',
-  "<strong>");
+test("strong", function (t) {
+	var ret = htmlToPdfMake("<strong>bold word</strong>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "bold word" &&
+			ret.bold === true &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-strong",
+		"<strong>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("u",function(t) {
-  var ret = htmlToPdfMake("<u>underline word</u>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "underline word" &&
-    Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-u',
-  "<u>");
+test("u", function (t) {
+	var ret = htmlToPdfMake("<u>underline word</u>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "underline word" &&
+			Array.isArray(ret.decoration) &&
+			ret.decoration.length === 1 &&
+			ret.decoration[0] &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-u",
+		"<u>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("em",function(t) {
-  var ret = htmlToPdfMake("<em>italic word</em>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "italic word" &&
-    ret.italics === true &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-em',
-  "<em>");
+test("em", function (t) {
+	var ret = htmlToPdfMake("<em>italic word</em>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "italic word" &&
+			ret.italics === true &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-em",
+		"<em>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("i",function(t) {
-  var ret = htmlToPdfMake("<i>italic word</i>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "italic word" &&
-    ret.italics === true &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-i',
-  "<i>");
+test("i", function (t) {
+	var ret = htmlToPdfMake("<i>italic word</i>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "italic word" &&
+			ret.italics === true &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-i",
+		"<i>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("h1",function(t) {
-  var ret = htmlToPdfMake("<h1>level 1</h1>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret), "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "level 1" &&
-    ret.fontSize === 24 &&
-    ret.bold === true &&
-    ret.marginBottom === 5 &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-h1',
-  "<h1>");
+test("h1", function (t) {
+	var ret = htmlToPdfMake("<h1>level 1</h1>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret), "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "level 1" &&
+			ret.fontSize === 24 &&
+			ret.bold === true &&
+			ret.marginBottom === 5 &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-h1",
+		"<h1>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("h2",function(t) {
-  var ret = htmlToPdfMake("<h2>level 2</h2>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret), "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "level 2" &&
-    ret.fontSize === 22 &&
-    ret.bold === true &&
-    ret.marginBottom === 5 &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-h2',
-  "<h2>");
+test("h2", function (t) {
+	var ret = htmlToPdfMake("<h2>level 2</h2>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret), "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "level 2" &&
+			ret.fontSize === 22 &&
+			ret.bold === true &&
+			ret.marginBottom === 5 &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-h2",
+		"<h2>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("h3",function(t) {
-  var ret = htmlToPdfMake("<h3>level 3</h3>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret), "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "level 3" &&
-    ret.fontSize === 20 &&
-    ret.bold === true &&
-    ret.marginBottom === 5 &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-h3',
-  "<h3>");
+test("h3", function (t) {
+	var ret = htmlToPdfMake("<h3>level 3</h3>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret), "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "level 3" &&
+			ret.fontSize === 20 &&
+			ret.bold === true &&
+			ret.marginBottom === 5 &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-h3",
+		"<h3>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("h4",function(t) {
-  var ret = htmlToPdfMake("<h4>level 4</h4>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret), "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "level 4" &&
-    ret.fontSize === 18 &&
-    ret.bold === true &&
-    ret.marginBottom === 5 &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-h4',
-  "<h4>");
+test("h4", function (t) {
+	var ret = htmlToPdfMake("<h4>level 4</h4>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret), "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "level 4" &&
+			ret.fontSize === 18 &&
+			ret.bold === true &&
+			ret.marginBottom === 5 &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-h4",
+		"<h4>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("h5",function(t) {
-  var ret = htmlToPdfMake("<h5>level 5</h5>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret), "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "level 5" &&
-    ret.fontSize === 16 &&
-    ret.bold === true &&
-    ret.marginBottom === 5 &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-h5',
-  "<h5>");
+test("h5", function (t) {
+	var ret = htmlToPdfMake("<h5>level 5</h5>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret), "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "level 5" &&
+			ret.fontSize === 16 &&
+			ret.bold === true &&
+			ret.marginBottom === 5 &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-h5",
+		"<h5>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("h6",function(t) {
-  var ret = htmlToPdfMake("<h6>level 6</h6>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret), "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "level 6" &&
-    ret.fontSize === 14 &&
-    ret.bold === true &&
-    ret.marginBottom === 5 &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-h6',
-  "<h6>");
+test("h6", function (t) {
+	var ret = htmlToPdfMake("<h6>level 6</h6>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret), "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "level 6" &&
+			ret.fontSize === 14 &&
+			ret.bold === true &&
+			ret.marginBottom === 5 &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-h6",
+		"<h6>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("a",function(t) {
-  var ret = htmlToPdfMake('<a href="https://www.somewhere.com">link</a>', {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(ret.text === "link", "text");
-  t.check(ret.color === "blue", "color");
-  t.check(Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] === "underline", "decoration");
-  t.check(ret.link === "https://www.somewhere.com", "href");
-  t.check(Array.isArray(ret.style), "style is array");
-  t.check(ret.style[0] === 'html-a', "class");
+test("font", function (t) {
+	var ret = htmlToPdfMake(
+		"<font color='#ff0033' size='4'>font element</font>",
+		{
+			window: window,
+			fontSizes: [10, 14, 16, 444, 20, 24, 28],
+		}
+	);
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(ret.color === "#ff0033" && ret.fontSize === 444, "<font>");
+	t.finish();
+});
 
-  t.finish();
-})
+test("a", function (t) {
+	var ret = htmlToPdfMake('<a href="https://www.somewhere.com">link</a>', {
+		window: window,
+	});
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(ret.text === "link", "text");
+	t.check(ret.color === "blue", "color");
+	t.check(
+		Array.isArray(ret.decoration) &&
+			ret.decoration.length === 1 &&
+			ret.decoration[0] === "underline",
+		"decoration"
+	);
+	t.check(ret.link === "https://www.somewhere.com", "href");
+	t.check(Array.isArray(ret.style), "style is array");
+	t.check(ret.style[0] === "html-a", "class");
 
-test("strike",function(t) {
-  var ret = htmlToPdfMake("<strike>strike</strike>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.text === "strike" &&
-    Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] === "lineThrough" &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-strike',
-  "<strike>");
+	t.finish();
+});
 
-  t.finish();
-})
+test("strike", function (t) {
+	var ret = htmlToPdfMake("<strike>strike</strike>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.text === "strike" &&
+			Array.isArray(ret.decoration) &&
+			ret.decoration.length === 1 &&
+			ret.decoration[0] === "lineThrough" &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-strike",
+		"<strike>"
+	);
+
+	t.finish();
+});
 
 // [{"table":{"body":[[{"text":"Header Column A","bold":true,"fillColor":"#EEEEEE","style":["html-th"]},{"text":"Header Column B","bold":true,"fillColor":"#EEEEEE","style":["html-th"]}],[{"text":"Value Cell A2","style":["html-td"]},{"text":"Value Cell B2","style":["html-td"]}],[{"text":"Value Cell A3","style":["html-td"]},{"text":"Value Cell B3","style":["html-td"]}]]},"style":"html-table","marginBottom":5}]
-test("table",function(t) {
-  var html = `<table>
+test("table", function (t) {
+	var html = `<table>
     <thead>
       <tr>
         <th>Header Column A</th>
@@ -232,81 +270,84 @@ test("table",function(t) {
       </tr>
     </tbody>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body.length === 3 &&
-    ret.table.body[0][0].text === "Header Column A" &&
-    ret.table.body[0][0].style[0] === 'html-th' &&
-    ret.table.body[0][0].style[1] === 'html-tr' &&
-    ret.table.body[1][1].text === "Value Cell B2" &&
-    ret.table.body[1][1].style[0] === 'html-td' &&
-    ret.table.body[1][1].style[1] === 'html-tr' &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-table',
-  "<table>");
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.table &&
+			Array.isArray(ret.table.body) &&
+			ret.table.body.length === 3 &&
+			ret.table.body[0][0].text === "Header Column A" &&
+			ret.table.body[0][0].style[0] === "html-th" &&
+			ret.table.body[0][0].style[1] === "html-tr" &&
+			ret.table.body[1][1].text === "Value Cell B2" &&
+			ret.table.body[1][1].style[0] === "html-td" &&
+			ret.table.body[1][1].style[1] === "html-tr" &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-table",
+		"<table>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
 // { table:  { body: [ [ { text: 'Cell1', style: [ 'html-td', 'html-tr' ] } ] ] },  style: [ 'html-table' ],  marginBottom: 5 }
-test("table (one row/one column)",function(t) {
-  var html = `<table>
+test("table (one row/one column)", function (t) {
+	var html = `<table>
       <tr>
         <td>Cell1</td>
       </tr>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body.length === 1 &&
-    ret.table.body[0][0].text === "Cell1" &&
-    ret.table.body[0][0].style[0] === 'html-td' &&
-    ret.table.body[0][0].style[1] === 'html-tr' &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-table',
-  "table (one row/one column)");
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.table &&
+			Array.isArray(ret.table.body) &&
+			ret.table.body.length === 1 &&
+			ret.table.body[0][0].text === "Cell1" &&
+			ret.table.body[0][0].style[0] === "html-td" &&
+			ret.table.body[0][0].style[1] === "html-tr" &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-table",
+		"table (one row/one column)"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("table (one row/two columns)",function(t) {
-  var html = `<table>
+test("table (one row/two columns)", function (t) {
+	var html = `<table>
       <tr>
         <td>Cell1</td><td>Cell2</td>
       </tr>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body.length === 1 &&
-    ret.table.body[0][0].text === "Cell1" &&
-    ret.table.body[0][0].style[0] === 'html-td' &&
-    ret.table.body[0][0].style[1] === 'html-tr' &&
-    ret.table.body[0][1].text === "Cell2" &&
-    ret.table.body[0][1].style[0] === 'html-td' &&
-    ret.table.body[0][1].style[1] === 'html-tr' &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-table',
-  "table (one row/two columns)");
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.table &&
+			Array.isArray(ret.table.body) &&
+			ret.table.body.length === 1 &&
+			ret.table.body[0][0].text === "Cell1" &&
+			ret.table.body[0][0].style[0] === "html-td" &&
+			ret.table.body[0][0].style[1] === "html-tr" &&
+			ret.table.body[0][1].text === "Cell2" &&
+			ret.table.body[0][1].style[0] === "html-td" &&
+			ret.table.body[0][1].style[1] === "html-tr" &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-table",
+		"table (one row/two columns)"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("table (two rows/one column)",function(t) {
-  var html = `<table>
+test("table (two rows/one column)", function (t) {
+	var html = `<table>
       <tr>
         <td>Cell1</td>
       </tr>
@@ -314,29 +355,30 @@ test("table (two rows/one column)",function(t) {
         <td>Cell2</td>
       </tr>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body.length === 2 &&
-    ret.table.body[0][0].text === "Cell1" &&
-    ret.table.body[0][0].style[0] === 'html-td' &&
-    ret.table.body[0][0].style[1] === 'html-tr' &&
-    ret.table.body[1][0].text === "Cell2" &&
-    ret.table.body[1][0].style[0] === 'html-td' &&
-    ret.table.body[1][0].style[1] === 'html-tr' &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-table',
-  "table (two rows/one column)");
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.table &&
+			Array.isArray(ret.table.body) &&
+			ret.table.body.length === 2 &&
+			ret.table.body[0][0].text === "Cell1" &&
+			ret.table.body[0][0].style[0] === "html-td" &&
+			ret.table.body[0][0].style[1] === "html-tr" &&
+			ret.table.body[1][0].text === "Cell2" &&
+			ret.table.body[1][0].style[0] === "html-td" &&
+			ret.table.body[1][0].style[1] === "html-tr" &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-table",
+		"table (two rows/one column)"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("table (rowspan/colspan)", function(t) {
-  var html = `<table>
+test("table (rowspan/colspan)", function (t) {
+	var html = `<table>
     <tr>
       <th>Col A</th>
       <th>Col B</th>
@@ -372,52 +414,65 @@ test("table (rowspan/colspan)", function(t) {
       <td>Cell D5</td>
     </tr>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
 
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body.length === 6, "base");
-  t.check(
-    ret.table.body[1][0].text === "Cell A1" &&
-    ret.table.body[1][0].style[0] === 'html-td' &&
-    ret.table.body[1][0].style[1] === 'html-tr', "row 1");
-  t.check(
-    ret.table.body[1][1].text === "Cell B1 & B2" &&
-    ret.table.body[1][2].text === "Cell C1" &&
-    ret.table.body[1][3].text === "Cell D1 & D2", "row 2");
-  t.check(
-    ret.table.body[2][0].text === "Cell A2" &&
-    ret.table.body[2][1].text === "" &&
-    ret.table.body[2][2].text === "Cell C2" &&
-    ret.table.body[2][3].text === "", "row 3");
-  t.check(
-    ret.table.body[3][0].text === "Cell A3" &&
-    ret.table.body[3][1].text === "Cell B3 & C3" &&
-    ret.table.body[3][2].text === "" &&
-    ret.table.body[3][3].text === "Cell D3", "row 4");
-  t.check(
-    ret.table.body[4][0].text === "Cell A4 & A5 & B4 & B5 & C4 & C5" &&
-    ret.table.body[4][1].text === "" &&
-    ret.table.body[4][2].text === "" &&
-    ret.table.body[4][3].text === "Cell D4", "row 5");
-  t.check(
-    ret.table.body[5][0].text === "" &&
-    ret.table.body[5][1].text === "" &&
-    ret.table.body[5][2].text === "" &&
-    ret.table.body[5][3].text === "Cell D5", "row 6");
-  t.check(
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-table', "table style");
+	t.check(
+		ret.table && Array.isArray(ret.table.body) && ret.table.body.length === 6,
+		"base"
+	);
+	t.check(
+		ret.table.body[1][0].text === "Cell A1" &&
+			ret.table.body[1][0].style[0] === "html-td" &&
+			ret.table.body[1][0].style[1] === "html-tr",
+		"row 1"
+	);
+	t.check(
+		ret.table.body[1][1].text === "Cell B1 & B2" &&
+			ret.table.body[1][2].text === "Cell C1" &&
+			ret.table.body[1][3].text === "Cell D1 & D2",
+		"row 2"
+	);
+	t.check(
+		ret.table.body[2][0].text === "Cell A2" &&
+			ret.table.body[2][1].text === "" &&
+			ret.table.body[2][2].text === "Cell C2" &&
+			ret.table.body[2][3].text === "",
+		"row 3"
+	);
+	t.check(
+		ret.table.body[3][0].text === "Cell A3" &&
+			ret.table.body[3][1].text === "Cell B3 & C3" &&
+			ret.table.body[3][2].text === "" &&
+			ret.table.body[3][3].text === "Cell D3",
+		"row 4"
+	);
+	t.check(
+		ret.table.body[4][0].text === "Cell A4 & A5 & B4 & B5 & C4 & C5" &&
+			ret.table.body[4][1].text === "" &&
+			ret.table.body[4][2].text === "" &&
+			ret.table.body[4][3].text === "Cell D4",
+		"row 5"
+	);
+	t.check(
+		ret.table.body[5][0].text === "" &&
+			ret.table.body[5][1].text === "" &&
+			ret.table.body[5][2].text === "" &&
+			ret.table.body[5][3].text === "Cell D5",
+		"row 6"
+	);
+	t.check(
+		Array.isArray(ret.style) && ret.style[0] === "html-table",
+		"table style"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("table (rowspan/colspan) with thead tbody", function(t) {
-  var html = `<table>
+test("table (rowspan/colspan) with thead tbody", function (t) {
+	var html = `<table>
     <thead>
         <tr>
           <th>Col A</th>
@@ -457,52 +512,65 @@ test("table (rowspan/colspan) with thead tbody", function(t) {
         </tr>
     </tbody>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
 
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body.length === 6, "base");
-  t.check(
-    ret.table.body[1][0].text === "Cell A1" &&
-    ret.table.body[1][0].style[0] === 'html-td' &&
-    ret.table.body[1][0].style[1] === 'html-tr', "row 1");
-  t.check(
-    ret.table.body[1][1].text === "Cell B1 & B2" &&
-    ret.table.body[1][2].text === "Cell C1" &&
-    ret.table.body[1][3].text === "Cell D1 & D2", "row 2");
-  t.check(
-    ret.table.body[2][0].text === "Cell A2" &&
-    ret.table.body[2][1].text === "" &&
-    ret.table.body[2][2].text === "Cell C2" &&
-    ret.table.body[2][3].text === "", "row 3");
-  t.check(
-    ret.table.body[3][0].text === "Cell A3" &&
-    ret.table.body[3][1].text === "Cell B3 & C3" &&
-    ret.table.body[3][2].text === "" &&
-    ret.table.body[3][3].text === "Cell D3", "row 4");
-  t.check(
-    ret.table.body[4][0].text === "Cell A4 & A5 & B4 & B5 & C4 & C5" &&
-    ret.table.body[4][1].text === "" &&
-    ret.table.body[4][2].text === "" &&
-    ret.table.body[4][3].text === "Cell D4", "row 5");
-  t.check(
-    ret.table.body[5][0].text === "" &&
-    ret.table.body[5][1].text === "" &&
-    ret.table.body[5][2].text === "" &&
-    ret.table.body[5][3].text === "Cell D5", "row 6");
-  t.check(
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-table', "table style");
+	t.check(
+		ret.table && Array.isArray(ret.table.body) && ret.table.body.length === 6,
+		"base"
+	);
+	t.check(
+		ret.table.body[1][0].text === "Cell A1" &&
+			ret.table.body[1][0].style[0] === "html-td" &&
+			ret.table.body[1][0].style[1] === "html-tr",
+		"row 1"
+	);
+	t.check(
+		ret.table.body[1][1].text === "Cell B1 & B2" &&
+			ret.table.body[1][2].text === "Cell C1" &&
+			ret.table.body[1][3].text === "Cell D1 & D2",
+		"row 2"
+	);
+	t.check(
+		ret.table.body[2][0].text === "Cell A2" &&
+			ret.table.body[2][1].text === "" &&
+			ret.table.body[2][2].text === "Cell C2" &&
+			ret.table.body[2][3].text === "",
+		"row 3"
+	);
+	t.check(
+		ret.table.body[3][0].text === "Cell A3" &&
+			ret.table.body[3][1].text === "Cell B3 & C3" &&
+			ret.table.body[3][2].text === "" &&
+			ret.table.body[3][3].text === "Cell D3",
+		"row 4"
+	);
+	t.check(
+		ret.table.body[4][0].text === "Cell A4 & A5 & B4 & B5 & C4 & C5" &&
+			ret.table.body[4][1].text === "" &&
+			ret.table.body[4][2].text === "" &&
+			ret.table.body[4][3].text === "Cell D4",
+		"row 5"
+	);
+	t.check(
+		ret.table.body[5][0].text === "" &&
+			ret.table.body[5][1].text === "" &&
+			ret.table.body[5][2].text === "" &&
+			ret.table.body[5][3].text === "Cell D5",
+		"row 6"
+	);
+	t.check(
+		Array.isArray(ret.style) && ret.style[0] === "html-table",
+		"table style"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("table (colspan + empty cell)", function(t) {
-  var html = `<table>
+test("table (colspan + empty cell)", function (t) {
+	var html = `<table>
     <thead>
       <tr>
         <th colspan="2">header</th>
@@ -519,111 +587,124 @@ test("table (colspan + empty cell)", function(t) {
       </tr>
     </tbody>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
 
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body.length === 3, "base");
-  t.check(
-    ret.table.body[0].length === 2 &&
-    ret.table.body[0][0].text === "header" &&
-    ret.table.body[0][0].style[0] === 'html-th' &&
-    ret.table.body[0][0].style[1] === 'html-tr', "row 1");
-  t.check(
-    ret.table.body[1].length === 2 &&
-    ret.table.body[1][0].text === "Cell A1" &&
-    ret.table.body[1][1].text === "Cell A2", "row 2");
-  t.check(
-    ret.table.body[2].length === 2 &&
-    ret.table.body[2][0].text === "Cell B1" &&
-    ret.table.body[2][1].text === "", "row 3");
-  t.check(
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-table', "table style");
+	t.check(
+		ret.table && Array.isArray(ret.table.body) && ret.table.body.length === 3,
+		"base"
+	);
+	t.check(
+		ret.table.body[0].length === 2 &&
+			ret.table.body[0][0].text === "header" &&
+			ret.table.body[0][0].style[0] === "html-th" &&
+			ret.table.body[0][0].style[1] === "html-tr",
+		"row 1"
+	);
+	t.check(
+		ret.table.body[1].length === 2 &&
+			ret.table.body[1][0].text === "Cell A1" &&
+			ret.table.body[1][1].text === "Cell A2",
+		"row 2"
+	);
+	t.check(
+		ret.table.body[2].length === 2 &&
+			ret.table.body[2][0].text === "Cell B1" &&
+			ret.table.body[2][1].text === "",
+		"row 3"
+	);
+	t.check(
+		Array.isArray(ret.style) && ret.style[0] === "html-table",
+		"table style"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("img",function(t) {
-  var ret = htmlToPdfMake('<img width="10" style="height:10px" src="data:image/jpeg;base64,...encodedContent...">', {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.image === "data:image/jpeg;base64,...encodedContent..." &&
-    ret.width === 8 && ret.height === 8 &&
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-img',
-  "<img>");
+test("img", function (t) {
+	var ret = htmlToPdfMake(
+		'<img width="10" style="height:10px" src="data:image/jpeg;base64,...encodedContent...">',
+		{ window: window }
+	);
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.image === "data:image/jpeg;base64,...encodedContent..." &&
+			ret.width === 8 &&
+			ret.height === 8 &&
+			Array.isArray(ret.style) &&
+			ret.style[0] === "html-img",
+		"<img>"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("svg",function(t) {
-  var ret = htmlToPdfMake(`
+test("svg", function (t) {
+	var ret = htmlToPdfMake(
+		`
     <svg version="1.1" baseProfile="full" width="300" height="200" xmlns="http://www.w3.org/2000/svg">
       <rect width="100%" height="100%" fill="red" />
       <circle cx="150" cy="100" r="80" fill="green" />
       <text x="150" y="125" font-size="60" text-anchor="middle" fill="white">SVG</text>
-    </svg>`, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
+    </svg>`,
+		{ window: window }
+	);
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
 
-  t.check(
-    'svg' in ret &&
-    ret.svg.length > 0,
-  "return has svg property")
+	t.check("svg" in ret && ret.svg.length > 0, "return has svg property");
 
-  t.check(
-    Array.isArray(ret.style) &&
-    ret.style[0] === 'html-svg',
-  "svg style");
+	t.check(Array.isArray(ret.style) && ret.style[0] === "html-svg", "svg style");
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("cascade_tags", function(t) {
-  var ret = htmlToPdfMake('<p style="text-align: center;"><span style="font-size: 14px;"><em><strong>test</strong></em></span></p>', {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0].text[0].text[0].text[0];
-  t.check(
-    ret.text === "test" &&
-    ret.bold &&
-    ret.italics &&
-    ret.fontSize === 11 &&
-    ret.alignment === 'center' &&
-    Array.isArray(ret.style) &&
-    ret.style.includes('html-strong') &&
-    ret.style.includes('html-em') &&
-    ret.style.includes('html-span') &&
-    ret.style.includes('html-p'),
-  "cascade_tags");
+test("cascade_tags", function (t) {
+	var ret = htmlToPdfMake(
+		'<p style="text-align: center;"><span style="font-size: 14px;"><em><strong>test</strong></em></span></p>',
+		{ window: window }
+	);
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0].text[0].text[0].text[0];
+	t.check(
+		ret.text === "test" &&
+			ret.bold &&
+			ret.italics &&
+			ret.fontSize === 11 &&
+			ret.alignment === "center" &&
+			Array.isArray(ret.style) &&
+			ret.style.includes("html-strong") &&
+			ret.style.includes("html-em") &&
+			ret.style.includes("html-span") &&
+			ret.style.includes("html-p"),
+		"cascade_tags"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("hr", function(t) {
-  var ret = htmlToPdfMake("<hr>", {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
-  ret = ret[0];
+test("hr", function (t) {
+	var ret = htmlToPdfMake("<hr>", { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
 
-  t.check(
-    !!ret.canvas && ret.canvas.length === 1 && ret.canvas[0].type === "line",
-    "hr tag"
-  );
+	t.check(
+		!!ret.canvas && ret.canvas.length === 1 && ret.canvas[0].type === "line",
+		"hr tag"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("table non empty inside div styles",function(t) {
-  var html = `<table>
+test("table non empty inside div styles", function (t) {
+	var html = `<table>
     <thead>
       <tr>
         <th><div> </div></th>
@@ -641,21 +722,22 @@ test("table non empty inside div styles",function(t) {
       </tr>
     </tbody>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body[0].length === ret.table.body[1].length,
-    "global");
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.table &&
+			Array.isArray(ret.table.body) &&
+			ret.table.body[0].length === ret.table.body[1].length,
+		"global"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("table empty inside div header",function(t) {
-  var html = `<table>
+test("table empty inside div header", function (t) {
+	var html = `<table>
     <thead>
       <tr>
         <th><div></div></th>
@@ -673,149 +755,166 @@ test("table empty inside div header",function(t) {
       </tr>
     </tbody>
   </table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.table &&
-    Array.isArray(ret.table.body) &&
-    ret.table.body[0].length === ret.table.body[1].length,
-    "global");
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.table &&
+			Array.isArray(ret.table.body) &&
+			ret.table.body[0].length === ret.table.body[1].length,
+		"global"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("inherit css styles",function(t) {
-  var html = `<div style="color:red;"><span style="color:blue">blue<strong style="color:green">green</strong>blue</span><span>red</span></div>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.color === 'red' &&
-    Array.isArray(ret.style) &&
-    ret.style.includes('html-div') &&
-    Array.isArray(ret.text) &&
-    Array.isArray(ret.text[0].text) &&
-    ret.text[0].text[0].text === 'blue' &&
-    ret.text[0].text[0].color === 'blue' &&
-    ret.text[0].text[1].text === 'green' &&
-    ret.text[0].text[1].color === 'green' &&
-    ret.text[0].text[1].bold &&
-    ret.text[0].text[2].text === 'blue' &&
-    ret.text[0].text[2].color === 'blue' &&
-    ret.text[0].color === 'blue' &&
-    ret.text[1].text === 'red' &&
-    ret.text[1].color === 'red',
-  "inherit");
+test("inherit css styles", function (t) {
+	var html = `<div style="color:red;"><span style="color:blue">blue<strong style="color:green">green</strong>blue</span><span>red</span></div>`;
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.color === "red" &&
+			Array.isArray(ret.style) &&
+			ret.style.includes("html-div") &&
+			Array.isArray(ret.text) &&
+			Array.isArray(ret.text[0].text) &&
+			ret.text[0].text[0].text === "blue" &&
+			ret.text[0].text[0].color === "blue" &&
+			ret.text[0].text[1].text === "green" &&
+			ret.text[0].text[1].color === "green" &&
+			ret.text[0].text[1].bold &&
+			ret.text[0].text[2].text === "blue" &&
+			ret.text[0].text[2].color === "blue" &&
+			ret.text[0].color === "blue" &&
+			ret.text[1].text === "red" &&
+			ret.text[1].color === "red",
+		"inherit"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("colored borders", function(t) {
-  var html = `<table><tr><td style="border-top-width: 0; border-right: 1pt solid #0080C0; border-bottom: 0; border-left: 1px solid #0080C0;">Cell with border left and right in blue</td></tr></table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    ret.table.body[0][0].text === "Cell with border left and right in blue" &&
-    Array.isArray(ret.table.body[0][0].border) &&
-    ret.table.body[0][0].border[0] &&
-    !ret.table.body[0][0].border[1] &&
-    ret.table.body[0][0].border[2] &&
-    !ret.table.body[0][0].border[3] &&
-    Array.isArray(ret.table.body[0][0].borderColor) &&
-    ret.table.body[0][0].borderColor[0] === '#0080c0' &&
-    ret.table.body[0][0].borderColor[1] === '#000000' &&
-    ret.table.body[0][0].borderColor[2] === '#0080c0' &&
-    ret.table.body[0][0].borderColor[3] === '#000000',
-  "colored borders");
+test("colored borders", function (t) {
+	var html = `<table><tr><td style="border-top-width: 0; border-right: 1pt solid #0080C0; border-bottom: 0; border-left: 1px solid #0080C0;">Cell with border left and right in blue</td></tr></table>`;
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		ret.table.body[0][0].text === "Cell with border left and right in blue" &&
+			Array.isArray(ret.table.body[0][0].border) &&
+			ret.table.body[0][0].border[0] &&
+			!ret.table.body[0][0].border[1] &&
+			ret.table.body[0][0].border[2] &&
+			!ret.table.body[0][0].border[3] &&
+			Array.isArray(ret.table.body[0][0].borderColor) &&
+			ret.table.body[0][0].borderColor[0] === "#0080c0" &&
+			ret.table.body[0][0].borderColor[1] === "#000000" &&
+			ret.table.body[0][0].borderColor[2] === "#0080c0" &&
+			ret.table.body[0][0].borderColor[3] === "#000000",
+		"colored borders"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("cell with P and DIV", function(t) {
-  var html = `<table><tr><td>some text<p>p1<span>span1</span><span>span2</span></p><p>p2</p><span>span3</span><p><span>p3span4</span></p><div><span>span5</span><p>p4</p></div><strong>strong</strong></td></tr></table>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0].table.body[0][0];
-  t.check(ret.stack[0].text === "some text", "some text");
-  t.check(ret.stack[1].text[0].text === "p1", "p1");
-  t.check(ret.stack[1].text[1].text === "span1", "span1");
-  t.check(ret.stack[1].text[2].text === "span2", "span2");
-  t.check(ret.stack[2].text === "p2", "p2");
-  t.check(ret.stack[3].text === "span3", "span3");
-  t.check(ret.stack[4].text[0].text === "p3span4", "p3span4");
-  t.check(ret.stack[5].stack[0].text === "span5", "span5");
-  t.check(ret.stack[5].stack[1].text === "p4", "p4");
-  t.check(ret.stack[6].text === "strong", "strong");
+test("cell with P and DIV", function (t) {
+	var html = `<table><tr><td>some text<p>p1<span>span1</span><span>span2</span></p><p>p2</p><span>span3</span><p><span>p3span4</span></p><div><span>span5</span><p>p4</p></div><strong>strong</strong></td></tr></table>`;
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0].table.body[0][0];
+	t.check(ret.stack[0].text === "some text", "some text");
+	t.check(ret.stack[1].text[0].text === "p1", "p1");
+	t.check(ret.stack[1].text[1].text === "span1", "span1");
+	t.check(ret.stack[1].text[2].text === "span2", "span2");
+	t.check(ret.stack[2].text === "p2", "p2");
+	t.check(ret.stack[3].text === "span3", "span3");
+	t.check(ret.stack[4].text[0].text === "p3span4", "p3span4");
+	t.check(ret.stack[5].stack[0].text === "span5", "span5");
+	t.check(ret.stack[5].stack[1].text === "p4", "p4");
+	t.check(ret.stack[6].text === "strong", "strong");
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("tableAutoSize", function(t) {
-  var html = `<table><tr style="height:100px"><td style="width:350px"></td><td></td></tr><tr><td style="width:100px"></td><td style="height:200px"></td></tr></table>`;
-  var ret = htmlToPdfMake(html, {window:window, tableAutoSize:true});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(
-    Array.isArray(ret.table.widths) &&
-    ret.table.widths.length === 2 &&
-    ret.table.widths[0] === 264 &&
-    ret.table.widths[1] === 'auto' &&
-    ret.table.heights.length === 2 &&
-    ret.table.heights[0] === 75 &&
-    ret.table.heights[1] === 151
-  , "tableAutoSize");
+test("tableAutoSize", function (t) {
+	var html = `<table><tr style="height:100px"><td style="width:350px"></td><td></td></tr><tr><td style="width:100px"></td><td style="height:200px"></td></tr></table>`;
+	var ret = htmlToPdfMake(html, { window: window, tableAutoSize: true });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(
+		Array.isArray(ret.table.widths) &&
+			ret.table.widths.length === 2 &&
+			ret.table.widths[0] === 264 &&
+			ret.table.widths[1] === "auto" &&
+			ret.table.heights.length === 2 &&
+			ret.table.heights[0] === 75 &&
+			ret.table.heights[1] === 151,
+		"tableAutoSize"
+	);
 
-  t.finish();
-})
+	t.finish();
+});
 
-test("convertUnit and stack", function(t) {
-  var html = `<div><div style="font-size:16px;margin-left:12pt">points</div><div style="margin-left:1rem">points</div></div>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  ret = ret[0];
-  t.check(Array.isArray(ret.stack), "stack");
-  t.check(
-    ret.stack[0].marginLeft===12 &&
-    ret.stack[0].fontSize===12 &&
-    ret.stack[1].marginLeft===12
-  , "convertUnit");
-  t.finish();
-})
+test("convertUnit and stack", function (t) {
+	var html = `<div><div style="font-size:16px;margin-left:12pt">points</div><div style="margin-left:1rem">points</div></div>`;
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	ret = ret[0];
+	t.check(Array.isArray(ret.stack), "stack");
+	t.check(
+		ret.stack[0].marginLeft === 12 &&
+			ret.stack[0].fontSize === 12 &&
+			ret.stack[1].marginLeft === 12,
+		"convertUnit"
+	);
+	t.finish();
+});
 
-test("'decoration' style", function(t) {
-  var html = `<p><u><s>Test</s></u></p>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  t.check(Array.isArray(ret[0].text) && ret[0].text.length===1 && Array.isArray(ret[0].text[0].text) && ret[0].text[0].text.length===1, "structure is OK");
-  ret = ret[0].text[0].text[0];
-  t.check(ret.text === "Test", "text is 'Test'");
-  t.check(ret.nodeName === "S", "nodeName is 'S'");
-  t.check(Array.isArray(ret.decoration), "'decoration' is array");
-  t.check(ret.decoration.includes("underline"), "includes 'underline'");
-  t.check(ret.decoration.includes("lineThrough"), "includes 'lineThrough'");
-  t.finish();
-})
+test("'decoration' style", function (t) {
+	var html = `<p><u><s>Test</s></u></p>`;
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	t.check(
+		Array.isArray(ret[0].text) &&
+			ret[0].text.length === 1 &&
+			Array.isArray(ret[0].text[0].text) &&
+			ret[0].text[0].text.length === 1,
+		"structure is OK"
+	);
+	ret = ret[0].text[0].text[0];
+	t.check(ret.text === "Test", "text is 'Test'");
+	t.check(ret.nodeName === "S", "nodeName is 'S'");
+	t.check(Array.isArray(ret.decoration), "'decoration' is array");
+	t.check(ret.decoration.includes("underline"), "includes 'underline'");
+	t.check(ret.decoration.includes("lineThrough"), "includes 'lineThrough'");
+	t.finish();
+});
 
-test("'decoration' style 2", function(t) {
-  var html = `<p><span style="text-decoration:underline"><span style="text-decoration:line-through">Test</span></span></p>`;
-  var ret = htmlToPdfMake(html, {window:window});
-  if (debug) console.log(JSON.stringify(ret));
-  t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  t.check(Array.isArray(ret[0].text) && ret[0].text.length===1 && Array.isArray(ret[0].text[0].text) && ret[0].text[0].text.length===1, "structure is OK");
-  ret = ret[0].text[0].text[0];
-  t.check(ret.text === "Test", "text is 'Test'");
-  t.check(ret.nodeName === "SPAN", "nodeName is 'SPAN'");
-  t.check(Array.isArray(ret.decoration), "'decoration' is array");
-  t.check(ret.decoration.includes("underline"), "includes 'underline'");
-  t.check(ret.decoration.includes("lineThrough"), "includes 'lineThrough'");
-  t.finish();
-})
+test("'decoration' style 2", function (t) {
+	var html = `<p><span style="text-decoration:underline"><span style="text-decoration:line-through">Test</span></span></p>`;
+	var ret = htmlToPdfMake(html, { window: window });
+	if (debug) console.log(JSON.stringify(ret));
+	t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+	t.check(
+		Array.isArray(ret[0].text) &&
+			ret[0].text.length === 1 &&
+			Array.isArray(ret[0].text[0].text) &&
+			ret[0].text[0].text.length === 1,
+		"structure is OK"
+	);
+	ret = ret[0].text[0].text[0];
+	t.check(ret.text === "Test", "text is 'Test'");
+	t.check(ret.nodeName === "SPAN", "nodeName is 'SPAN'");
+	t.check(Array.isArray(ret.decoration), "'decoration' is array");
+	t.check(ret.decoration.includes("underline"), "includes 'underline'");
+	t.check(ret.decoration.includes("lineThrough"), "includes 'lineThrough'");
+	t.finish();
+});

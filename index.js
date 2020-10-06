@@ -428,12 +428,8 @@ module.exports = function (htmlText, options) {
 								Math.max(1, parseInt(element.getAttribute("size"))),
 								7
 							);
-
-							// Getting the relatiev fontsize
-							var fontSize = Math.min(
-								fontSizes[6],
-								Math.max(fontSizes[0], fontSizes[size - 1])
-							);
+							// Getting the relative fontsize
+							var fontSize = Math.max(fontSizes[0], fontSizes[size - 1]);
 
 							// Assigning the font size
 							ret.fontSize = fontSize;
