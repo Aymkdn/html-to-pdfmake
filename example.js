@@ -216,6 +216,8 @@ var html = htmlToPdfMake(`
     Below we preserve the spaces:
     <p class="with-spaces">     this    is     just     an     example.</p>
   </div>
+
+  <div>And support for <font color="blue" size="3">FONT</font> tag.</div>
 `, {window:window, tableAutoSize:true});
 
 //var html = htmlToPdfMake(``, {window:window, tableAutoSize:true});

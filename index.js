@@ -127,8 +127,8 @@ module.exports = function(htmlText, options) {
         if (element.textContent) {
           text = element.textContent.replace(/\n(\s+)?/g, "");
 
-          // for table, thead, tbody, tfoot, tr: remove all empty space
-          if (['TABLE','THEAD','TBODY','TFOOT','TR'].indexOf(parents[parents.length-1].nodeName) > -1) text = text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+          // for table, thead, tbody, tfoot, tr, ul, ol: remove all empty space
+          if (['TABLE','THEAD','TBODY','TFOOT','TR','UL','OL'].indexOf(parents[parents.length-1].nodeName) > -1) text = text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
           if (text) {
             ret = {'text':text};
             ret = applyStyle({ret:ret, parents:parents});
