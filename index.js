@@ -37,6 +37,9 @@ module.exports = function(htmlText, options) {
   var wndw = (options && options.window ? options.window : window);
   var tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
 
+  // Used with the size attribute on the font elements to calculate relative font size
+  var fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
+
   // set default styles
   var defaultStyles = {
     b: {bold:true},
@@ -356,6 +359,29 @@ module.exports = function(htmlText, options) {
           }
           case "A": {
             ret.link = element.getAttribute("href");
+            break;
+          }
+          case "FONT": {
+            if (element.getAttribute("color")) {
+              ret.color = parseColor(element.getAttribute("color"));
+            }
+            // Checking if the element has a size attribute
+            if (element.getAttribute("size")) {
+              // Getting and sanitizing the size value – it should be included between 1 and 7
+              var size = Math.min(Math.max(1, parseInt(element.getAttribute("size"))), 7);
+
+              // Getting the relative fontsize
+              var fontSize = Math.max(fontSizes[0], fontSizes[size - 1]);
+
+              // Assigning the font size
+              ret.fontSize = fontSize;
+            }
+
+            // Applying inherited styles
+            ret = applyStyle({
+              ret: ret,
+              parents: parents.concat([element]),
+            });
             break;
           }
         }

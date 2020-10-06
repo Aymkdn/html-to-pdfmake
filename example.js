@@ -179,6 +179,26 @@ var html = htmlToPdfMake(`
     </tr>
   </table>
 
+  <p>Change the table's layout (header with red border, body with blue border):</p>
+  <table data-pdfmake="{&quot;layout&quot;:&quot;exampleLayout&quot;}">
+    <tr>
+      <th>Header A</th>
+      <th>Header B</td>
+    </tr>
+    <tr>
+      <td>A1</td>
+      <td>B1</td>
+    </tr>
+    <tr>
+      <td>A2</td>
+      <td>B2</td>
+    </tr>
+    <tr>
+      <td>A3</td>
+      <td>B3</td>
+    </tr>
+  </table>
+
   <svg version="1.1" baseProfile="full" width="300" height="200" xmlns="http://www.w3.org/2000/svg">
     <rect width="100%" height="100%" fill="red" />
     <circle cx="150" cy="100" r="80" fill="green" />
@@ -241,7 +261,19 @@ var docDefinition = {
   }
 };
 
-var pdfDocGenerator = pdfMake.createPdf(docDefinition);
+var pdfDocGenerator = pdfMake.createPdf(docDefinition, {
+  // see https://pdfmake.github.io/docs/0.1/document-definition-object/tables/
+  exampleLayout: {
+    hLineColor: function (rowIndex, node, colIndex) {
+      if (rowIndex === node.table.body.length) return 'blue';
+      return rowIndex <= 1 ? 'red' : '#dddddd';
+    },
+    vLineColor: function (colIndex, node, rowIndex) {
+      if (rowIndex === 0) return 'red';
+      return rowIndex > 0 && (colIndex === 0 || colIndex === node.table.body[0].length) ? 'blue' : 'black';
+    }  
+  }
+});
 pdfDocGenerator.getBuffer(function(buffer) {
   fs.writeFileSync('example.pdf', buffer);
   console.log('--> example.pdf')

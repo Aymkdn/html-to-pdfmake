@@ -819,3 +819,13 @@ test("'decoration' style 2", function(t) {
   t.check(ret.decoration.includes("lineThrough"), "includes 'lineThrough'");
   t.finish();
 })
+
+test("font", function (t) {
+  var html = `<font color="#ff0033" size="4">font element</font>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.color === "#ff0033" && ret.fontSize === 18, "<font>");
+  t.finish();
+});
