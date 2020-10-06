@@ -103,7 +103,7 @@ it will return:
 ### Browser
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/docs/browser.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/browser.js"></script>
 ```
 
 Example:
@@ -117,7 +117,7 @@ Example:
   <script src='https://cdn.jsdelivr.net/npm/pdfmake@latest/build/pdfmake.min.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/pdfmake@latest/build/vfs_fonts.min.js'></script>
   <!-- html-to-pdfmake file: -->
-  <script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/docs/browser.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html-to-pdfmake/browser.js"></script>
 </head>
 <body>
   […]
