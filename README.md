@@ -1,6 +1,6 @@
 # html-to-pdfmake
 
-[pdfmake](https://pdfmake.github.io/docs/) permits to easily create a PDF with JavaScript, but the support of HTML was missing. After [reviewing issue #205](https://github.com/bpampuch/pdfmake/issues/205) I decided to create a module to handle this feature.
+[pdfmake](https://pdfmake.github.io/docs/) permits to easily create a PDF with JavaScript, but with the support of HTML was missing. After [reviewing issue #205](https://github.com/bpampuch/pdfmake/issues/205) I decided to create a module to handle this feature.
 
 ## Online Demo
 
