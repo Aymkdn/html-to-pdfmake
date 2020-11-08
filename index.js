@@ -567,6 +567,10 @@ module.exports = function(htmlText, options) {
             ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:parseColor(value)})
             break;
           }
+          case "text-indent": {
+            ret.push({key:"leadingIndent", value:convertToUnit(value)})
+            break;
+          }
           default: {
             // for borders
             if (key === 'border' || key.indexOf('border-left') === 0 || key.indexOf('border-top') === 0 || key.indexOf('border-right') === 0 || key.indexOf('border-bottom') === 0) {
@@ -671,7 +675,7 @@ module.exports = function(htmlText, options) {
   }
 
   /**
-   * Convert 'px'/'rem' to 'pt', and return false for the other ones. If it's only a number, it will just return it
+   * Convert 'px'/'rem'/'cm' to 'pt', and return false for the other ones. If it's only a number, it will just return it
    *
    * @param  {String} val The value with units (e.g. 12px)
    * @return {Number|Boolean} Return the pt value, or false
@@ -679,7 +683,7 @@ module.exports = function(htmlText, options) {
   var convertToUnit = function(val) {
     // if it's just a number, then return it
     if (!isNaN(parseFloat(val)) && isFinite(val)) return val*1;
-    var mtch = (val+"").trim().match(/^(\d+(\.\d+)?)(pt|px|rem)$/);
+    var mtch = (val+"").trim().match(/^(\d+(\.\d+)?)(pt|px|rem|cm)$/);
     // if we don't have a number with supported units, then return false
     if (!mtch) return false;
     val = mtch[1];
@@ -690,6 +694,10 @@ module.exports = function(htmlText, options) {
       }
       case 'rem':{
         val *= 12; // default font-size is 12pt
+        break;
+      }
+      case 'cm':{
+        val = Math.round(val * 28.34646); // 1cm => 28.34646
         break;
       }
     }
