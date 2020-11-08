@@ -75,9 +75,15 @@ module.exports = function(htmlText, options) {
         } else {
           for (var k in options.defaultStyles[keyStyle]) {
             // if we want to delete a specific property
-            if (!options.defaultStyles[keyStyle][k]) delete defaultStyles[keyStyle][k];
+            if (options.defaultStyles[keyStyle][k] === '') delete defaultStyles[keyStyle][k];
             else defaultStyles[keyStyle][k] = options.defaultStyles[keyStyle][k];
           }
+        }
+      } else {
+        // if we add default styles
+        defaultStyles[keyStyle] = {}
+        for (var ks in options.defaultStyles[keyStyle]) {
+          defaultStyles[keyStyle][ks] = options.defaultStyles[keyStyle][ks];
         }
       }
     }
@@ -555,7 +561,7 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "font-family": {
-            ret.push({key:"font", value:value.replace(/"|^'|'$/g,"")});
+            ret.push({key:"font", value:value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g,"")}).replace(/^([a-z])/g, function (g) { return g[0].toUpperCase() }).replace(/ ([a-z])/g, function (g) { return g[1].toUpperCase() });
             break;
           }
           case "color": {
