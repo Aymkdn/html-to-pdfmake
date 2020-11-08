@@ -79,11 +79,6 @@ module.exports = function(htmlText, options) {
             else defaultStyles[keyStyle][k] = options.defaultStyles[keyStyle][k];
           }
         }
-      } else {
-        defaultStyles[keyStyle] = {}
-        for (var k in options.defaultStyles[keyStyle]) {
-          defaultStyles[keyStyle][k] = options.defaultStyles[keyStyle][k];
-        }
       }
     }
   }
