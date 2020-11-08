@@ -567,6 +567,10 @@ module.exports = function(htmlText, options) {
             ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:parseColor(value)})
             break;
           }
+          case "text-indent": {
+            ret.push({key:"leadingIndent", value:convertToUnit(value)})
+            break;
+          }
           default: {
             // for borders
             if (key === 'border' || key.indexOf('border-left') === 0 || key.indexOf('border-top') === 0 || key.indexOf('border-right') === 0 || key.indexOf('border-bottom') === 0) {
