@@ -561,7 +561,7 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "font-family": {
-            ret.push({key:"font", value:value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g,"")}).replace(/^([a-z])/g, function (g) { return g[0].toUpperCase() }).replace(/ ([a-z])/g, function (g) { return g[1].toUpperCase() });
+            ret.push({key:"font", value:value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g,"").replace(/^([a-z])/g, function (g) { return g[0].toUpperCase() }).replace(/ ([a-z])/g, function (g) { return g[1].toUpperCase() })});
             break;
           }
           case "color": {
