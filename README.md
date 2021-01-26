@@ -177,6 +177,20 @@ var html = htmlToPdfmake(`<table>
 } ]
 ```
 
+#### `replaceText`
+
+By passing `replaceText` as a function with two parameters (`text` and `nodes`) you can modify the text of all the nodes in your HTML document.
+
+Example:
+```javascript
+var html = htmlToPdfmake(`<p style='text-align: justify;'>Lorem Ipsum is simply d-ummy text of th-e printing and typese-tting industry. Lorem Ipsum has b-een the industry's standard dummy text ever since the 1500s</p>`, {
+  replaceText:function(text, nodes) {
+    // 'nodes' contains all the parent nodes for the text
+    return text.replace(/-/g, "\\u2011"); // it will replace any occurrence of '-' with '\\u2011' in "Lorem Ipsum is simply d-ummy text […] dummy text ever since the 1500s"
+  }
+});
+```
+
 ### HTML tags supported
 
 The below HTML tags are supported:

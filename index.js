@@ -132,6 +132,7 @@ module.exports = function(htmlText, options) {
       case 3: { // TEXT_NODE
         if (element.textContent) {
           text = element.textContent.replace(/\n(\s+)?/g, "");
+          if (typeof options.replaceText === "function") text = options.replaceText(text, parents);
 
           // for table, thead, tbody, tfoot, tr, ul, ol: remove all empty space
           if (['TABLE','THEAD','TBODY','TFOOT','TR','UL','OL'].indexOf(parents[parents.length-1].nodeName) > -1) text = text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
