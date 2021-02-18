@@ -674,7 +674,7 @@ module.exports = function(htmlText, options) {
       }
       return '#' + decimalColors.join('');
     } else if (nameRegex.test(color)) {
-      return color;
+      return (color === "transparent" ? "white" : color);
     } else {
       console.error('Could not parse color "' + color + '"');
       return color;
