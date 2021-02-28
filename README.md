@@ -411,7 +411,7 @@ To apply these special attributes, you have to use the attribute `data-pdfmake` 
 
 <table data-pdfmake="{&quot;widths&quot;:[100,&quot;*&quot;,&quot;auto&quot;],&quot;heights&quot;:40}">
   <tr>
-    <td colspan="3">Table with <b>widths=[100,"*","auto"]</b> and <b>heights=40</b></th>
+    <td colspan="3">Table with <b>widths=[100,"*","auto"]</b> and <b>heights=40</b></td>
   </tr>
   <tr>
     <td>Cell1</td>
