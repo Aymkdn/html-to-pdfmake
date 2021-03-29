@@ -131,7 +131,18 @@ module.exports = function(htmlText, options) {
     switch(element.nodeType) {
       case 3: { // TEXT_NODE
         if (element.textContent) {
-          text = element.textContent.replace(/\n(\s+)?/g, "");
+          text = element.textContent;
+          // check if we have 'white-space' in the parent's style
+          var styleParentTextNode = parseStyle(parents[parents.length-1], true);
+          var hasWhiteSpace = false;
+          for (i=0; i<styleParentTextNode.length; i++) {
+            if (styleParentTextNode[i].key === "preserveLeadingSpaces") {
+              hasWhiteSpace=styleParentTextNode[i].value;
+              break;
+            }
+          }
+          // if no 'white-space' style, then remove blanks
+          if (!hasWhiteSpace) text = element.textContent.replace(/\n(\s+)?/g, "");
           if (options && typeof options.replaceText === "function") text = options.replaceText(text, parents);
 
           // for table, thead, tbody, tfoot, tr, ul, ol: remove all empty space
@@ -575,7 +586,11 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "text-indent": {
-            ret.push({key:"leadingIndent", value:convertToUnit(value)})
+            ret.push({key:"leadingIndent", value:convertToUnit(value)});
+            break;
+          }
+          case "white-space": {
+            ret.push({key:"preserveLeadingSpaces", value:(value==='break-spaces' || value.slice(0,3) === 'pre')});
             break;
           }
           default: {
