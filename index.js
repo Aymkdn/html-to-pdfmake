@@ -322,6 +322,11 @@ module.exports = function(htmlText, options) {
             ret.text = [{text:'\n'}];
             break;
           }
+          case "SUB":
+          case "SUP": {
+            ret[nodeName.toLowerCase()] = { offset: '30%', fontSize: 8 };
+            break;
+          }
           case "HR": {
             // default style for the HR
             var styleHR = {

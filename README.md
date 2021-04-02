@@ -205,6 +205,7 @@ The below HTML tags are supported:
   - FONT
   - IMG
   - SVG
+  - SUP / SUB
 
 ### Default styles
 

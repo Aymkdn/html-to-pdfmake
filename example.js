@@ -220,8 +220,8 @@ var html = htmlToPdfMake(`
   <div>And support for <font color="blue" size="3">FONT</font> tag.</div>
 `, {window:window, tableAutoSize:true});
 
-//var html = htmlToPdfMake(``, {window:window, tableAutoSize:true});
-//console.log(JSON.stringify(html))
+/*var html = htmlToPdfMake(``, {window:window, tableAutoSize:true});
+console.log(JSON.stringify(html))*/
 
 var docDefinition = {
   content: [

@@ -829,3 +829,23 @@ test("font", function (t) {
   t.check(ret.color === "#ff0033" && ret.fontSize === 18, "<font>");
   t.finish();
 });
+
+test("sup", function (t) {
+  var html = `<sup>sup</sup>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "sup" && ret.sup && ret.sup.offset && ret.sup.fontSize, "<sup>");
+  t.finish();
+});
+
+test("sub", function (t) {
+  var html = `<sub>sub</sub>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "sub" && ret.sub && ret.sub.offset && ret.sub.fontSize, "<sub>");
+  t.finish();
+});
