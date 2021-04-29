@@ -509,7 +509,19 @@ module.exports = function(htmlText, options) {
           if (!Array.isArray(params.ret[stl.key])) params.ret[stl.key]=[];
           params.ret[stl.key].push(stl.value);
         } else {
-          params.ret[stl.key] = stl.value;
+          // when 'params.ret.margin' is defined but also a 'marginXYZ' is defined in `stl.key`,
+          // then we should change the correct index in `params.ret.margin` to reflect it
+          if (params.ret.margin && stl.key.indexOf('margin') === 0) {
+            // order: left | top | right | bottom
+            switch(stl.key) {
+              case "marginLeft": params.ret.margin[0]=stl.value; break;
+              case "marginTop": params.ret.margin[1]=stl.value; break;
+              case "marginRight": params.ret.margin[2]=stl.value; break;
+              case "marginBottom": params.ret.margin[3]=stl.value; break;
+            }
+          } else {
+            params.ret[stl.key] = stl.value;
+          }
         }
       });
     });
