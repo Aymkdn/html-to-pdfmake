@@ -730,7 +730,7 @@ module.exports = function(htmlText, options) {
   }
 
   /**
-   * Convert 'px'/'rem'/'cm' to 'pt', and return false for the other ones. If it's only a number, it will just return it
+   * Convert 'px'/'rem'/'cm'/'em' to 'pt', and return false for the other ones. If it's only a number, it will just return it
    *
    * @param  {String} val The value with units (e.g. 12px)
    * @return {Number|Boolean} Return the pt value, or false
@@ -747,6 +747,7 @@ module.exports = function(htmlText, options) {
         val = Math.round(val * 0.75292857248934); // 1px => 0.75292857248934pt
         break;
       }
+      case 'em':
       case 'rem':{
         val *= 12; // default font-size is 12pt
         break;
