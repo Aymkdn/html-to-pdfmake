@@ -21,7 +21,7 @@
   "homepage": "https://github.com/Aymkdn/html-to-pdfmake#readme",
   "devDependencies": {
     "eslint": "^5.16.0",
-    "jsdom": "^14.1.0",
+    "jsdom": "^16.6.0",
     "pdfmake": "^0.1.70",
     "simple-test-framework": "^0.1.7",
     "svg-to-pdfkit": "^0.1.8"
