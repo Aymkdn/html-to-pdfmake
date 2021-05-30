@@ -191,6 +191,39 @@ var html = htmlToPdfmake(`<p style='text-align: justify;'>Lorem Ipsum is simply 
 });
 ```
 
+#### `customTag`
+
+If your HTML code doesn't use regular HTML tags, then you can use `customTag` to define your own result.
+
+Example with a QR code generator:
+```js
+var html = htmlToPdfMake(`<code typecode="QR" style="foreground:black;background:yellow;fit:300px">texto in code</code>`, {,
+  customTag:function(params) {
+    var ret = params.ret;
+    var element = params.element;
+    var parents = params.parents;
+    switch(ret.nodeName) {
+      case "CODE": {
+        ret = this.applyStyle({ret:ret, parents:parents.concat([element])});
+        ret.qr = ret.text[0].text;
+        switch(element.getAttribute("typecode")){
+          case 'QR':
+            delete ret.text;
+            ret.nodeName='QR';
+            if(!ret.style || !Array.isArray(ret.style)){
+              ret.style = [];
+            }
+            ret.style.push('html-qr');
+            break;
+        }
+        break;
+      }
+    }
+    return ret;
+  }
+});
+```
+
 ### HTML tags supported
 
 The below HTML tags are supported:
@@ -410,7 +443,7 @@ To apply these special attributes, you have to use the attribute `data-pdfmake` 
 ```html
 <!-- Example with `widths:[100,"*","auto"]` and `heights:40` to apply to a `table`. -->
 
-<table data-pdfmake="{&quot;widths&quot;:[100,&quot;*&quot;,&quot;auto&quot;],&quot;heights&quot;:40}">
+<table data-pdfmake="{'widths':[100,'*','auto'],'heights':40}">
   <tr>
     <td colspan="3">Table with <b>widths=[100,"*","auto"]</b> and <b>heights=40</b></td>
   </tr>

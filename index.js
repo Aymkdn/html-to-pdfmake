@@ -13,6 +13,7 @@
  * @param  {Object} [options]
  *   @param  {Object} [defaultStyles] An object with the default styles for each elements
  *   @param  {Boolean} [tableAutoSize=false] It permits to use the width/height defined in styles for a table's cells and rows
+ *   @param  {Function} [customTag] It permits to handle non-regular HTML tag
  *   @param  {Object} [window] The `window` object (required for NodeJS server side use)
  * @return {Object} it returns a PdfMake object
  *
@@ -34,14 +35,14 @@
  */
 //var util = require("util"); // to debug
 module.exports = function(htmlText, options) {
-  var wndw = (options && options.window ? options.window : window);
-  var tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
+  this.wndw = (options && options.window ? options.window : window);
+  this.tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
 
   // Used with the size attribute on the font elements to calculate relative font size
-  var fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
+  this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
 
   // set default styles
-  var defaultStyles = {
+  this.defaultStyles = {
     b: {bold:true},
     strong: {bold:true},
     u: {decoration:'underline'},
@@ -66,31 +67,31 @@ module.exports = function(htmlText, options) {
   /**
    * Permit to change the default styles based on the options
    */
-  function changeDefaultStyles () {
+  this.changeDefaultStyles = function () {
     for (var keyStyle in options.defaultStyles) {
-      if (defaultStyles.hasOwnProperty(keyStyle)) {
+      if (this.defaultStyles.hasOwnProperty(keyStyle)) {
         // if we want to remove a default style
         if (options.defaultStyles.hasOwnProperty(keyStyle) && !options.defaultStyles[keyStyle]) {
-          delete defaultStyles[keyStyle];
+          delete this.defaultStyles[keyStyle];
         } else {
           for (var k in options.defaultStyles[keyStyle]) {
             // if we want to delete a specific property
-            if (options.defaultStyles[keyStyle][k] === '') delete defaultStyles[keyStyle][k];
-            else defaultStyles[keyStyle][k] = options.defaultStyles[keyStyle][k];
+            if (options.defaultStyles[keyStyle][k] === '') delete this.defaultStyles[keyStyle][k];
+            else this.defaultStyles[keyStyle][k] = options.defaultStyles[keyStyle][k];
           }
         }
       } else {
         // if we add default styles
-        defaultStyles[keyStyle] = {}
+        this.defaultStyles[keyStyle] = {}
         for (var ks in options.defaultStyles[keyStyle]) {
-          defaultStyles[keyStyle][ks] = options.defaultStyles[keyStyle][ks];
+          this.defaultStyles[keyStyle][ks] = options.defaultStyles[keyStyle][ks];
         }
       }
     }
   }
 
   if (options && options.defaultStyles) {
-    changeDefaultStyles();
+    this.changeDefaultStyles();
   }
 
   /**
@@ -100,12 +101,12 @@ module.exports = function(htmlText, options) {
    * @param htmlText the html text to translate as string
    * @returns pdfmake doc definition as object
    */
-  var convertHtml = function(htmlText) {
+  this.convertHtml = function(htmlText) {
     // Create a HTML DOM tree out of html string
-    var parser = new wndw.DOMParser();
+    var parser = new this.wndw.DOMParser();
     var parsedHtml = parser.parseFromString(htmlText, 'text/html');
 
-    var docDef = parseElement(parsedHtml.body, []);
+    var docDef = this.parseElement(parsedHtml.body, []);
     // remove first level
     return  docDef.stack || docDef.text;
   }
@@ -118,12 +119,12 @@ module.exports = function(htmlText, options) {
    * @param parents Array of node names of all the parents for the element
    * @returns the doc def to the given element in consideration to the given paragraph and styles
    */
-  var parseElement = function(element, parents) {
+  this.parseElement = function(element, parents) {
     var nodeName = element.nodeName.toUpperCase();
     var nodeNameLowerCase = nodeName.toLowerCase();
     var ret = {text:[]};
     var text, needStack=false;
-    var dataset, i, key;
+    var dataset, i, key, _this=this;
 
     // ignore some HTML tags
     if (['COLGROUP','COL'].indexOf(nodeName) > -1) return '';
@@ -133,7 +134,7 @@ module.exports = function(htmlText, options) {
         if (element.textContent) {
           text = element.textContent;
           // check if we have 'white-space' in the parent's style
-          var styleParentTextNode = parseStyle(parents[parents.length-1], true);
+          var styleParentTextNode = this.parseStyle(parents[parents.length-1], true);
           var hasWhiteSpace = false;
           for (i=0; i<styleParentTextNode.length; i++) {
             if (styleParentTextNode[i].key === "preserveLeadingSpaces") {
@@ -149,7 +150,7 @@ module.exports = function(htmlText, options) {
           if (['TABLE','THEAD','TBODY','TFOOT','TR','UL','OL'].indexOf(parents[parents.length-1].nodeName) > -1) text = text.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
           if (text) {
             ret = {'text':text};
-            ret = applyStyle({ret:ret, parents:parents});
+            ret = this.applyStyle({ret:ret, parents:parents});
             return ret;
           }
         }
@@ -161,7 +162,7 @@ module.exports = function(htmlText, options) {
         parents.push(element);
         if (element.childNodes && element.childNodes.length>0) {
           [].forEach.call(element.childNodes, function(child) {
-            var res = parseElement(child, parents);
+            var res = _this.parseElement(child, parents);
             if (res) {
               if (Array.isArray(res.text) && res.text.length===0) res.text='';
               ret.text.push(res);
@@ -169,13 +170,13 @@ module.exports = function(htmlText, options) {
           });
           //console.log(nodeName,'=>',util.inspect(ret.text, {showHidden: false, depth: null})); // to debug
           // find if we need a 'stack' instead of a 'text'
-          needStack = searchForStack(ret);
+          needStack = this.searchForStack(ret);
           if (needStack) {
             ret.stack = ret.text.slice(0);
             delete ret.text;
           } else {
             // apply all the inhirent classes and styles from the parents
-            ret = applyStyle({ret:ret, parents:parents});
+            ret = this.applyStyle({ret:ret, parents:parents});
           }
         }
         parents.pop();
@@ -211,16 +212,16 @@ module.exports = function(htmlText, options) {
                         if (cell.colSpan) {
                           i = cell.colSpan;
                           // do we have a rowSpan in addition of the colSpan?
-                          setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                          _this.setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                           while (--i > 0) {
                             ret.table.body[rowIndex].push({text:''});
                             // keep adding empty cell due to rowspan
-                            setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                            _this.setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                             cellIndex++;
                           }
                         } else {
                           // do we have a rowSpan ?
-                          setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                          _this.setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                         }
 
                         cellIndex++;
@@ -235,10 +236,10 @@ module.exports = function(htmlText, options) {
             delete ret.stack;
             delete ret.text;
             // apply all the inhirent classes and styles from the parents, or for the current element
-            ret = applyStyle({ret:ret, parents:parents.concat([element])});
+            ret = this.applyStyle({ret:ret, parents:parents.concat([element])});
 
             // if option tableAutoSize, then we try to apply the correct width/height on the table
-            if (tableAutoSize) {
+            if (this.tableAutoSize) {
               var cellsWidths = [];
               var cellsHeights = [];
               var tableWidths = [];
@@ -290,13 +291,20 @@ module.exports = function(htmlText, options) {
 
             // check if we have some data-pdfmake to apply
             if (element.dataset && element.dataset.pdfmake) {
-              dataset = JSON.parse(element.dataset.pdfmake);
-              for (key in dataset) {
-                if (key === "layout") {
-                  ret.layout = dataset[key];
-                } else {
-                  ret.table[key] = dataset[key];
+              // handle when people will use simple quotes, e.g. <table data-pdfmake="{'layout':'noBorders'}">
+              dataset = element.dataset.pdfmake;
+              if (dataset.charAt(1) === "'") dataset=dataset.replace(/'/g,'"');
+              try {
+                dataset = JSON.parse(dataset);
+                for (key in dataset) {
+                  if (key === "layout") {
+                    ret.layout = dataset[key];
+                  } else {
+                    ret.table[key] = dataset[key];
+                  }
                 }
+              } catch(e) {
+                console.error(e);
               }
             }
             break;
@@ -306,7 +314,7 @@ module.exports = function(htmlText, options) {
             if (element.getAttribute("rowspan")) ret.rowSpan = element.getAttribute("rowspan")*1;
             if (element.getAttribute("colspan")) ret.colSpan = element.getAttribute("colspan")*1;
             // apply all the inhirent classes and styles from the parents, or for the current element
-            ret = applyStyle({ret:ret, parents:parents.concat([element])});
+            ret = this.applyStyle({ret:ret, parents:parents.concat([element])});
             break;
           }
           case "SVG": {
@@ -367,7 +375,7 @@ module.exports = function(htmlText, options) {
             delete ret.stack;
             delete ret.text;
             // apply all the inhirent classes and styles from the parents, or for the current element
-            ret = applyStyle({ret:ret, parents:parents.concat([element])});
+            ret = this.applyStyle({ret:ret, parents:parents.concat([element])});
             // check if we have `list-style-type` or `list-style`
             if (ret.listStyle || ret.listStyleType) ret.type = ret.listStyle || ret.listStyleType;
             break;
@@ -377,7 +385,7 @@ module.exports = function(htmlText, options) {
             delete ret.stack;
             delete ret.text;
             // apply all the inhirent classes and styles from the parents, or for the current element
-            ret = applyStyle({ret:ret, parents:parents.concat([element])});
+            ret = this.applyStyle({ret:ret, parents:parents.concat([element])});
             break;
           }
           case "A": {
@@ -386,26 +394,32 @@ module.exports = function(htmlText, options) {
           }
           case "FONT": {
             if (element.getAttribute("color")) {
-              ret.color = parseColor(element.getAttribute("color"));
+              ret.color = this.parseColor(element.getAttribute("color"));
             }
             // Checking if the element has a size attribute
             if (element.getAttribute("size")) {
-              // Getting and sanitizing the size value – it should be included between 1 and 7
+              // Getting and sanitizing the size value: it should be included between 1 and 7
               var size = Math.min(Math.max(1, parseInt(element.getAttribute("size"))), 7);
 
               // Getting the relative fontsize
-              var fontSize = Math.max(fontSizes[0], fontSizes[size - 1]);
+              var fontSize = Math.max(this.fontSizes[0], this.fontSizes[size - 1]);
 
               // Assigning the font size
               ret.fontSize = fontSize;
             }
 
             // Applying inherited styles
-            ret = applyStyle({
+            ret = this.applyStyle({
               ret: ret,
               parents: parents.concat([element]),
             });
             break;
+          }
+          default: {
+            // handle other cases
+            if (typeof options.customTag === "function") {
+              ret = options.customTag.call(this, {element:element, parents:parents, ret:ret});
+            }
           }
         }
         if (Array.isArray(ret.text) && ret.text.length === 1 && ret.text[0].text && !ret.text[0].nodeName) {
@@ -425,11 +439,11 @@ module.exports = function(htmlText, options) {
     }
   }
 
-  var searchForStack = function(ret) {
+  this.searchForStack = function(ret) {
     if (Array.isArray(ret.text)) {
       for (var i=0; i<ret.text.length; i++) {
         if (ret.text[i].stack || ['P','DIV','TABLE','SVG','UL','OL','IMG','H1','H2','H3','H4','H5','H6'].indexOf(ret.text[i].nodeName) > -1) return true;
-        if (searchForStack(ret.text[i]) === true) return true;
+        if (this.searchForStack(ret.text[i]) === true) return true;
       }
     }
     return false;
@@ -444,7 +458,7 @@ module.exports = function(htmlText, options) {
    *   @param {Number} rowIndex Current row index
    *   @param {Number} cellIndex Current cell index
    */
-  var setRowSpan = function(params) {
+  this.setRowSpan = function(params) {
     var cells;
     if (params.cell.rowSpan) {
       for (var i=1; i <= params.cell.rowSpan-1; i++) {
@@ -462,9 +476,10 @@ module.exports = function(htmlText, options) {
    *   @param {Array} parents Array of node elements
    * @return {Object} the modified 'ret'
    */
-  var applyStyle = function(params) {
+  this.applyStyle = function(params) {
     var cssClass = [];
     var lastIndex = params.parents.length-1;
+    var _this = this;
     params.parents.forEach(function(parent, parentIndex) {
       // classes
       var parentNodeName = parent.nodeName.toLowerCase();
@@ -479,9 +494,9 @@ module.exports = function(htmlText, options) {
       // not all the CSS properties should be inhirent
       var ignoreNonDescendentProperties = (parentIndex!==lastIndex);
       // 1) the default styles
-      if (defaultStyles[parentNodeName]) {
-        for (style in defaultStyles[parentNodeName]) {
-          if (defaultStyles[parentNodeName].hasOwnProperty(style)) {
+      if (_this.defaultStyles[parentNodeName]) {
+        for (style in _this.defaultStyles[parentNodeName]) {
+          if (_this.defaultStyles[parentNodeName].hasOwnProperty(style)) {
             if (!ignoreNonDescendentProperties ||
                 (ignoreNonDescendentProperties &&
                   style.indexOf('margin') === -1 &&
@@ -491,9 +506,9 @@ module.exports = function(htmlText, options) {
               // 'decoration' can be an array
               if (style === 'decoration') {
                 if (!Array.isArray(params.ret[style])) params.ret[style]=[];
-                params.ret[style].push(defaultStyles[parentNodeName][style]);
+                params.ret[style].push(_this.defaultStyles[parentNodeName][style]);
               } else {
-                params.ret[style] = defaultStyles[parentNodeName][style];
+                params.ret[style] = _this.defaultStyles[parentNodeName][style];
               }
             }
           }
@@ -502,7 +517,7 @@ module.exports = function(htmlText, options) {
       // 2) element's style
       // we want TD/TH to receive descendent properties from TR
       if (parentNodeName === 'tr') ignoreNonDescendentProperties=false;
-      style = parseStyle(parent, ignoreNonDescendentProperties);
+      style = _this.parseStyle(parent, ignoreNonDescendentProperties);
       style.forEach(function(stl) {
         // 'decoration' can be an array
         if (stl.key === "decoration") {
@@ -537,7 +552,7 @@ module.exports = function(htmlText, options) {
    * @param {Boolean} ignoreProperties TRUE when we have to ignore some properties, like border, padding, margin
    * @returns {Array} array of {key, value}
    */
-  var parseStyle = function(element, ignoreProperties) {
+  this.parseStyle = function(element, ignoreProperties) {
     var style = element.getAttribute("style") || "";
     style = style.split(';');
     // check if we have "width" or "height"
@@ -551,6 +566,7 @@ module.exports = function(htmlText, options) {
     var ret = [];
     var borders = []; // special treatment for borders
     var nodeName = element.nodeName.toUpperCase();
+    var _this=this;
     styleDefs.forEach(function(styleDef) {
       if (styleDef.length===2) {
         var key = styleDef[0].trim();
@@ -567,7 +583,7 @@ module.exports = function(htmlText, options) {
 
             // we now need to convert to PT
             value.forEach(function(val, i) {
-              value[i] = convertToUnit(val);
+              value[i] = _this.convertToUnit(val);
             });
             // ignore if we have a FALSE in the table
             if (value.indexOf(false) === -1) ret.push({key:key, value:value});
@@ -582,7 +598,7 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "text-decoration": {
-            ret.push({key:"decoration", value:toCamelCase(value)})
+            ret.push({key:"decoration", value:_this.toCamelCase(value)})
             break;
           }
           case "font-style": {
@@ -594,16 +610,16 @@ module.exports = function(htmlText, options) {
             break;
           }
           case "color": {
-            ret.push({key:"color", value:parseColor(value)})
+            ret.push({key:"color", value:_this.parseColor(value)})
             break;
           }
           case "background-color": {
             // if TH/TD and key is 'background', then we use 'fillColor' instead
-            ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:parseColor(value)})
+            ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:_this.parseColor(value)})
             break;
           }
           case "text-indent": {
-            ret.push({key:"leadingIndent", value:convertToUnit(value)});
+            ret.push({key:"leadingIndent", value:_this.convertToUnit(value)});
             break;
           }
           case "white-space": {
@@ -619,10 +635,10 @@ module.exports = function(htmlText, options) {
               if (ignoreProperties && (key.indexOf("margin-") === 0 || key === 'width' || key === 'height')) break;
               // padding is not supported by PDFMake
               if (key.indexOf("padding") === 0) break;
-              if (key.indexOf("-") > -1) key=toCamelCase(key);
+              if (key.indexOf("-") > -1) key=_this.toCamelCase(key);
               if (value) {
                 // convert value to a 'pt' when possible
-                var parsedValue = convertToUnit(value);
+                var parsedValue = _this.convertToUnit(value);
                 ret.push({key:key, value:(parsedValue === false ? value : parsedValue)});
               }
             }
@@ -654,9 +670,9 @@ module.exports = function(htmlText, options) {
         if (properties.length > 2) {
           var color = properties.slice(2).join(' ');
           if (index > -1) {
-            borderColor[index] = parseColor(color);
+            borderColor[index] = _this.parseColor(color);
           } else {
-            for (i=0; i<4; i++) borderColor[i] = parseColor(color);
+            for (i=0; i<4; i++) borderColor[i] = _this.parseColor(color);
           }
         }
       });
@@ -671,7 +687,7 @@ module.exports = function(htmlText, options) {
     return ret;
   }
 
-  var toCamelCase = function(str) {
+  this.toCamelCase = function(str) {
     return str.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase() });
   }
 
@@ -682,7 +698,7 @@ module.exports = function(htmlText, options) {
    * @param color color as string representation
    * @returns color as hex values for pdfmake
    */
-  var parseColor = function(color) {
+  this.parseColor = function(color) {
     var haxRegex = new RegExp('^#([0-9a-f]{3}|[0-9a-f]{6})$');
 
     // e.g. `#fff` or `#ff0048`
@@ -719,7 +735,7 @@ module.exports = function(htmlText, options) {
    * @param  {String} val The value with units (e.g. 12px)
    * @return {Number|Boolean} Return the pt value, or false
    */
-  var convertToUnit = function(val) {
+  this.convertToUnit = function(val) {
     // if it's just a number, then return it
     if (!isNaN(parseFloat(val)) && isFinite(val)) return val*1;
     var mtch = (val+"").trim().match(/^(\d+(\.\d+)?)(pt|px|rem|cm)$/);
@@ -743,5 +759,5 @@ module.exports = function(htmlText, options) {
     return val*1;
   }
 
-  return convertHtml(htmlText)
+  return this.convertHtml(htmlText);
 }
