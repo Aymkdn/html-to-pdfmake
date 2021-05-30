@@ -738,7 +738,7 @@ module.exports = function(htmlText, options) {
   this.convertToUnit = function(val) {
     // if it's just a number, then return it
     if (!isNaN(parseFloat(val)) && isFinite(val)) return val*1;
-    var mtch = (val+"").trim().match(/^(\d+(\.\d+)?)(pt|px|rem|cm)$/);
+    var mtch = (val+"").trim().match(/^(\d+(\.\d+)?)(pt|px|r?em|cm)$/);
     // if we don't have a number with supported units, then return false
     if (!mtch) return false;
     val = mtch[1];
