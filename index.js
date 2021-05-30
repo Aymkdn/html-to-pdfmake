@@ -417,7 +417,7 @@ module.exports = function(htmlText, options) {
           }
           default: {
             // handle other cases
-            if (typeof options.customTag === "function") {
+            if (options && typeof options.customTag === "function") {
               ret = options.customTag.call(this, {element:element, parents:parents, ret:ret});
             }
           }
