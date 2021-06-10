@@ -34,7 +34,8 @@
  * });
  */
 //var util = require("util"); // to debug
-module.exports = function(htmlText, options) {
+function htmlToPdfMake(htmlText, options) {
+  'use strict';
   this.wndw = (options && options.window ? options.window : window);
   this.tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
 
@@ -107,8 +108,9 @@ module.exports = function(htmlText, options) {
     var parsedHtml = parser.parseFromString(htmlText, 'text/html');
 
     var docDef = this.parseElement(parsedHtml.body, []);
+
     // remove first level
-    return  docDef.stack || docDef.text;
+    return docDef.stack || docDef.text;
   }
 
   /**
@@ -760,5 +762,12 @@ module.exports = function(htmlText, options) {
     return val*1;
   }
 
-  return this.convertHtml(htmlText);
+  var result = this.convertHtml(htmlText);
+  // if we only pass a string without HTML code
+  if (typeof result === "string") result={text:result};
+  return result;
+}
+
+module.exports = function(htmlText, options) {
+  return new htmlToPdfMake(htmlText, options);
 }
