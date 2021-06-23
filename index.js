@@ -391,7 +391,16 @@ function htmlToPdfMake(htmlText, options) {
             break;
           }
           case "A": {
-            ret.link = element.getAttribute("href");
+            // the link must be applied to the deeper `text`
+            var setLink = function(pointer, href) {
+              if (Array.isArray(pointer.text)) {
+                pointer.text = setLink(pointer.text[0], href);
+                return pointer;
+              }
+              pointer.link = href;
+              return pointer;
+            }
+            ret = setLink(ret, element.getAttribute("href"));
             break;
           }
           case "FONT": {
