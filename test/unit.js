@@ -42,7 +42,7 @@ test("u",function(t) {
   ret = ret[0];
   t.check(
     ret.text === "underline word" &&
-    Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] &&
+    Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] &&
     Array.isArray(ret.style) &&
     ret.style[0] === 'html-u',
   "<u>");
@@ -189,7 +189,7 @@ test("a",function(t) {
   ret = ret[0];
   t.check(ret.text === "link", "text");
   t.check(ret.color === "blue", "color");
-  t.check(Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] === "underline", "decoration");
+  t.check(Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] === "underline", "decoration");
   t.check(ret.link === "https://www.somewhere.com", "href");
   t.check(Array.isArray(ret.style), "style is array");
   t.check(ret.style[0] === 'html-a', "class");
@@ -204,7 +204,7 @@ test("strike",function(t) {
   ret = ret[0];
   t.check(
     ret.text === "strike" &&
-    Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] === "lineThrough" &&
+    Array.isArray(ret.decoration) && ret.decoration.length === 1 && ret.decoration[0] === "lineThrough" &&
     Array.isArray(ret.style) &&
     ret.style[0] === 'html-strike',
   "<strike>");
@@ -795,7 +795,7 @@ test("'decoration' style", function(t) {
   var ret = htmlToPdfMake(html, {window:window});
   if (debug) console.log(JSON.stringify(ret));
   t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  t.check(Array.isArray(ret[0].text) && ret[0].text.length===1 && Array.isArray(ret[0].text[0].text) && ret[0].text[0].text.length===1, "structure is OK");
+  t.check(Array.isArray(ret[0].text) && ret[0].text.length===1 && Array.isArray(ret[0].text[0].text) && ret[0].text[0].text.length===1, "structure is OK");
   ret = ret[0].text[0].text[0];
   t.check(ret.text === "Test", "text is 'Test'");
   t.check(ret.nodeName === "S", "nodeName is 'S'");
@@ -810,7 +810,7 @@ test("'decoration' style 2", function(t) {
   var ret = htmlToPdfMake(html, {window:window});
   if (debug) console.log(JSON.stringify(ret));
   t.check(Array.isArray(ret) && ret.length===1, "return is OK");
-  t.check(Array.isArray(ret[0].text) && ret[0].text.length===1 && Array.isArray(ret[0].text[0].text) && ret[0].text[0].text.length===1, "structure is OK");
+  t.check(Array.isArray(ret[0].text) && ret[0].text.length===1 && Array.isArray(ret[0].text[0].text) && ret[0].text[0].text.length===1, "structure is OK");
   ret = ret[0].text[0].text[0];
   t.check(ret.text === "Test", "text is 'Test'");
   t.check(ret.nodeName === "SPAN", "nodeName is 'SPAN'");
@@ -836,7 +836,7 @@ test("sup", function (t) {
   if (debug) console.log(JSON.stringify(ret));
   t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
   ret = ret[0];
-  t.check(ret.text === "sup" && ret.sup && ret.sup.offset && ret.sup.fontSize, "<sup>");
+  t.check(ret.text === "sup" && ret.sup && ret.sup.offset && ret.sup.fontSize, "<sup>");
   t.finish();
 });
 
@@ -846,6 +846,6 @@ test("sub", function (t) {
   if (debug) console.log(JSON.stringify(ret));
   t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
   ret = ret[0];
-  t.check(ret.text === "sub" && ret.sub && ret.sub.offset && ret.sub.fontSize, "<sub>");
+  t.check(ret.text === "sub" && ret.sub && ret.sub.offset && ret.sub.fontSize, "<sub>");
   t.finish();
 });
