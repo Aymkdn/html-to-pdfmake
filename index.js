@@ -502,7 +502,7 @@ function htmlToPdfMake(htmlText, options) {
       });
       // styles
       var style;
-      // not all the CSS properties should be inhirent
+      // not all the CSS properties should be inherent
       var ignoreNonDescendentProperties = (parentIndex!==lastIndex);
       // 1) the default styles
       if (_this.defaultStyles[parentNodeName]) {
@@ -517,7 +517,10 @@ function htmlToPdfMake(htmlText, options) {
               // 'decoration' can be an array
               if (style === 'decoration') {
                 if (!Array.isArray(params.ret[style])) params.ret[style]=[];
-                params.ret[style].push(_this.defaultStyles[parentNodeName][style]);
+                // do not apply twice the same (e.g. applying 2 "underline" will cause an extra blank space with an underline)
+                if (params.ret[style].indexOf(_this.defaultStyles[parentNodeName][style]) === -1) {
+                  params.ret[style].push(_this.defaultStyles[parentNodeName][style]);
+                }
               } else {
                 params.ret[style] = _this.defaultStyles[parentNodeName][style];
               }
@@ -526,7 +529,7 @@ function htmlToPdfMake(htmlText, options) {
         }
       }
       // 2) element's style
-      // we want TD/TH to receive descendent properties from TR
+      // we want TD/TH to receive descendant properties from TR
       if (parentNodeName === 'tr') ignoreNonDescendentProperties=false;
       style = _this.parseStyle(parent, ignoreNonDescendentProperties);
       style.forEach(function(stl) {
