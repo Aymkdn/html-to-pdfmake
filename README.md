@@ -402,9 +402,26 @@ Examples:
 
 ### `<img>`
 
-The `<img>` tag is supported, however the `src` attribute must already be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)).
+The `<img>` tag is supported, however the `src` attribute must already be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)) or a reference (starting from PDFMake 0.1.67).
 
-This is too complex and out of the scope of this module to find and convert the image source to a base64 format. You can check [this Stackoverflow question](https://stackoverflow.com/questions/934012/get-image-data-in-javascript/42916772#42916772) to know the different ways to get a base64 encoded content from an image.
+You can check [this Stackoverflow question](https://stackoverflow.com/questions/934012/get-image-data-in-javascript/42916772#42916772) to know the different ways to get a base64 encoded content from an image.
+
+If you want to use the **reference**, just put a name as the `src` of your image, and add the `images` property:
+```js
+var html = htmlToPdfmake(`<img src="my_ref"> <img src="https://picsum.photos/seed/picsum/200/300">`);
+var docDefinition = {
+  content: [
+    html
+  ],
+  images:{
+    "my_ref":"https://picsum.photos/200",
+     // it works also using the url as the reference name
+    "https://picsum.photos/seed/picsum/200/300":"https://picsum.photos/seed/picsum/200/300"
+  }
+};
+```
+
+To know more, check the [PDFMake documentation](https://pdfmake.github.io/docs/0.1/document-definition-object/images/) and look at [this issue](https://github.com/Aymkdn/html-to-pdfmake/issues/109#issue-932953144).
 
 ### page break
 
