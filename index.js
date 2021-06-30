@@ -13,6 +13,7 @@
  * @param  {Object} [options]
  *   @param  {Object} [defaultStyles] An object with the default styles for each elements
  *   @param  {Boolean} [tableAutoSize=false] It permits to use the width/height defined in styles for a table's cells and rows
+ *   @param  {Boolean} [imagesByReference=false] It permits to return two objets ({content, images}) to handle the `<img>` tags by reference
  *   @param  {Function} [customTag] It permits to handle non-regular HTML tag
  *   @param  {Object} [window] The `window` object (required for NodeJS server side use)
  * @return {Object} it returns a PdfMake object
@@ -38,6 +39,7 @@ function htmlToPdfMake(htmlText, options) {
   'use strict';
   this.wndw = (options && options.window ? options.window : window);
   this.tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
+  this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -64,6 +66,9 @@ function htmlToPdfMake(htmlText, options) {
     table: {marginBottom:5},
     th: {bold:true, fillColor:'#EEEEEE'}
   }
+
+  // store the references to the images
+  this.imagesRef = [];
 
   /**
    * Permit to change the default styles based on the options
@@ -383,7 +388,17 @@ function htmlToPdfMake(htmlText, options) {
             break;
           }
           case "IMG": {
-            ret.image = element.getAttribute("src");
+            if (this.imagesByReference) {
+              var src = element.getAttribute("src");
+              var index = this.imagesRef.indexOf(src);
+              if (index>-1) ret.image = 'img_ref_'+index;
+              else {
+                ret.image = 'img_ref_'+this.imagesRef.length;
+                this.imagesRef.push(src);
+              }
+            } else {
+              ret.image = element.getAttribute("src");
+            }
             delete ret.stack;
             delete ret.text;
             // apply all the inhirent classes and styles from the parents, or for the current element
@@ -777,6 +792,13 @@ function htmlToPdfMake(htmlText, options) {
   var result = this.convertHtml(htmlText);
   // if we only pass a string without HTML code
   if (typeof result === "string") result={text:result};
+  // if images by reference
+  if (this.imagesByReference) {
+    result = {content:result, images:{}};
+    this.imagesRef.forEach(function(src, i) {
+      result.images['img_ref_'+i] = src;
+    });
+  }
   return result;
 }
 

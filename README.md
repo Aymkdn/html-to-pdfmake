@@ -144,6 +144,40 @@ If you use Node, then you'll have to pass the `window` object ([see below](https
 
 You can overwrite the default styles using `defaultStyles` ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
 
+#### `imagesByReference`
+
+If you're using `html-to-pdfmake` in a web browser with images, then you can set this option to `true` and it will automatically load your images in your PDF using the [`{images}` option of PDFMake](https://pdfmake.github.io/docs/document-definition-object/images/).
+
+Using this option will change the output of `html-to-pdfmake` that will return an object with `{content, images}`.
+
+Example:
+```javascript
+var ret = htmlToPdfmake(`<img src="https://picsum.photos/seed/picsum/200">`, {
+  imagesByReference:true
+});
+// 'ret' contains:
+//  {
+//    "content":[
+//      [
+//        {
+//          "nodeName":"IMG",
+//          "image":"img_ref_0",
+//          "style":["html-img"]
+//        }
+//      ]
+//    ],
+//    "images":{
+//      "img_ref_0":"https://picsum.photos/seed/picsum/200"
+//    }
+//  }
+
+var dd = {
+  content:ret.content,
+  images:ret.images
+}
+pdfMake.createPdf(dd).download();
+```
+
 #### `fontSizes`
 
 You can overwrite the default sizes for the old HTML4 tag `<font>` by using `fontSizes`. It must be an array with 7 values ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
@@ -402,26 +436,11 @@ Examples:
 
 ### `<img>`
 
-The `<img>` tag is supported, however the `src` attribute must already be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)) or a reference (starting from PDFMake 0.1.67).
+If you use `html-to-pdfmake` **in a Web browser**, then you could just pass [the option `imagesByReference`](https://github.com/Aymkdn/html-to-pdfmake#imagesbyreference) with the value `true` and the images will be passed by references (starting from PDFMake v0.1.67).
+
+Otherwise the `src` attribute must be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)) or a reference ([see more here](https://github.com/Aymkdn/html-to-pdfmake/issues/109#issue-932953144)).
 
 You can check [this Stackoverflow question](https://stackoverflow.com/questions/934012/get-image-data-in-javascript/42916772#42916772) to know the different ways to get a base64 encoded content from an image.
-
-If you want to use the **reference**, just put a name as the `src` of your image, and add the `images` property:
-```js
-var html = htmlToPdfmake(`<img src="my_ref"> <img src="https://picsum.photos/seed/picsum/200/300">`);
-var docDefinition = {
-  content: [
-    html
-  ],
-  images:{
-    "my_ref":"https://picsum.photos/200",
-     // it works also using the url as the reference name
-    "https://picsum.photos/seed/picsum/200/300":"https://picsum.photos/seed/picsum/200/300"
-  }
-};
-```
-
-To know more, check the [PDFMake documentation](https://pdfmake.github.io/docs/0.1/document-definition-object/images/) and look at [this issue](https://github.com/Aymkdn/html-to-pdfmake/issues/109#issue-932953144).
 
 ### page break
 
