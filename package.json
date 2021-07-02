@@ -7,7 +7,7 @@
     "pretest": "eslint index.js",
     "test": "node test/unit.js",
     "browser": "browserify index.js --standalone htmlToPdfmake | uglifyjs > browser.js",
-    "build": "npm run test && node example.js && npm run browser"
+    "build": "npm run test && node example.js && npm run browser && node update-doc.js"
   },
   "repository": {
     "type": "git",
