@@ -383,6 +383,10 @@ function htmlToPdfMake(htmlText, options) {
             delete ret.text;
             // apply all the inhirent classes and styles from the parents, or for the current element
             ret = this.applyStyle({ret:ret, parents:parents.concat([element])});
+            // check if we have `start`
+            if (element.getAttribute("start")) {
+              ret.start = element.getAttribute("start")*1;
+            }
             // check if we have `list-style-type` or `list-style`
             if (ret.listStyle || ret.listStyleType) ret.type = ret.listStyle || ret.listStyleType;
             break;
