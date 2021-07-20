@@ -167,6 +167,7 @@ function htmlToPdfMake(htmlText, options) {
       case 1: { // ELEMENT_NODE
         ret.nodeName = nodeName;
         parents.push(element);
+
         if (element.childNodes && element.childNodes.length>0) {
           [].forEach.call(element.childNodes, function(child) {
             var res = _this.parseElement(child, parents);
@@ -452,11 +453,13 @@ function htmlToPdfMake(htmlText, options) {
             }
           }
         }
+
+        // reduce the number of JSON properties
         if (Array.isArray(ret.text) && ret.text.length === 1 && ret.text[0].text && !ret.text[0].nodeName) {
           ret.text = ret.text[0].text;
         }
 
-        // chekck if we have some data-pdfmake to apply
+        // check if we have some data-pdfmake to apply
         if (['HR','TABLE'].indexOf(nodeName) === -1 && element.dataset && element.dataset.pdfmake) {
           dataset = JSON.parse(element.dataset.pdfmake);
           for (key in dataset) {
@@ -541,7 +544,7 @@ function htmlToPdfMake(htmlText, options) {
                   params.ret[style].push(_this.defaultStyles[parentNodeName][style]);
                 }
               } else {
-                params.ret[style] = _this.defaultStyles[parentNodeName][style];
+                params.ret[style] = JSON.parse(JSON.stringify(_this.defaultStyles[parentNodeName][style]));
               }
             }
           }
