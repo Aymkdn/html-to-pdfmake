@@ -263,7 +263,6 @@ var html = htmlToPdfMake(`<code typecode="QR" style="foreground:black;background
 The below HTML tags are supported:
   - `A` (with external and internal links)
   - `DIV` / `P` / `SPAN`
-  - `B`
   - `B` / `STRONG`
   - `I` / `EM`
   - `S`
