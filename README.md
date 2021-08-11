@@ -261,19 +261,37 @@ var html = htmlToPdfMake(`<code typecode="QR" style="foreground:black;background
 ### HTML tags supported
 
 The below HTML tags are supported:
-  - DIV / P / SPAN
-  - BR
-  - B / STRONG
-  - I / EM
-  - S
-  - UL / OL / LI
-  - TABLE / THEAD / TBODY / TFOOTER / TR / TH / TD
-  - H1 to H6
-  - FONT
-  - IMG
-  - SVG
-  - SUP / SUB
+  - `A` (with external and internal links)
+  - `DIV` / `P` / `SPAN`
+  - `B`
+  - `B` / `STRONG`
+  - `I` / `EM`
+  - `S`
+  - `UL` / `OL` / `LI`
+  - `TABLE` / `THEAD` / `TBODY` / `TFOOTER` / `TR` / `TH` / `TD`
+  - `H1` to `H6`
+  - `FONT`
+  - `IMG`
+  - `SVG`
+  - `SUP` / `SUB`
+  
+### CSS properties supported
 
+CSS can create very complex design, however this framework can only handle the most simple HTML / CSS. The support of CSS style is limited and might not work in all cases with all values:
+  - background-color
+  - border
+  - color
+  - font-family
+  - font-style (with `italic`)
+  - font-weight (with `bold`)
+  - height
+  - margin
+  - text-align
+  - text-decoration
+  - text-indent
+  - white-space (with `break-spaces` and `pre*`)
+  - width
+  
 ### Default styles
 
 I've defined some default styles for the supported element.

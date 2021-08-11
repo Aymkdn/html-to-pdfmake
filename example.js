@@ -228,8 +228,8 @@ var docDefinition = {
     html
   ],
   pageBreakBefore: function(currentNode) {
-    // we add a page break before TABLE with the classname "pdf-pagebreak-before"
-    return currentNode.table && currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
+    // we add a page break before elements with the classname "pdf-pagebreak-before"
+    return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
   },
   styles:{
     red:{

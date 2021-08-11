@@ -166,6 +166,7 @@ function htmlToPdfMake(htmlText, options) {
       }
       case 1: { // ELEMENT_NODE
         ret.nodeName = nodeName;
+        if (element.id) ret.id = element.id;
         parents.push(element);
 
         if (element.childNodes && element.childNodes.length>0) {
@@ -416,7 +417,9 @@ function htmlToPdfMake(htmlText, options) {
               if (Array.isArray(pointer.text)) {
                 return setLink(pointer.text[0], href);
               }
-              pointer.link = href;
+              // if 'href' starts with '#' then it's an internal link
+              if (href.indexOf('#') === 0) pointer.linkToDestination=href.slice(1);
+              else pointer.link = href;
               pointer.nodeName = "A";
               return pointer;
             }
