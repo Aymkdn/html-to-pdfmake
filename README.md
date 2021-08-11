@@ -277,19 +277,19 @@ The below HTML tags are supported:
 ### CSS properties supported
 
 CSS can create very complex design, however this framework can only handle the most simple HTML / CSS. The support of CSS style is limited and might not work in all cases with all values:
-  - background-color
-  - border
-  - color
-  - font-family
-  - font-style (with `italic`)
-  - font-weight (with `bold`)
-  - height
-  - margin
-  - text-align
-  - text-decoration
-  - text-indent
-  - white-space (with `break-spaces` and `pre*`)
-  - width
+  - `background-color`
+  - `border`
+  - `color`
+  - `font-family`
+  - `font-style` (with `italic`)
+  - `font-weight` (with `bold`)
+  - `height`
+  - `margin`
+  - `text-align`
+  - `text-decoration`
+  - `text-indent`
+  - `white-space` (with `break-spaces` and `pre*`)
+  - `width`
   
 ### Default styles
 
