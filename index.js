@@ -423,7 +423,9 @@ function htmlToPdfMake(htmlText, options) {
               pointer.nodeName = "A";
               return pointer;
             }
-            ret = setLink(ret, element.getAttribute("href"));
+            if (element.getAttribute("href")) {
+              ret = setLink(ret, element.getAttribute("href"));
+            }
             break;
           }
           case "FONT": {
