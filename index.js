@@ -393,6 +393,15 @@ function htmlToPdfMake(htmlText, options) {
             if (ret.listStyle || ret.listStyleType) ret.type = ret.listStyle || ret.listStyleType;
             break;
           }
+          case "LI": {
+            // if it's a stack, then check if the last child has a "text"
+            if (ret.stack && !ret.stack[ret.stack.length-1].text) {
+              // if not, we restructure our node
+              text = ret.stack.slice(0, -1);
+              ret = [ {"text": text}, ret.stack[ret.stack.length-1] ];
+            }
+            break;
+          }
           case "IMG": {
             if (this.imagesByReference) {
               var src = element.getAttribute("src");
