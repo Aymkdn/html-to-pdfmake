@@ -389,6 +389,14 @@ function htmlToPdfMake(htmlText, options) {
             if (element.getAttribute("start")) {
               ret.start = element.getAttribute("start")*1;
             }
+            // check if we have "type"
+            switch (element.getAttribute("type")) {
+              case 'A': ret.type = 'upper-alpha'; break;
+              case 'a': ret.type = 'lower-alpha'; break;
+              case 'I': ret.type = 'upper-roman'; break;
+              case 'i': ret.type = 'lower-roman'; break;
+            }
+            
             // check if we have `list-style-type` or `list-style`
             if (ret.listStyle || ret.listStyleType) ret.type = ret.listStyle || ret.listStyleType;
             break;

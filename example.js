@@ -56,8 +56,8 @@ var html = htmlToPdfMake(`
     <br>This sentence is surrended by BR<br>
   </p>
   <p>
-    A first level ordered list:
-    <ol>
+    A first level ordered list with type "I":
+    <ol type="I">
       <li>Item 1</li>
       <li>Item 2</li>
       <li>Item 3</li>
