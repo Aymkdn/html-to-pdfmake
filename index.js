@@ -431,6 +431,7 @@ function htmlToPdfMake(htmlText, options) {
           case "A": {
             // the link must be applied to the deeper `text`
             var setLink = function(pointer, href) {
+              pointer = pointer || {text:''}; // for link without any text
               if (Array.isArray(pointer.text)) {
                 return setLink(pointer.text[0], href);
               }
