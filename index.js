@@ -760,6 +760,17 @@ function htmlToPdfMake(htmlText, options) {
     return str.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase() });
   }
 
+  // input: h in [0,360] and s,v in [0,1] - output: "rgb(0–255,0–255,0–255)""
+  // source: https://stackoverflow.com/a/54014428/1134119 + https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion#comment58413965_9493060
+  this.hsl2rgb = function(h,s,l) {
+    var a = s*Math.min(l,1-l);
+    var f = function(n) {
+      var k=(n+h/30)%12;
+      return Math.min(Math.floor((l - a*Math.max(Math.min(k-3,9-k,1),-1))*256),255);
+    }
+    return "rgb("+f(0)+","+f(8)+","+f(4)+")";
+  }
+
   /**
    * Returns the color in a hex format (e.g. #12ff00).
    * Also tries to convert RGB colors into hex values
@@ -768,34 +779,60 @@ function htmlToPdfMake(htmlText, options) {
    * @returns color as hex values for pdfmake
    */
   this.parseColor = function(color) {
+    // e.g. `#fff` or `#ff0048`
     var haxRegex = new RegExp('^#([0-9a-f]{3}|[0-9a-f]{6})$');
 
-    // e.g. `#fff` or `#ff0048`
-    var rgbRegex = new RegExp('^rgb\\((\\d+),\\s*(\\d+),\\s*(\\d+)\\)$');
+    // e.g. rgb(0,255,34) or rgb(22, 0, 0) or rgb(100%, 100%, 100%)
+    var rgbRegex = new RegExp('^rgb\\((\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?)\\)$');
 
-    // e.g. rgb(0,255,34) or rgb(22, 0, 0)
+    // e.g. hsl(300, 10%, 20%)
+    var hslRegex = new RegExp('^hsl\\((\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?)\\)$');
+
+    // e.g. "white" or "red"
     var nameRegex = new RegExp('^[a-z]+$');
+
+    var decimalColors, decimalValue, hexString, i, ret=[];
 
     if (haxRegex.test(color)) {
       return color;
-    } else if (rgbRegex.test(color)) {
-      var decimalColors = rgbRegex.exec(color).slice(1);
-      for (var i = 0; i < 3; i++) {
-        var decimalValue = +decimalColors[i];
+    }
+
+    if (hslRegex.test(color)) {
+      // we want to convert to RGB
+      decimalColors = hslRegex.exec(color).slice(1);
+      // first value should be from 0 to 360
+      if (decimalColors[0].endsWith('%')) decimalValue = decimalColors[0].slice(0,-1) * 360 / 100;
+      else decimalValue = decimalColors[0]*1;
+      ret.push(decimalValue);
+      // next values should be % to convert to base 1
+      ret.push(decimalColors[2].slice(0,-1) / 100);
+      ret.push(decimalColors[4].slice(0,-1) / 100);
+      color = this.hsl2rgb(ret[0], ret[1], ret[2]);
+      ret = [];
+    }
+    if (rgbRegex.test(color)) {
+      decimalColors = rgbRegex.exec(color).slice(1);
+      for (i = 0; i < 6; i+=2) {
+        decimalValue = decimalColors[i];
+        // if it ends with '%', we calculcate based on 100%=255
+        if (decimalValue.endsWith('%')) {
+          decimalValue = Math.round(decimalValue.slice(0,-1) * 255 / 100);
+        } else decimalValue = decimalValue*1;
         if (decimalValue > 255) {
           decimalValue = 255;
         }
-        var hexString = '0' + decimalValue.toString(16);
+        hexString = '0' + decimalValue.toString(16);
         hexString = hexString.slice(-2);
-        decimalColors[i] = hexString;
+        ret.push(hexString);
       }
-      return '#' + decimalColors.join('');
-    } else if (nameRegex.test(color)) {
-      return (color === "transparent" ? "white" : color);
-    } else {
-      console.error('Could not parse color "' + color + '"');
-      return color;
+      return '#' + ret.join('');
     }
+    if (nameRegex.test(color)) {
+      return (color === "transparent" ? "white" : color);
+    }
+
+    console.error('Could not parse color "' + color + '"');
+    return color;
   }
 
   /**

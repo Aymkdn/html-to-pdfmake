@@ -3,7 +3,7 @@ var test = require("simple-test-framework");
 var jsdom = require("jsdom");
 var { JSDOM } = jsdom;
 var { window } = new JSDOM("");
-var debug = false;
+var debug = true;
 
 test("b",function(t) {
   var ret = htmlToPdfMake("<b>bold word</b>", {window:window});
@@ -847,5 +847,55 @@ test("sub", function (t) {
   t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
   ret = ret[0];
   t.check(ret.text === "sub" && ret.sub && ret.sub.offset && ret.sub.fontSize, "<sub>");
+  t.finish();
+});
+
+test("parse NAME color", function (t) {
+  var html = `<span style="color:red">red</span>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "red" && ret.color === "red", "color:red");
+  t.finish();
+});
+
+test("parse HEX color", function (t) {
+  var html = `<span style="color:#E63737">red</span>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "red" && ret.color === "#e63737", "color:#E63737");
+  t.finish();
+});
+
+test("parse RGB color", function (t) {
+  var html = `<span style="color:rgb(230,55,55)">red</span>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "red" && ret.color === "#e63737", "color:rgb(230,55,55)");
+  t.finish();
+});
+
+test("parse RGB color with %", function (t) {
+  var html = `<span style="color:rgb(90.2%, 21.568%, 21.568%)">red</span>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "red" && ret.color === "#e63737", "color:rgb(90.2%, 21.568%, 21.568%)");
+  t.finish();
+});
+
+test("parse HSL color", function (t) {
+  var html = `<span style="color:hsl(0, 78%, 56%)">red</span>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "red" && ret.color === "#e73737", "color:hsl(0, 78%, 56%)");
   t.finish();
 });
