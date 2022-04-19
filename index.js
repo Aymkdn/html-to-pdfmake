@@ -408,6 +408,10 @@ function htmlToPdfMake(htmlText, options) {
               text = ret.stack.slice(0, -1);
               ret = [ {"text": text}, ret.stack[ret.stack.length-1] ];
             }
+            // we don't want a child of UL/OL to be an array, but it should be a "stack"
+            if (Array.isArray(ret)) {
+              ret = {stack:ret};
+            }
             break;
           }
           case "IMG": {

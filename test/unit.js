@@ -3,7 +3,7 @@ var test = require("simple-test-framework");
 var jsdom = require("jsdom");
 var { JSDOM } = jsdom;
 var { window } = new JSDOM("");
-var debug = true;
+var debug = false;
 
 test("b",function(t) {
   var ret = htmlToPdfMake("<b>bold word</b>", {window:window});
