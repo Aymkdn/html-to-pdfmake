@@ -149,8 +149,8 @@ function htmlToPdfMake(htmlText, options) {
               break;
             }
           }
-          // if no 'white-space' style, then remove blanks
-          if (!hasWhiteSpace) text = text.replace(/\n(\s+)?/g, "");
+          // if no 'white-space' style, then deal with white spaces
+          if (!hasWhiteSpace) text = text.replace(/\s*\n\s*/g, " ");
           if (options && typeof options.replaceText === "function") text = options.replaceText(text, parents);
 
           // for table, thead, tbody, tfoot, tr, ul, ol: remove all empty space
