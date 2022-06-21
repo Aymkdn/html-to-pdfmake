@@ -195,6 +195,7 @@ function htmlToPdfMake(htmlText, options) {
             var rowIndex, cellIndex;
             // the format for the table is table.body[[], [], …]
             ret.table = {body:[]};
+
             var tbodies = (ret.stack || ret.text);
             if (Array.isArray(tbodies)) {
               rowIndex = 0;
@@ -294,9 +295,15 @@ function htmlToPdfMake(htmlText, options) {
                   }
                 });
               });
-              if (tableWidths.length > 0) ret.table.widths = tableWidths;
+              if (tableWidths.length > 0) {
+                // if all columns are in 'auto' and if we have 'width:"100%"' for the table
+                // then put widths:['*', '*' …], for all columns
+                if (ret.table.width === "100%" && tableWidths.filter(function(w) { return w==='auto' }).length === tableWidths.length) tableWidths=tableWidths.map(function() { return '*' });
+                ret.table.widths = tableWidths;
+              }
               if (tableHeights.length > 0) ret.table.heights = tableHeights;
             }
+
 
             // check if we have some data-pdfmake to apply
             if (element.dataset && element.dataset.pdfmake) {
@@ -619,11 +626,13 @@ function htmlToPdfMake(htmlText, options) {
     var style = element.getAttribute("style") || "";
     style = style.split(';');
     // check if we have "width" or "height"
-    if (element.getAttribute("width")) {
-      style.unshift("width:" + element.getAttribute("width") + "px");
+    var width = element.getAttribute("width");
+    var height = element.getAttribute("height");
+    if (width) {
+      style.unshift("width:" + width + (isNaN(width) ? "" : "px"));
     }
-    if (element.getAttribute("height")) {
-      style.unshift("height:" + element.getAttribute("height") + "px");
+    if (height) {
+      style.unshift("height:" + height + (isNaN(height) ? "" : "px"));
     }
     var styleDefs = style.map(function(style) { return style.toLowerCase().split(':') });
     var ret = [];
