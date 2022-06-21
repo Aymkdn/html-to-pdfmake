@@ -345,13 +345,9 @@ test("table (rowspan/colspan)", function(t) {
     </tr>
     <tr>
       <td>Cell A1</td>
-      <td rowspan="2">
-        Cell B1 & B2
-      </td>
+      <td rowspan="2">Cell B1 & B2</td>
       <td>Cell C1</td>
-      <td rowspan="2">
-        Cell D1 & D2
-      </td>
+      <td rowspan="2">Cell D1 & D2</td>
     </tr>
     <tr>
       <td>Cell A2</td>
@@ -363,9 +359,7 @@ test("table (rowspan/colspan)", function(t) {
       <td>Cell D3</td>
     </tr>
     <tr>
-      <td rowspan="2" colspan="3">
-        Cell A4 & A5 & B4 & B5 & C4 & C5
-      </td>
+      <td rowspan="2" colspan="3">Cell A4 & A5 & B4 & B5 & C4 & C5</td>
       <td>Cell D4</td>
     </tr>
     <tr>
@@ -429,13 +423,9 @@ test("table (rowspan/colspan) with thead tbody", function(t) {
     <tbody>
         <tr>
           <td>Cell A1</td>
-          <td rowspan="2">
-            Cell B1 & B2
-          </td>
+          <td rowspan="2">Cell B1 & B2</td>
           <td>Cell C1</td>
-          <td rowspan="2">
-            Cell D1 & D2
-          </td>
+          <td rowspan="2">Cell D1 & D2</td>
         </tr>
         <tr>
           <td>Cell A2</td>
@@ -447,9 +437,7 @@ test("table (rowspan/colspan) with thead tbody", function(t) {
           <td>Cell D3</td>
         </tr>
         <tr>
-          <td rowspan="2" colspan="3">
-            Cell A4 & A5 & B4 & B5 & C4 & C5
-          </td>
+          <td rowspan="2" colspan="3">Cell A4 & A5 & B4 & B5 & C4 & C5</td>
           <td>Cell D4</td>
         </tr>
         <tr>

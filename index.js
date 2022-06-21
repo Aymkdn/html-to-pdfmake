@@ -254,6 +254,8 @@ function htmlToPdfMake(htmlText, options) {
               var cellsHeights = [];
               var tableWidths = [];
               var tableHeights = [];
+              // determine if we have "width:100%" on the TABLE
+              var fullWidth = (element.getAttribute("width") === "100%" || (element.getAttribute("style")||"").replace(/width\s*:\s*100%/, "width:100%").includes("width:100%"));
 
               ret.table.body.forEach(function(row, rowIndex) {
                 cellsWidths.push([]);
@@ -298,7 +300,7 @@ function htmlToPdfMake(htmlText, options) {
               if (tableWidths.length > 0) {
                 // if all columns are in 'auto' and if we have 'width:"100%"' for the table
                 // then put widths:['*', '*' …], for all columns
-                if (ret.table.width === "100%" && tableWidths.filter(function(w) { return w==='auto' }).length === tableWidths.length) tableWidths=tableWidths.map(function() { return '*' });
+                if (fullWidth && tableWidths.filter(function(w) { return w==='auto' }).length === tableWidths.length) tableWidths=tableWidths.map(function() { return '*' });
                 ret.table.widths = tableWidths;
               }
               if (tableHeights.length > 0) ret.table.heights = tableHeights;
@@ -629,10 +631,10 @@ function htmlToPdfMake(htmlText, options) {
     var width = element.getAttribute("width");
     var height = element.getAttribute("height");
     if (width) {
-      style.unshift("width:" + width + (isNaN(width) ? "" : "px"));
+      style.unshift("width:" + this.convertToUnit(width + (isNaN(width) ? "" : "px")));
     }
     if (height) {
-      style.unshift("height:" + height + (isNaN(height) ? "" : "px"));
+      style.unshift("height:" + this.convertToUnit(height + (isNaN(height) ? "" : "px")));
     }
     var styleDefs = style.map(function(style) { return style.toLowerCase().split(':') });
     var ret = [];
