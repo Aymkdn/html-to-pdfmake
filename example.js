@@ -8,7 +8,7 @@ var { window } = new JSDOM("");
 var htmlToPdfMake = require("./index.js");
 //var util = require("util");
 
-var html = htmlToPdfMake(`
+/*var html = htmlToPdfMake(`
   Simple text
   <div>
     <h1>Title Level 1</h1>
@@ -218,7 +218,7 @@ var html = htmlToPdfMake(`
   </div>
 
   <div>And support for <font color="blue" size="3">FONT</font> tag.</div>
-`, {window:window, tableAutoSize:true});
+`, {window:window, tableAutoSize:true});*/
 
 /*var html = htmlToPdfMake(``, {window:window, tableAutoSize:true});
 console.log(JSON.stringify(html))*/
