@@ -14,6 +14,7 @@
  *   @param  {Object} [defaultStyles] An object with the default styles for each elements
  *   @param  {Boolean} [tableAutoSize=false] It permits to use the width/height defined in styles for a table's cells and rows
  *   @param  {Boolean} [imagesByReference=false] It permits to return two objets ({content, images}) to handle the `<img>` tags by reference
+ *   @param  {Boolean} [removeExtraBlanks=false] Some blank spaces in your code may cause extra blank lines in the PDF – use this option to remove them
  *   @param  {Function} [customTag] It permits to handle non-regular HTML tag
  *   @param  {Object} [window] The `window` object (required for NodeJS server side use)
  * @return {Object} it returns a PdfMake object
@@ -40,6 +41,7 @@ function htmlToPdfMake(htmlText, options) {
   this.wndw = (options && options.window ? options.window : window);
   this.tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
   this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
+  this.removeExtraBlanks = (options && typeof options.removeExtraBlanks === "boolean" ? options.removeExtraBlanks : false);
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -110,6 +112,7 @@ function htmlToPdfMake(htmlText, options) {
   this.convertHtml = function(htmlText) {
     // Create a HTML DOM tree out of html string
     var parser = new this.wndw.DOMParser();
+    if (this.removeExtraBlanks) htmlText = htmlText.replace(/(<\/?(div|p|h1|h2|h3|h4|h5|h6)([^>]+)?>)\s+(<\/?(div|p|h1|h2|h3|h4|h5|h6))/gi, "$1$4");
     var parsedHtml = parser.parseFromString(htmlText, 'text/html');
 
     var docDef = this.parseElement(parsedHtml.body, []);
