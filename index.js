@@ -726,6 +726,8 @@ function htmlToPdfMake(htmlText, options) {
               if (value) {
                 // convert value to a 'pt' when possible
                 var parsedValue = _this.convertToUnit(value);
+                // if we have 'font-size' with a parsedValue at false, then ignore it
+                if (key === 'font-size' && parsedValue === false) break;
                 ret.push({key:key, value:(parsedValue === false ? value : parsedValue)});
               }
             }
