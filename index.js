@@ -222,7 +222,7 @@ function htmlToPdfMake(htmlText, options) {
 
                         // do we have a colSpan?
                         // if yes, insert empty cells due to colspan
-                        if (cell.colSpan) {
+                        if (cell.colSpan>1) {
                           i = cell.colSpan;
                           // do we have a rowSpan in addition of the colSpan?
                           _this.setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
@@ -269,12 +269,12 @@ function htmlToPdfMake(htmlText, options) {
                   var height = typeof cell.height !== 'undefined' ? cell.height : 'auto';
                   // check if we have colspan or rowspan
                   // if yes, and if width/height is a number, we divide by the col/rowspan, otherwise we use 'auto'
-                  if (width !== 'auto' && cell.colSpan) {
+                  if (width !== 'auto' && cell.colSpan>1) {
                     if (!isNaN(width)) width /= cell.colSpan;
                     else width = 'auto';
                   }
-                  if (height !== 'auto' && cell.rowSpan) {
-                    if (!isNaN(height)) height /= cell.colSpan;
+                  if (height !== 'auto' && cell.rowSpan>1) {
+                    if (!isNaN(height)) height /= cell.rowSpan;
                     else height = 'auto';
                   }
                   cellsWidths[rowIndex].push(width);
