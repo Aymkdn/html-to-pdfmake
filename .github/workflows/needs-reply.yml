@@ -1,0 +1,18 @@
+name: Close old issues that need reply
+
+on:
+  issues:
+    types:
+      - labeled
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close old issues that need reply
+        uses: dwieeb/needs-reply@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-label: waiting-for-requestor
+          days-before-close: 1
+          close-message: This issue has been automatically closed because the requestor didn't provide any additional comment.

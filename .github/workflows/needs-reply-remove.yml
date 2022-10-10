@@ -1,0 +1,23 @@
+name: Remove needs-reply label
+
+on:
+  issue_comment:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove needs-reply label
+        uses: octokit/request-action@v2.x
+        continue-on-error: true
+        with:
+          route: DELETE /repos/:repository/issues/:issue/labels/:label
+          repository: ${{ github.repository }}
+          issue: ${{ github.event.issue.number }}
+          label: waiting-for-requestor
+          days-before-close: 3
+          close-message: This issue has been automatically closed because the requestor didn't provide any additional comment.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

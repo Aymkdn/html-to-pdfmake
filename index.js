@@ -303,7 +303,10 @@ function htmlToPdfMake(htmlText, options) {
               if (tableWidths.length > 0) {
                 // if all columns are in 'auto' and if we have 'width:"100%"' for the table
                 // then put widths:['*', '*' …], for all columns
-                if (fullWidth && tableWidths.filter(function(w) { return w==='auto' }).length === tableWidths.length) tableWidths=tableWidths.map(function() { return '*' });
+                //if (fullWidth && tableWidths.filter(function(w) { return w==='auto' }).length === tableWidths.length) tableWidths=tableWidths.map(function() { return '*' });
+                // see https://github.com/Aymkdn/html-to-pdfmake/issues/151#issuecomment-1273015585
+                // if we have 'width:"100%"' for the table, replace "auto" width to "*"
+                if (fullWidth) tableWidths=tableWidths.map(function(w) { return w==='auto' ? '*' : w });
                 ret.table.widths = tableWidths;
               }
               if (tableHeights.length > 0) ret.table.heights = tableHeights;
