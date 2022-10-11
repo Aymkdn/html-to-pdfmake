@@ -746,7 +746,7 @@ function htmlToPdfMake(htmlText, options) {
       borders.forEach(function(b) {
         // we have 3 properties: width style color
         var properties = b.value.split(' ');
-        var width = properties[0].replace(/(\d+)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
+        var width = properties[0].replace(/(\d*)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
         var index = -1, i;
         if (b.key.indexOf('-left') > -1) index=0;
         else if (b.key.indexOf('-top') > -1) index=1;
@@ -867,7 +867,7 @@ function htmlToPdfMake(htmlText, options) {
   this.convertToUnit = function(val) {
     // if it's just a number, then return it
     if (!isNaN(parseFloat(val)) && isFinite(val)) return val*1;
-    var mtch = (val+"").trim().match(/^(\d+(\.\d+)?)(pt|px|r?em|cm)$/);
+    var mtch = (val+"").trim().match(/^(\d*(\.\d+)?)(pt|px|r?em|cm)$/);
     // if we don't have a number with supported units, then return false
     if (!mtch) return false;
     val = mtch[1];
