@@ -1,9 +1,8 @@
 name: Close old issues that need reply
 
 on:
-  issues:
-    types:
-      - labeled
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   build:
@@ -14,5 +13,5 @@ jobs:
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           issue-label: waiting-for-requestor
-          days-before-close: 1
+          days-before-close: 3
           close-message: This issue has been automatically closed because the requestor didn't provide any additional comment.

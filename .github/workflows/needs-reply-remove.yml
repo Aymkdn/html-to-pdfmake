@@ -8,6 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: |
+      github.event.comment.author_association != 'OWNER' &&
+      github.event.comment.author_association != 'COLLABORATOR'
     steps:
       - name: Remove needs-reply label
         uses: octokit/request-action@v2.x
