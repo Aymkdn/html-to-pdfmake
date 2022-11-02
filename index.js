@@ -465,29 +465,6 @@ function htmlToPdfMake(htmlText, options) {
             }
             break;
           }
-          case "FONT": {
-            if (element.getAttribute("color")) {
-              ret.color = this.parseColor(element.getAttribute("color"));
-            }
-            // Checking if the element has a size attribute
-            if (element.getAttribute("size")) {
-              // Getting and sanitizing the size value: it should be included between 1 and 7
-              var size = Math.min(Math.max(1, parseInt(element.getAttribute("size"))), 7);
-
-              // Getting the relative fontsize
-              var fontSize = Math.max(this.fontSizes[0], this.fontSizes[size - 1]);
-
-              // Assigning the font size
-              ret.fontSize = fontSize;
-            }
-
-            // Applying inherited styles
-            ret = this.applyStyle({
-              ret: ret,
-              parents: parents.concat([element]),
-            });
-            break;
-          }
           default: {
             // handle other cases
             if (options && typeof options.customTag === "function") {
@@ -632,6 +609,7 @@ function htmlToPdfMake(htmlText, options) {
    */
   this.parseStyle = function(element, ignoreProperties) {
     var style = element.getAttribute("style") || "";
+    var ret = [];
     style = style.split(';');
     // check if we have "width" or "height"
     var width = element.getAttribute("width");
@@ -642,8 +620,20 @@ function htmlToPdfMake(htmlText, options) {
     if (height) {
       style.unshift("height:" + this.convertToUnit(height + (isNaN(height) ? "" : "px")));
     }
+    // check if we have 'color' or 'size' -- mainly for '<font>'
+    var color = element.getAttribute("color");
+    if (color) {
+      ret.push({key:"color", value:this.parseColor(color)});
+    }
+    var size = element.getAttribute("size");
+    if (size !== null) {
+      // Getting and sanitizing the size value: it should be included between 1 and 7
+      size = Math.min(Math.max(1, parseInt(size)), 7);
+      // Assigning the font size
+      ret.push({key:'fontSize', value:Math.max(this.fontSizes[0], this.fontSizes[size - 1])});
+    }
+
     var styleDefs = style.map(function(style) { return style.toLowerCase().split(':') });
-    var ret = [];
     var borders = []; // special treatment for borders
     var nodeName = element.nodeName.toUpperCase();
     var _this=this;
