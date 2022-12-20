@@ -170,13 +170,13 @@ function htmlToPdfMake(htmlText, options) {
         return '';
       }
       case 1: { // ELEMENT_NODE
-        ret.nodeName = nodeName;
-        if (element.id) ret.id = element.id;
-        parents.push(element);
-
         if (!this.showHidden && (element.style.display && element.style.display === 'none') || (element.style.visibility && element.style.visibility === 'hidden')) {
           return;
         }
+
+        ret.nodeName = nodeName;
+        if (element.id) ret.id = element.id;
+        parents.push(element);
 
         if (element.childNodes && element.childNodes.length>0) {
           [].forEach.call(element.childNodes, function(child) {
