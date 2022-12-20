@@ -42,6 +42,7 @@ function htmlToPdfMake(htmlText, options) {
   this.tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
   this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
   this.removeExtraBlanks = (options && typeof options.removeExtraBlanks === "boolean" ? options.removeExtraBlanks : false);
+  this.ignoreHidden = (options && typeof options.ignoreHidden === "boolean" ? options.ignoreHidden : false);
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -171,6 +172,10 @@ function htmlToPdfMake(htmlText, options) {
         ret.nodeName = nodeName;
         if (element.id) ret.id = element.id;
         parents.push(element);
+
+        if (this.ignoreHidden && element.style.display && element.style.display === 'none') {
+          return;
+        }
 
         if (element.childNodes && element.childNodes.length>0) {
           [].forEach.call(element.childNodes, function(child) {

@@ -887,3 +887,13 @@ test("parse HSL color", function (t) {
   t.check(ret.text === "red" && ret.color === "#e73737", "color:hsl(0, 78%, 56%)");
   t.finish();
 });
+
+test("ignoreHidden", function (t) {
+  var html = `<div><div style="display:none">hidden</div><div>visible</div></div>`;
+  var ret = htmlToPdfMake(html, {window: window, ignoreHidden:true});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.stack.length === 1 && ret.stack[0].text === "visible", "display:none");
+  t.finish();
+});
