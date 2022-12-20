@@ -148,6 +148,10 @@ You can overwrite the default styles using `defaultStyles` ([see below](https://
 
 In [some cases](https://github.com/Aymkdn/html-to-pdfmake/issues/145), you may see some extra blank spaces in the PDF. Because removing them could be quite resource consuming, the option is `false` by default.
 
+#### `ignoreHidden`
+
+You can choose to not parse elements where they are not displayed through css display:none
+
 #### `imagesByReference`
 
 If you're using `html-to-pdfmake` in a web browser with images, then you can set this option to `true` and it will automatically load your images in your PDF using the [`{images}` option of PDFMake](https://pdfmake.github.io/docs/document-definition-object/images/).
