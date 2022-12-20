@@ -15,6 +15,7 @@
  *   @param  {Boolean} [tableAutoSize=false] It permits to use the width/height defined in styles for a table's cells and rows
  *   @param  {Boolean} [imagesByReference=false] It permits to return two objets ({content, images}) to handle the `<img>` tags by reference
  *   @param  {Boolean} [removeExtraBlanks=false] Some blank spaces in your code may cause extra blank lines in the PDF – use this option to remove them
+ *   @param  {Boolean} [showHidden=false] TRUE if the 'display:none' elements should be displayed
  *   @param  {Function} [customTag] It permits to handle non-regular HTML tag
  *   @param  {Object} [window] The `window` object (required for NodeJS server side use)
  * @return {Object} it returns a PdfMake object
@@ -42,7 +43,7 @@ function htmlToPdfMake(htmlText, options) {
   this.tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
   this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
   this.removeExtraBlanks = (options && typeof options.removeExtraBlanks === "boolean" ? options.removeExtraBlanks : false);
-  this.ignoreHidden = (options && typeof options.ignoreHidden === "boolean" ? options.ignoreHidden : false);
+  this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -173,7 +174,7 @@ function htmlToPdfMake(htmlText, options) {
         if (element.id) ret.id = element.id;
         parents.push(element);
 
-        if (this.ignoreHidden && element.style.display && element.style.display === 'none') {
+        if (!this.showHidden && (element.style.display && element.style.display === 'none') || (element.style.visibility && element.style.visibility === 'hidden')) {
           return;
         }
 

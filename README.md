@@ -148,9 +148,9 @@ You can overwrite the default styles using `defaultStyles` ([see below](https://
 
 In [some cases](https://github.com/Aymkdn/html-to-pdfmake/issues/145), you may see some extra blank spaces in the PDF. Because removing them could be quite resource consuming, the option is `false` by default.
 
-#### `ignoreHidden`
+#### `showHidden`
 
-You can choose to not parse elements where they are not displayed through css display:none
+By default the `display:none` elements won't be parsed. Set this option to `true` to display the hidden elements in the PDF.
 
 #### `imagesByReference`
 

@@ -888,12 +888,12 @@ test("parse HSL color", function (t) {
   t.finish();
 });
 
-test("ignoreHidden", function (t) {
+test("showHidden", function (t) {
   var html = `<div><div style="display:none">hidden</div><div>visible</div></div>`;
-  var ret = htmlToPdfMake(html, {window: window, ignoreHidden:true});
+  var ret = htmlToPdfMake(html, {window: window, showHidden:true});
   if (debug) console.log(JSON.stringify(ret));
   t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
   ret = ret[0];
-  t.check(ret.stack.length === 1 && ret.stack[0].text === "visible", "display:none");
+  t.check(ret.stack.length === 2 && ret.stack[0].text === "hidden", "showHidden");
   t.finish();
 });

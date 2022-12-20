@@ -199,6 +199,9 @@ var html = htmlToPdfMake(`
     </tr>
   </table>
 
+  <div style="display:none">display:none</div>
+  <div style="visibility:hidden">visibility:hidden</div>
+
   <svg version="1.1" baseProfile="full" width="300" height="200" xmlns="http://www.w3.org/2000/svg">
     <rect width="100%" height="100%" fill="red" />
     <circle cx="150" cy="100" r="80" fill="green" />
