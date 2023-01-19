@@ -16,6 +16,7 @@
  *   @param  {Boolean} [imagesByReference=false] It permits to return two objets ({content, images}) to handle the `<img>` tags by reference
  *   @param  {Boolean} [removeExtraBlanks=false] Some blank spaces in your code may cause extra blank lines in the PDF – use this option to remove them
  *   @param  {Boolean} [showHidden=false] TRUE if the 'display:none' elements should be displayed
+ *   @param  {Array} [ignoreStyles=[]] An array of style property to ignore
  *   @param  {Function} [customTag] It permits to handle non-regular HTML tag
  *   @param  {Object} [window] The `window` object (required for NodeJS server side use)
  * @return {Object} it returns a PdfMake object
@@ -44,7 +45,7 @@ function htmlToPdfMake(htmlText, options) {
   this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
   this.removeExtraBlanks = (options && typeof options.removeExtraBlanks === "boolean" ? options.removeExtraBlanks : false);
   this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
-  this.ignoreStyles = (options && typeof options.ignoreStyles === "object" && options.ignoreStyles.length > 0 ? options.ignoreStyles : []);
+  this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -627,7 +628,7 @@ function htmlToPdfMake(htmlText, options) {
 				}
 			});
 			return v1 + ' ' + v2 + ' ' + v3;
-		}catch (e) {
+		} catch (e) {
 			return styleStr;
 		}
 	}
@@ -672,56 +673,54 @@ function htmlToPdfMake(htmlText, options) {
     var _this=this;
     styleDefs.forEach(function(styleDef) {
       if (styleDef.length===2) {
-        var key = styleDef[0].trim();
+        var key = styleDef[0].trim().toLowerCase();
         var value = styleDef[1].trim();
-        switch (key) {
-          case "margin": {
-            if (ignoreProperties) break;
-            // pdfMake uses a different order than CSS
-            value = value.split(' ');
-            if (value.length===1) value=[value[0], value[0], value[0], value[0]];
-            else if (value.length===2) value=[value[1], value[0]]; // vertical | horizontal ==> horizontal | vertical
-            else if (value.length===3) value=[value[1], value[0], value[1], value[2]]; // top | horizontal | bottom ==> left | top | right | bottom
-            else if (value.length===4) value=[value[3], value[0], value[1], value[2]]; // top | right | bottom | left ==> left | top | right | bottom
+        if (_this.ignoreStyles.indexOf(key) === -1) {
+          switch (key) {
+            case "margin": {
+              if (ignoreProperties) break;
+              // pdfMake uses a different order than CSS
+              value = value.split(' ');
+              if (value.length===1) value=[value[0], value[0], value[0], value[0]];
+              else if (value.length===2) value=[value[1], value[0]]; // vertical | horizontal ==> horizontal | vertical
+              else if (value.length===3) value=[value[1], value[0], value[1], value[2]]; // top | horizontal | bottom ==> left | top | right | bottom
+              else if (value.length===4) value=[value[3], value[0], value[1], value[2]]; // top | right | bottom | left ==> left | top | right | bottom
 
-            // we now need to convert to PT
-            value.forEach(function(val, i) {
-              value[i] = _this.convertToUnit(val);
-            });
-            // ignore if we have a FALSE in the table
-            if (value.indexOf(false) === -1) ret.push({key:key, value:value});
-            break;
-          }
-          case "line-height": {
-            // change % unit
-            if (typeof value === "string" && value.slice(-1) === '%') {
-              value = value.slice(0,-1) / 100;
-            } else {
-              value = _this.convertToUnit(value);
+              // we now need to convert to PT
+              value.forEach(function(val, i) {
+                value[i] = _this.convertToUnit(val);
+              });
+              // ignore if we have a FALSE in the table
+              if (value.indexOf(false) === -1) ret.push({key:key, value:value});
+              break;
             }
-            ret.push({key:"lineHeight", value:value});
-            break;
-          }
-          case "text-align": {
-            ret.push({key:"alignment", value:value});
-            break;
-          }
-          case "font-weight": {
-            if (value === "bold") ret.push({key:"bold", value:true});
-            break;
-          }
-          case "text-decoration": {
-            ret.push({key:"decoration", value:_this.toCamelCase(value)})
-            break;
-          }
-          case "font-style": {
-            if (value==="italic") ret.push({key:"italics", value:true});
-            break;
-          }
-          case "font-family": {
-						if(_this.ignoreStyles.indexOf("font-family") > -1) {
-							break;
-						}else {
+            case "line-height": {
+              // change % unit
+              if (typeof value === "string" && value.slice(-1) === '%') {
+                value = value.slice(0,-1) / 100;
+              } else {
+                value = _this.convertToUnit(value);
+              }
+              ret.push({key:"lineHeight", value:value});
+              break;
+            }
+            case "text-align": {
+              ret.push({key:"alignment", value:value});
+              break;
+            }
+            case "font-weight": {
+              if (value === "bold") ret.push({key:"bold", value:true});
+              break;
+            }
+            case "text-decoration": {
+              ret.push({key:"decoration", value:_this.toCamelCase(value)})
+              break;
+            }
+            case "font-style": {
+              if (value==="italic") ret.push({key:"italics", value:true});
+              break;
+            }
+            case "font-family": {
 							ret.push({
 								key: "font", value: value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g, "").replace(/^([a-z])/g, function (g) {
 									return g[0].toUpperCase();
@@ -730,41 +729,41 @@ function htmlToPdfMake(htmlText, options) {
 								})
 							});
 							break;
-						}
-          }
-          case "color": {
-            ret.push({key:"color", value:_this.parseColor(value)})
-            break;
-          }
-          case "background-color": {
-            // if TH/TD and key is 'background', then we use 'fillColor' instead
-            ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:_this.parseColor(value)})
-            break;
-          }
-          case "text-indent": {
-            ret.push({key:"leadingIndent", value:_this.convertToUnit(value)});
-            break;
-          }
-          case "white-space": {
-            ret.push({key:"preserveLeadingSpaces", value:(value==='break-spaces' || value.slice(0,3) === 'pre')});
-            break;
-          }
-          default: {
-            // for borders
-            if (key === 'border' || key.indexOf('border-left') === 0 || key.indexOf('border-top') === 0 || key.indexOf('border-right') === 0 || key.indexOf('border-bottom') === 0) {
-              if (!ignoreProperties) borders.push({key:key, value:value});
-            } else {
-              // ignore some properties
-              if (ignoreProperties && (key.indexOf("margin-") === 0 || key === 'width' || key === 'height')) break;
-              // padding is not supported by PDFMake
-              if (key.indexOf("padding") === 0) break;
-              if (key.indexOf("-") > -1) key=_this.toCamelCase(key);
-              if (value) {
-                // convert value to a 'pt' when possible
-                var parsedValue = _this.convertToUnit(value);
-                // if we have 'font-size' with a parsedValue at false, then ignore it
-                if (key === 'font-size' && parsedValue === false) break;
-                ret.push({key:key, value:(parsedValue === false ? value : parsedValue)});
+            }
+            case "color": {
+              ret.push({key:"color", value:_this.parseColor(value)})
+              break;
+            }
+            case "background-color": {
+              // if TH/TD and key is 'background', then we use 'fillColor' instead
+              ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:_this.parseColor(value)})
+              break;
+            }
+            case "text-indent": {
+              ret.push({key:"leadingIndent", value:_this.convertToUnit(value)});
+              break;
+            }
+            case "white-space": {
+              ret.push({key:"preserveLeadingSpaces", value:(value==='break-spaces' || value.slice(0,3) === 'pre')});
+              break;
+            }
+            default: {
+              // for borders
+              if (key === 'border' || key.indexOf('border-left') === 0 || key.indexOf('border-top') === 0 || key.indexOf('border-right') === 0 || key.indexOf('border-bottom') === 0) {
+                if (!ignoreProperties) borders.push({key:key, value:value});
+              } else {
+                // ignore some properties
+                if (ignoreProperties && (key.indexOf("margin-") === 0 || key === 'width' || key === 'height')) break;
+                // padding is not supported by PDFMake
+                if (key.indexOf("padding") === 0) break;
+                if (key.indexOf("-") > -1) key=_this.toCamelCase(key);
+                if (value) {
+                  // convert value to a 'pt' when possible
+                  var parsedValue = _this.convertToUnit(value);
+                  // if we have 'font-size' with a parsedValue at false, then ignore it
+                  if (key === 'font-size' && parsedValue === false) break;
+                  ret.push({key:key, value:(parsedValue === false ? value : parsedValue)});
+                }
               }
             }
           }

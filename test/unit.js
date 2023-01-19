@@ -3,7 +3,7 @@ var test = require("simple-test-framework");
 var jsdom = require("jsdom");
 var { JSDOM } = jsdom;
 var { window } = new JSDOM("");
-var debug = false;
+var debug = true;
 
 test("b",function(t) {
   var ret = htmlToPdfMake("<b>bold word</b>", {window:window});
@@ -895,5 +895,25 @@ test("showHidden", function (t) {
   t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
   ret = ret[0];
   t.check(ret.stack.length === 2 && ret.stack[0].text === "hidden", "showHidden");
+  t.finish();
+});
+
+test("ignoreStyles", function (t) {
+  var html = `<div style="font-family:Roboto">Text in Roboto</div>`;
+  var ret = htmlToPdfMake(html, {window: window, ignoreStyles:['font-family']});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "Text in Roboto" && !ret.font, "ignoreStyles");
+  t.finish();
+});
+
+test("borderValueRearrange", function (t) {
+  var html = `<div style="border:solid 10px red">border</div>`;
+  var ret = htmlToPdfMake(html, {window: window});
+  if (debug) console.log(JSON.stringify(ret));
+  t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+  ret = ret[0];
+  t.check(ret.text === "border" && Array.isArray(ret.border) && ret.border.filter(function(b) { return b===true }).length===4 && Array.isArray(ret.borderColor) && ret.borderColor.filter(function(b) { return b==='red' }).length===4, "borderValueRearrange");
   t.finish();
 });
