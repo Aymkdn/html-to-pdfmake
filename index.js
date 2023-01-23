@@ -616,6 +616,7 @@ function htmlToPdfMake(htmlText, options) {
 	this.borderValueRearrange = function(styleStr) {
 		try {
 			var styleArray = styleStr.split(' ');
+      if (styleArray.length!==3) return styleStr;
 			var v1 = "0px", v2 = "none", v3 = "transparent";
 			var style = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden", "mix"];
 			styleArray.forEach(function (v) {
@@ -883,9 +884,7 @@ function htmlToPdfMake(htmlText, options) {
       }
       return '#' + ret.join('');
     }
-    if (nameRegex.test(color)) {
-      return (color === "transparent" ? "white" : color);
-    }
+    if (nameRegex.test(color)) return color;
 
     console.error('Could not parse color "' + color + '"');
     return color;
