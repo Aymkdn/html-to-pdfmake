@@ -439,7 +439,7 @@ function htmlToPdfMake(htmlText, options) {
           }
           case "IMG": {
             if (this.imagesByReference) {
-              var src = element.getAttribute("src");
+              var src = element.getAttribute("data-src") || element.getAttribute("src");
               var index = this.imagesRef.indexOf(src);
               if (index>-1) ret.image = 'img_ref_'+index;
               else {
@@ -928,7 +928,8 @@ function htmlToPdfMake(htmlText, options) {
   if (this.imagesByReference) {
     result = {content:result, images:{}};
     this.imagesRef.forEach(function(src, i) {
-      result.images['img_ref_'+i] = src;
+      // check if 'src' is a JSON string
+      result.images['img_ref_'+i] = (src.startsWith("{") ? JSON.parse(src) : src);
     });
   }
   return result;

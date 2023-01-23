@@ -193,6 +193,14 @@ var dd = {
 pdfMake.createPdf(dd).download();
 ```
 
+You can use the "custom headers" too by passing a JSON string in either `src`, or `data-src`:
+```html
+<div>
+  <img src="https://picsum.photos/id/1080/367/267" data-src="{&quot;url&quot;:&quot;https://picsum.photos/id/1080/367/267&quot;,&quot;headers&quot;:{&quot;myheader&quot;:&quot;123&quot;}}" />
+  <img src="https://picsum.photos/seed/picsum/200/300" data-src='{"url":"https://picsum.photos/seed/picsum/200/300","headers":{"myheader":"123"}}' />
+</div>
+```
+
 #### `fontSizes`
 
 You can overwrite the default sizes for the old HTML4 tag `<font>` by using `fontSizes`. It must be an array with 7 values ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
