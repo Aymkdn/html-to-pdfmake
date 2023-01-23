@@ -143,7 +143,7 @@
         errorStyles.innerHTML = err;
       }
       var val = htmlToPdfmake(code.value, options);
-      var dd = {content:val};
+      var dd = (typeof val.content !== "undefined" ? val : {content:val});
       if (typeof styles === 'object') dd.styles = styles;
       document.querySelector('#result').value = "var dd = " + JSON.stringify(dd, null, '  ');
       // is IE ?
