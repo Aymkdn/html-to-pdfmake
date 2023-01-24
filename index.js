@@ -456,20 +456,26 @@ function htmlToPdfMake(htmlText, options) {
             break;
           }
           case "A": {
-            // the link must be applied to the deeper `text`
+            // the link must be applied to the deeper `text` or stacked element (e.g. `image`)
             var setLink = function(pointer, href) {
               pointer = pointer || {text:''}; // for link without any text
               if (Array.isArray(pointer.text)) {
                 return setLink(pointer.text[0], href);
+              } else if (Array.isArray(pointer.stack)) {
+                // if we have a more complex layer
+                pointer.stack = pointer.stack.map(function(stack) {
+                  return setLink(stack, href);
+                });
+                return pointer;
               }
               // if 'href' starts with '#' then it's an internal link
               if (href.indexOf('#') === 0) pointer.linkToDestination=href.slice(1);
               else pointer.link = href;
-              pointer.nodeName = "A";
               return pointer;
             }
             if (element.getAttribute("href")) {
               ret = setLink(ret, element.getAttribute("href"));
+              ret.nodeName = "A";
             }
             break;
           }
