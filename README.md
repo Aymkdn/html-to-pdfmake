@@ -152,6 +152,10 @@ In [some cases](https://github.com/Aymkdn/html-to-pdfmake/issues/145), you may s
 
 By default the `display:none` elements won't be parsed. Set this option to `true` to display the hidden elements in the PDF.
 
+#### `removeTagClasses`
+
+By default we add a class `html-TAG` for each node. It's possible to remove these CSS classes by using `removeTagClasses:true`.
+
 #### `ignoreStyles`
 
 You can define a list of style properties that should not be parsed. For example, to ignore `font-family`:
