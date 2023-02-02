@@ -16,6 +16,7 @@
  *   @param  {Boolean} [imagesByReference=false] It permits to return two objets ({content, images}) to handle the `<img>` tags by reference
  *   @param  {Boolean} [removeExtraBlanks=false] Some blank spaces in your code may cause extra blank lines in the PDF – use this option to remove them
  *   @param  {Boolean} [showHidden=false] TRUE if the 'display:none' elements should be displayed
+ *   @param  {Boolean} [removeTagClasses=false] TRUE if we don't want to have 'html-TAG' added as a class for each node
  *   @param  {Array} [ignoreStyles=[]] An array of style property to ignore
  *   @param  {Function} [customTag] It permits to handle non-regular HTML tag
  *   @param  {Object} [window] The `window` object (required for NodeJS server side use)
@@ -45,6 +46,7 @@ function htmlToPdfMake(htmlText, options) {
   this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
   this.removeExtraBlanks = (options && typeof options.removeExtraBlanks === "boolean" ? options.removeExtraBlanks : false);
   this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
+  this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);  
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
 
   // Used with the size attribute on the font elements to calculate relative font size
@@ -352,9 +354,9 @@ function htmlToPdfMake(htmlText, options) {
           case "SVG": {
             ret = {
               svg:element.outerHTML.replace(/\n(\s+)?/g, ""),
-              nodeName:'SVG',
-              style:['html-svg']
+              nodeName:'SVG'
             }
+            if (!this.removeTagClasses) ret.style=['html-svg'];
             break;
           }
           case "BR": {
@@ -549,8 +551,10 @@ function htmlToPdfMake(htmlText, options) {
     params.parents.forEach(function(parent, parentIndex) {
       // classes
       var parentNodeName = parent.nodeName.toLowerCase();
-      var htmlClass = 'html-' + parentNodeName;
-      if (htmlClass !== 'html-body' && cssClass.indexOf(htmlClass) === -1) cssClass.unshift(htmlClass);
+      if (!_this.removeTagClasses) {
+        var htmlClass = 'html-' + parentNodeName;
+        if (htmlClass !== 'html-body' && cssClass.indexOf(htmlClass) === -1) cssClass.unshift(htmlClass);
+      }
       var parentClass = (parent.getAttribute("class")||"").split(' ');
       parentClass.forEach(function(p) {
         if (p) cssClass.push(p);
@@ -609,7 +613,7 @@ function htmlToPdfMake(htmlText, options) {
         }
       });
     });
-    params.ret.style = cssClass;
+    if (cssClass.length>0) params.ret.style = cssClass;
     return params.ret;
   }
 	

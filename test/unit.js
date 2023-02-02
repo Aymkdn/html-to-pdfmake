@@ -930,5 +930,16 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("removeTagClasses", function (t) {
+    var html = `<div class="my-div"><strong>hello world</strong></div>`;
+    // [{"text":[{"text":"hello world","nodeName":"STRONG","bold":true,"style":["my-div"]}],"nodeName":"DIV","style":["my-div"]}]
+    var ret = htmlToPdfMake(html, {window: window, removeTagClasses: true});
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+    ret = ret[0];
+    t.check(Array.isArray(ret.text) && ret.text[0].text==="hello world" && Array.isArray(ret.text[0].style) && ret.text[0].style.length===1 && ret.text[0].style[0]==="my-div" && Array.isArray(ret.style) && ret.style.length===1 && ret.style[0]==="my-div", "removeTagClasses");
+    t.finish();
+  });
+
   t.finish();
 })
