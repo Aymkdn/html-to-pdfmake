@@ -15,7 +15,6 @@
  *   @param  {Boolean} [tableAutoSize=false] It permits to use the width/height defined in styles for a table's cells and rows
  *   @param  {Boolean} [imagesByReference=false] It permits to return two objets ({content, images}) to handle the `<img>` tags by reference
  *   @param  {Boolean} [removeExtraBlanks=false] Some blank spaces in your code may cause extra blank lines in the PDF – use this option to remove them
- *   @param  {String} [imagesByReferenceSuffix=''] Add an optional suffix to the image's references to ensure uniqueness across PDFs converted in sections
  *   @param  {Boolean} [showHidden=false] TRUE if the 'display:none' elements should be displayed
  *   @param  {Boolean} [removeTagClasses=false] TRUE if we don't want to have 'html-TAG' added as a class for each node
  *   @param  {Array} [ignoreStyles=[]] An array of style property to ignore
@@ -45,11 +44,13 @@ function htmlToPdfMake(htmlText, options) {
   this.wndw = (options && options.window ? options.window : window);
   this.tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
   this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
-  this.imagesByReferenceSuffix = (options && options.imagesByReferenceSuffix ? '_'+options.imagesByReferenceSuffix : '');
   this.removeExtraBlanks = (options && typeof options.removeExtraBlanks === "boolean" ? options.removeExtraBlanks : false);
   this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
   this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);  
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
+
+  // A random string to be used in all image references if imagesByReference is true
+  this.imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -445,9 +446,9 @@ function htmlToPdfMake(htmlText, options) {
             if (this.imagesByReference) {
               var src = element.getAttribute("data-src") || element.getAttribute("src");
               var index = this.imagesRef.indexOf(src);
-              if (index>-1) ret.image = 'img_ref_'+index+this.imagesByReferenceSuffix;
+              if (index>-1) ret.image = 'img_ref_'+this.imagesByReferenceSuffix+index;
               else {
-                ret.image = 'img_ref_'+this.imagesRef.length+this.imagesByReferenceSuffix;
+                ret.image = 'img_ref_'+this.imagesByReferenceSuffix+this.imagesRef.length;
                 this.imagesRef.push(src);
               }
             } else {
@@ -941,7 +942,7 @@ function htmlToPdfMake(htmlText, options) {
     result = {content:result, images:{}};
     this.imagesRef.forEach(function(src, i) {
       // check if 'src' is a JSON string
-      result.images['img_ref_'+i+this.imagesByReferenceSuffix] = (src.startsWith("{") ? JSON.parse(src) : src);
+      result.images['img_ref_'+this.imagesByReferenceSuffix+i] = (src.startsWith("{") ? JSON.parse(src) : src);
     });
   }
   return result;
