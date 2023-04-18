@@ -49,7 +49,7 @@ function htmlToPdfMake(htmlText, options) {
   this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);  
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
 
-  // A random string to be used in all image references if imagesByReference is true
+  // A random string to be used in the image references
   this.imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
 
   // Used with the size attribute on the font elements to calculate relative font size
