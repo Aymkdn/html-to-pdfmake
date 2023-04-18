@@ -50,7 +50,7 @@ function htmlToPdfMake(htmlText, options) {
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
 
   // A random string to be used in the image references
-  this.imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
+  var imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -446,9 +446,9 @@ function htmlToPdfMake(htmlText, options) {
             if (this.imagesByReference) {
               var src = element.getAttribute("data-src") || element.getAttribute("src");
               var index = this.imagesRef.indexOf(src);
-              if (index>-1) ret.image = 'img_ref_'+this.imagesByReferenceSuffix+index;
+              if (index>-1) ret.image = 'img_ref_'+imagesByReferenceSuffix+index;
               else {
-                ret.image = 'img_ref_'+this.imagesByReferenceSuffix+this.imagesRef.length;
+                ret.image = 'img_ref_'+imagesByReferenceSuffix+this.imagesRef.length;
                 this.imagesRef.push(src);
               }
             } else {
@@ -942,7 +942,7 @@ function htmlToPdfMake(htmlText, options) {
     result = {content:result, images:{}};
     this.imagesRef.forEach(function(src, i) {
       // check if 'src' is a JSON string
-      result.images['img_ref_'+this.imagesByReferenceSuffix+i] = (src.startsWith("{") ? JSON.parse(src) : src);
+      result.images['img_ref_'+imagesByReferenceSuffix+i] = (src.startsWith("{") ? JSON.parse(src) : src);
     });
   }
   return result;
