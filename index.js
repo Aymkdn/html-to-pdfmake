@@ -734,6 +734,14 @@ function htmlToPdfMake(htmlText, options) {
               if (value==="italic") ret.push({key:"italics", value:true});
               break;
             }
+            case "height": {
+              ret.push({key:"height", value: _this.convertToUnit(value)});
+              break;
+            }
+            case "width": {
+              ret.push({key:"width", value: _this.convertToUnit(value)});
+              break;
+            }
             case "font-family": {
 							ret.push({
 								key: "font", value: value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g, "").replace(/^([a-z])/g, function (g) {
