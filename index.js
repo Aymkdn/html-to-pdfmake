@@ -48,9 +48,10 @@ function htmlToPdfMake(htmlText, options) {
   this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
   this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);  
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
+  this.id = (options && typeof options.id === "number" && options.id > -1 ? options.id : 0); 
 
   // A random string to be used in the image references
-  var imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
+  //var imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -446,9 +447,11 @@ function htmlToPdfMake(htmlText, options) {
             if (this.imagesByReference) {
               var src = element.getAttribute("data-src") || element.getAttribute("src");
               var index = this.imagesRef.indexOf(src);
-              if (index>-1) ret.image = 'img_ref_'+imagesByReferenceSuffix+index;
-              else {
-                ret.image = 'img_ref_'+imagesByReferenceSuffix+this.imagesRef.length;
+              //ret.image = 'author0';
+              if (index>-1) {
+                ret.image = 'img_ref_'+this.id+'_'+index;
+              } else {
+                ret.image = 'img_ref_'+this.id+'_'+this.imagesRef.length;
                 this.imagesRef.push(src);
               }
             } else {
@@ -753,8 +756,16 @@ function htmlToPdfMake(htmlText, options) {
               ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:_this.parseColor(value)})
               break;
             }
+            case "height": {
+              ret.push({key:"height", value: _this.convertToUnit(value)});
+              break;
+            }
             case "text-indent": {
               ret.push({key:"leadingIndent", value:_this.convertToUnit(value)});
+              break;
+            }
+            case "width": {
+              ret.push({key:"width", value: _this.convertToUnit(value)});
               break;
             }
             case "white-space": {
@@ -940,9 +951,10 @@ function htmlToPdfMake(htmlText, options) {
   // if images by reference
   if (this.imagesByReference) {
     result = {content:result, images:{}};
+    var id = this.id;
     this.imagesRef.forEach(function(src, i) {
       // check if 'src' is a JSON string
-      result.images['img_ref_'+imagesByReferenceSuffix+i] = (src.startsWith("{") ? JSON.parse(src) : src);
+      result.images['img_ref_'+id+'_'+i] = (src.startsWith("{") ? JSON.parse(src) : src);
     });
   }
   return result;
