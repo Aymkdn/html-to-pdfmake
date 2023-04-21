@@ -205,6 +205,35 @@ You can use the "custom headers" too by passing a JSON string in either `src`, o
 </div>
 ```
 
+### `id`
+
+Pass in an id. The id is used to create unique identifiers for the images found in your html, e.g. if you create various instances of htmlToPdfmake but want to merge the results into one pdf.
+
+```javascript
+
+  const content = {};
+  const images = {};
+
+  htmlSnippets.forEach((html, i) => {
+
+      const transformed = htmlToPdfmake(
+            html,{
+            imagesByReference: true,
+            id: i
+      });
+
+      Object.assign(content, transformed.content);
+      Object.assign(images, transformed.images);
+
+  }
+
+  const pdf = pdfMake.createPdf({
+      content,
+      images
+  });
+
+```
+
 #### `fontSizes`
 
 You can overwrite the default sizes for the old HTML4 tag `<font>` by using `fontSizes`. It must be an array with 7 values ([see below](https://github.com/Aymkdn/html-to-pdfmake#default-styles)).
