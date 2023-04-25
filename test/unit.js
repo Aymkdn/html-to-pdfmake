@@ -941,5 +941,16 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("img with invalid width/height in style", function (t) {
+    var html = `<img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/7QPQUGhvdG9zaG9wIDMuMAA4QklNA+kKUHJpbnQgSW5mbwAAAAB4AAMAAABIAEgAAAAAAtgCKP/h/+IC+QJGA0cFKAP8AAIAAABIAEgAAAAAAtgCKAABAAAAZAAAAAEAAwMDAAAAAScPAAEAAQA" style="width:100%;height:auto" />`;
+    var ret = htmlToPdfMake(html, {window: window});
+    // [{"nodeName":"IMG","image":"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/7QPQUGhvdG9zaG9wIDMuMAA4QklNA+kKUHJpbnQgSW5mbwAAAAB4AAMAAABIAEgAAAAAAtgCKP/h/+IC+QJGA0cFKAP8AAIAAABIAEgAAAAAAtgCKAABAAAAZAAAAAEAAwMDAAAAAScPAAEAAQA","width":false,"height":false,"style":["html-img"]}]
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+    ret = ret[0];
+    t.check(ret.image.startsWith("data:image") && ret.width===false && ret.height===false, "width/height to false");
+    t.finish();
+  });
+
   t.finish();
 })

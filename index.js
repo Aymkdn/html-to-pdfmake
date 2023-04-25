@@ -733,15 +733,7 @@ function htmlToPdfMake(htmlText, options) {
             case "font-style": {
               if (value==="italic") ret.push({key:"italics", value:true});
               break;
-            }
-            case "height": {
-              ret.push({key:"height", value: _this.convertToUnit(value)});
-              break;
-            }
-            case "width": {
-              ret.push({key:"width", value: _this.convertToUnit(value)});
-              break;
-            }
+            }            
             case "font-family": {
 							ret.push({
 								key: "font", value: value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g, "").replace(/^([a-z])/g, function (g) {
@@ -776,6 +768,12 @@ function htmlToPdfMake(htmlText, options) {
               } else {
                 // ignore some properties
                 if (ignoreProperties && (key.indexOf("margin-") === 0 || key === 'width' || key === 'height')) break;
+                // for IMG only (see issue #181)
+                if (nodeName === "IMG" && (key === 'width' || key === 'height')) {
+                  ret.push({key:key, value: _this.convertToUnit(value)});
+                  break;
+                }
+
                 // padding is not supported by PDFMake
                 if (key.indexOf("padding") === 0) break;
                 if (key.indexOf("-") > -1) key=_this.toCamelCase(key);
