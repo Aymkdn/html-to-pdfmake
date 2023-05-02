@@ -48,7 +48,8 @@ function htmlToPdfMake(htmlText, options) {
   this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
   this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);  
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
-  this.id = (options && typeof options.id === "number" && options.id > -1 ? options.id : 0); 
+  this.id = (options && options.id ? options.id : 0); 
+  this.proxy = (options && options.proxy ? options.proxy : null);
 
   // A random string to be used in the image references
   //var imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
@@ -71,7 +72,7 @@ function htmlToPdfMake(htmlText, options) {
     h4: {fontSize:18, bold:true, marginBottom:5},
     h5: {fontSize:16, bold:true, marginBottom:5},
     h6: {fontSize:14, bold:true, marginBottom:5},
-    a: {color:'blue', decoration:'underline'},
+    a: {decoration:'underline'},
     strike: {decoration: 'lineThrough'},
     p: {margin:[0, 5, 0, 10]},
     ul: {marginBottom:5,marginLeft:5},
@@ -446,8 +447,18 @@ function htmlToPdfMake(htmlText, options) {
           case "IMG": {
             if (this.imagesByReference) {
               var src = element.getAttribute("data-src") || element.getAttribute("src");
+
+              console.log('this.proxy', this.proxy);
+
+              if (this.proxy) {
+                src = this.proxy + src;
+              }
+
+              /*if (!src.includes('images.ctfassets.net')) {
+                 src = window.location.origin + '/img/' + src;
+              }*/
+
               var index = this.imagesRef.indexOf(src);
-              //ret.image = 'author0';
               if (index>-1) {
                 ret.image = 'img_ref_'+this.id+'_'+index;
               } else {
