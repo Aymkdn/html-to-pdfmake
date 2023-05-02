@@ -448,15 +448,9 @@ function htmlToPdfMake(htmlText, options) {
             if (this.imagesByReference) {
               var src = element.getAttribute("data-src") || element.getAttribute("src");
 
-              console.log('this.proxy', this.proxy);
-
               if (this.proxy) {
                 src = this.proxy + src;
               }
-
-              /*if (!src.includes('images.ctfassets.net')) {
-                 src = window.location.origin + '/img/' + src;
-              }*/
 
               var index = this.imagesRef.indexOf(src);
               if (index>-1) {
