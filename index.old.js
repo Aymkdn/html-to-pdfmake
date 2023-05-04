@@ -48,10 +48,11 @@ function htmlToPdfMake(htmlText, options) {
   this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
   this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);  
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
-  this.imagesByReferenceProxy = (options && options.imagesByReferenceProxy ? options.imagesByReferenceProxy : null);
+  this.id = (options && options.id ? options.id : 0); 
+  this.proxy = (options && options.proxy ? options.proxy : null);
 
   // A random string to be used in the image references
-  var imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
+  //var imagesByReferenceSuffix = (Math.random().toString(36).slice(2,8));
 
   // Used with the size attribute on the font elements to calculate relative font size
   this.fontSizes = (options && Array.isArray(options.fontSizes) ? options.fontSizes : [10, 14, 16, 18, 20, 24, 28]);
@@ -71,7 +72,7 @@ function htmlToPdfMake(htmlText, options) {
     h4: {fontSize:18, bold:true, marginBottom:5},
     h5: {fontSize:16, bold:true, marginBottom:5},
     h6: {fontSize:14, bold:true, marginBottom:5},
-    a: {color:'blue', decoration:'underline'},
+    a: {decoration:'underline'},
     strike: {decoration: 'lineThrough'},
     p: {margin:[0, 5, 0, 10]},
     ul: {marginBottom:5,marginLeft:5},
@@ -447,14 +448,15 @@ function htmlToPdfMake(htmlText, options) {
             if (this.imagesByReference) {
               var src = element.getAttribute("data-src") || element.getAttribute("src");
 
-              if (this.imagesByReferenceProxy) {
-                src = this.imagesByReferenceProxy + src;
+              if (this.proxy) {
+                src = this.proxy + src;
               }
 
               var index = this.imagesRef.indexOf(src);
-              if (index>-1) ret.image = 'img_ref_'+imagesByReferenceSuffix+index;
-              else {
-                ret.image = 'img_ref_'+imagesByReferenceSuffix+this.imagesRef.length;
+              if (index>-1) {
+                ret.image = 'img_ref_'+this.id+'_'+index;
+              } else {
+                ret.image = 'img_ref_'+this.id+'_'+this.imagesRef.length;
                 this.imagesRef.push(src);
               }
             } else {
@@ -739,7 +741,7 @@ function htmlToPdfMake(htmlText, options) {
             case "font-style": {
               if (value==="italic") ret.push({key:"italics", value:true});
               break;
-            }            
+            }
             case "font-family": {
 							ret.push({
 								key: "font", value: value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g, "").replace(/^([a-z])/g, function (g) {
@@ -759,8 +761,16 @@ function htmlToPdfMake(htmlText, options) {
               ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:_this.parseColor(value)})
               break;
             }
+            case "height": {
+              ret.push({key:"height", value: _this.convertToUnit(value)});
+              break;
+            }
             case "text-indent": {
               ret.push({key:"leadingIndent", value:_this.convertToUnit(value)});
+              break;
+            }
+            case "width": {
+              ret.push({key:"width", value: _this.convertToUnit(value)});
               break;
             }
             case "white-space": {
@@ -774,12 +784,6 @@ function htmlToPdfMake(htmlText, options) {
               } else {
                 // ignore some properties
                 if (ignoreProperties && (key.indexOf("margin-") === 0 || key === 'width' || key === 'height')) break;
-                // for IMG only (see issue #181)
-                if (nodeName === "IMG" && (key === 'width' || key === 'height')) {
-                  ret.push({key:key, value: _this.convertToUnit(value)});
-                  break;
-                }
-
                 // padding is not supported by PDFMake
                 if (key.indexOf("padding") === 0) break;
                 if (key.indexOf("-") > -1) key=_this.toCamelCase(key);
@@ -952,9 +956,10 @@ function htmlToPdfMake(htmlText, options) {
   // if images by reference
   if (this.imagesByReference) {
     result = {content:result, images:{}};
+    var id = this.id;
     this.imagesRef.forEach(function(src, i) {
       // check if 'src' is a JSON string
-      result.images['img_ref_'+imagesByReferenceSuffix+i] = (src.startsWith("{") ? JSON.parse(src) : src);
+      result.images['img_ref_'+id+'_'+i] = (src.startsWith("{") ? JSON.parse(src) : src);
     });
   }
   return result;

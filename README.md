@@ -205,34 +205,21 @@ You can use the "custom headers" too by passing a JSON string in either `src`, o
 </div>
 ```
 
-### `id`
+#### `imagesByReferenceProxy`
 
-Pass in an id. The id is used to create unique identifiers for the images found in your html, e.g. if you create various instances of htmlToPdfmake but want to merge the results into one pdf.
+If `imagesByReference = true` you can define an optional proxy for the images to overcome potential CORS issues.
+
+Example: 
 
 ```javascript
-
-  const content = {};
-  const images = {};
-
-  htmlSnippets.forEach((html, i) => {
-
-      const transformed = htmlToPdfmake(
-            html,{
-            imagesByReference: true,
-            id: i
-      });
-
-      Object.assign(content, transformed.content);
-      Object.assign(images, transformed.images);
-
-  }
-
-  const pdf = pdfMake.createPdf({
-      content,
-      images
-  });
-
+var html = htmlToPdfmake(`<p><img src="https://placekitten.com/200/200" alt="kitty" /></p>`, {
+  imagesByReference: true,
+  imagesByReferenceProxy: window.location.origin + "/img/"
+});
 ```
+
+This will prefix all the found image resources with what is defined in `imagesByReferenceProxy`. In that example this would result in `"http://localhost:3000/img/https://placekitten.com/200/200"` if you are currently on `http://localhost:3000`. On the proxy route
+`http://localhost:3000/img/<Img URL>` a script (PHP, Node...) needs to be in place to ensure the correct header (`Access-Control-Allow-Origin: *`) is set. 
 
 #### `fontSizes`
 
