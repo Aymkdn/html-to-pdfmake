@@ -300,6 +300,7 @@ The below HTML tags are supported:
   - `IMG`
   - `SVG`
   - `SUP` / `SUB`
+  - `PRE`
   
 ### CSS properties supported
 

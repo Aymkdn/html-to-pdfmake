@@ -153,8 +153,9 @@ function htmlToPdfMake(htmlText, options) {
         if (element.textContent) {
           text = element.textContent;
           // check if we have 'white-space' in the parent's style
+          // or if the parent is a <PRE>
           var styleParentTextNode = this.parseStyle(parents[parents.length-1], true);
-          var hasWhiteSpace = false;
+          var hasWhiteSpace = (parents[parents.length-1].nodeName === "PRE");
           for (i=0; i<styleParentTextNode.length; i++) {
             if (styleParentTextNode[i].key === "preserveLeadingSpaces") {
               hasWhiteSpace=styleParentTextNode[i].value;
@@ -440,6 +441,10 @@ function htmlToPdfMake(htmlText, options) {
             if (Array.isArray(ret)) {
               ret = {stack:ret};
             }
+            break;
+          }
+          case "PRE":{
+            ret.preserveLeadingSpaces = true;
             break;
           }
           case "IMG": {
