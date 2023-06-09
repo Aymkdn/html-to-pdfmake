@@ -153,9 +153,9 @@ function htmlToPdfMake(htmlText, options) {
         if (element.textContent) {
           text = element.textContent;
           // check if we have 'white-space' in the parent's style
-          // or if the parent is a <PRE>
+          // or if a parent is a <PRE>
           var styleParentTextNode = this.parseStyle(parents[parents.length-1], true);
-          var hasWhiteSpace = (parents[parents.length-1].nodeName === "PRE");
+          var hasWhiteSpace = (parents.findIndex(function(p) { return p.nodeName === "PRE" })>-1);
           for (i=0; i<styleParentTextNode.length; i++) {
             if (styleParentTextNode[i].key === "preserveLeadingSpaces") {
               hasWhiteSpace=styleParentTextNode[i].value;

@@ -1,6 +1,6 @@
 {
   "name": "html-to-pdfmake",
-  "version": "2.4.21",
+  "version": "2.4.22",
   "description": "Convert HTML code to PDFMake",
   "main": "index.js",
   "scripts": {
