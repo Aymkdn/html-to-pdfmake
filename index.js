@@ -326,7 +326,6 @@ function htmlToPdfMake(htmlText, options) {
               if (tableHeights.length > 0) ret.table.heights = tableHeights;
             }
 
-
             // check if we have some data-pdfmake to apply
             if (element.dataset && element.dataset.pdfmake) {
               // handle when people will use simple quotes, e.g. <table data-pdfmake="{'layout':'noBorders'}">
@@ -539,7 +538,12 @@ function htmlToPdfMake(htmlText, options) {
     if (params.cell.rowSpan) {
       for (var i=1; i <= params.cell.rowSpan-1; i++) {
         cells = (params.rows[params.rowIndex+i].text || params.rows[params.rowIndex+i].stack);
-        cells.splice(params.cellIndex, 0, {text:''});
+        if (cells) cells.splice(params.cellIndex, 0, {text:''});
+        else {
+          // if we have an empty <tr></tr> after a row with rowspan, then we need to remove rowSpan
+          // cf https://github.com/Aymkdn/html-to-pdfmake/issues/189
+          params.cell.rowSpan--;
+        }
       }
     }
   }

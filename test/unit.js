@@ -686,6 +686,35 @@ test("unit tests", function(t) {
     t.finish();
   })
 
+  t.test("empty TR after rowspan",function(t) {
+    var html = `<table>
+                 <tbody>
+                    <tr>
+                       <td>A</td>
+                       <td>B</td>
+                       <td>C</td>
+                    </tr>
+                    <tr>
+                       <td rowspan="2">AA</td>
+                       <td rowspan="2">BB</td>
+                       <td rowspan="2">CC</td>
+                    </tr>
+                    <tr></tr>
+                 </tbody>
+              </table>`;
+    var ret = htmlToPdfMake(html, {window:window});
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+    t.check(
+      ret.table &&
+      Array.isArray(ret.table.body) &&
+      ret.table.body[0].length === ret.table.body[1].length,
+      "basic test");
+
+    t.finish();
+  })
+
   t.test("inherit css styles",function(t) {
     var html = `<div style="color:red;"><span style="color:blue">blue<strong style="color:green">green</strong>blue</span><span>red</span></div>`;
     var ret = htmlToPdfMake(html, {window:window});
