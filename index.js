@@ -536,7 +536,8 @@ function htmlToPdfMake(htmlText, options) {
   this.setRowSpan = function(params) {
     var cells;
     if (params.cell.rowSpan) {
-      for (var i=1; i <= params.cell.rowSpan-1; i++) {
+      var len = params.cell.rowSpan;
+      for (var i=1; i <= len-1; i++) {
         cells = (params.rows[params.rowIndex+i].text || params.rows[params.rowIndex+i].stack);
         if (cells) cells.splice(params.cellIndex, 0, {text:''});
         else {
