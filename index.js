@@ -868,8 +868,8 @@ function htmlToPdfMake(htmlText, options) {
     // e.g. `#fff` or `#ff0048`
     var haxRegex = new RegExp('^#([0-9a-f]{3}|[0-9a-f]{6})$');
 
-    // e.g. rgb(0,255,34) or rgb(22, 0, 0) or rgb(100%, 100%, 100%)
-    var rgbRegex = new RegExp('^rgb\\((\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?)\\)$');
+    // e.g. rgb(0,255,34) or rgb(22, 0, 0) or rgb(100%, 100%, 100%) or rgba(0,125,250,0.8)
+    var rgbRegex = /^rgba?\(\s*(\d+(\.\d+)?%?),\s*(\d+(\.\d+)?%?),\s*(\d+(\.\d+)?%?)(,\s*\d+(\.\d+)?)?\)$/;
 
     // e.g. hsl(300, 10%, 20%)
     var hslRegex = new RegExp('^hsl\\((\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?)\\)$');
@@ -877,7 +877,7 @@ function htmlToPdfMake(htmlText, options) {
     // e.g. "white" or "red"
     var nameRegex = new RegExp('^[a-z]+$');
 
-    var decimalColors, decimalValue, hexString, i, ret=[];
+    var decimalColors, decimalValue, hexString, ret=[];
 
     if (haxRegex.test(color)) {
       return color;
@@ -897,20 +897,27 @@ function htmlToPdfMake(htmlText, options) {
       ret = [];
     }
     if (rgbRegex.test(color)) {
-      decimalColors = rgbRegex.exec(color).slice(1);
-      for (i = 0; i < 6; i+=2) {
-        decimalValue = decimalColors[i];
-        // if it ends with '%', we calculcate based on 100%=255
-        if (decimalValue.endsWith('%')) {
-          decimalValue = Math.round(decimalValue.slice(0,-1) * 255 / 100);
-        } else decimalValue = decimalValue*1;
-        if (decimalValue > 255) {
-          decimalValue = 255;
+      decimalColors = rgbRegex.exec(color).slice(1).filter(function(v,i) {
+        return i%2===0 && typeof v !== "undefined";
+      });
+
+      decimalColors.forEach(function(decimalValue, i) {
+        // for the alpha number
+        if (i === 3) {
+          hexString = Math.round(decimalValue.replace(",","") * 255).toString(16);
+        } else {
+          // if it ends with '%', we calculcate based on 100%=255
+          if (decimalValue.endsWith('%')) {
+            decimalValue = Math.round(decimalValue.slice(0,-1) * 255 / 100);
+          } else decimalValue = decimalValue*1;
+          if (decimalValue > 255) {
+            decimalValue = 255;
+          }
+          hexString = '0' + decimalValue.toString(16);
+          hexString = hexString.slice(-2);
         }
-        hexString = '0' + decimalValue.toString(16);
-        hexString = hexString.slice(-2);
         ret.push(hexString);
-      }
+      })
       return '#' + ret.join('');
     }
     if (nameRegex.test(color)) return color;

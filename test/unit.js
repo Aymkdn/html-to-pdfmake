@@ -940,6 +940,16 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("parse RGBA color", function (t) {
+    var html = `<span style="color:rgba(230,55,55,0.8)">red</span>`;
+    var ret = htmlToPdfMake(html, {window: window});
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+    ret = ret[0];
+    t.check(ret.text === "red" && ret.color === "#e63737cc", "color:rgba(230,55,55,0.8)");
+    t.finish();
+  });
+
   t.test("parse RGB color with %", function (t) {
     var html = `<span style="color:rgb(90.2%, 21.568%, 21.568%)">red</span>`;
     var ret = htmlToPdfMake(html, {window: window});
