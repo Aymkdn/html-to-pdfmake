@@ -866,7 +866,7 @@ function htmlToPdfMake(htmlText, options) {
    */
   this.parseColor = function(color) {
     // e.g. `#fff` or `#ff0048`
-    var haxRegex = new RegExp('^#([0-9a-f]{3}|[0-9a-f]{6})$');
+    var haxRegex = new RegExp('^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');
 
     // e.g. rgb(0,255,34) or rgb(22, 0, 0) or rgb(100%, 100%, 100%) or rgba(0,125,250,0.8)
     var rgbRegex = /^rgba?\(\s*(\d+(\.\d+)?%?),\s*(\d+(\.\d+)?%?),\s*(\d+(\.\d+)?%?)(,\s*\d+(\.\d+)?)?\)$/;
@@ -875,7 +875,7 @@ function htmlToPdfMake(htmlText, options) {
     var hslRegex = new RegExp('^hsl\\((\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?)\\)$');
 
     // e.g. "white" or "red"
-    var nameRegex = new RegExp('^[a-z]+$');
+    var nameRegex = new RegExp('^[a-zA-Z]+$');
 
     var decimalColors, decimalValue, hexString, ret=[];
 
@@ -927,7 +927,7 @@ function htmlToPdfMake(htmlText, options) {
   }
 
   /**
-   * Convert 'px'/'rem'/'cm'/'em' to 'pt', and return false for the other ones. If it's only a number, it will just return it
+   * Convert 'px'/'rem'/'cm'/'em'/'in' to 'pt', and return false for the other ones. If it's only a number, it will just return it
    *
    * @param  {String} val The value with units (e.g. 12px)
    * @return {Number|Boolean} Return the pt value, or false
@@ -935,7 +935,7 @@ function htmlToPdfMake(htmlText, options) {
   this.convertToUnit = function(val) {
     // if it's just a number, then return it
     if (!isNaN(parseFloat(val)) && isFinite(val)) return val*1;
-    var mtch = (val+"").trim().match(/^(\d*(\.\d+)?)(pt|px|r?em|cm)$/);
+    var mtch = (val+"").trim().match(/^(\d*(\.\d+)?)(pt|px|r?em|cm|in)$/);
     // if we don't have a number with supported units, then return false
     if (!mtch) return false;
     val = mtch[1];
@@ -951,6 +951,10 @@ function htmlToPdfMake(htmlText, options) {
       }
       case 'cm':{
         val = Math.round(val * 28.34646); // 1cm => 28.34646
+        break;
+      }
+      case 'in':{
+        val *= 72; // 1in => 72 pt
         break;
       }
     }
