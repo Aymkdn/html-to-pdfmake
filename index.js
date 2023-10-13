@@ -866,7 +866,7 @@ function htmlToPdfMake(htmlText, options) {
    */
   this.parseColor = function(color) {
     // e.g. `#fff` or `#ff0048`
-    var haxRegex = new RegExp('^#([0-9a-f]{3}|[0-9a-f]{6})$');
+    var haxRegex = new RegExp('^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$');
 
     // e.g. rgb(0,255,34) or rgb(22, 0, 0) or rgb(100%, 100%, 100%) or rgba(0,125,250,0.8)
     var rgbRegex = /^rgba?\(\s*(\d+(\.\d+)?%?),\s*(\d+(\.\d+)?%?),\s*(\d+(\.\d+)?%?)(,\s*\d+(\.\d+)?)?\)$/;
@@ -875,7 +875,7 @@ function htmlToPdfMake(htmlText, options) {
     var hslRegex = new RegExp('^hsl\\((\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?),\\s*(\\d+(\\.\\d+)?%?)\\)$');
 
     // e.g. "white" or "red"
-    var nameRegex = new RegExp('^[a-z]+$');
+    var nameRegex = new RegExp('^[a-zA-Z]+$');
 
     var decimalColors, decimalValue, hexString, ret=[];
 
