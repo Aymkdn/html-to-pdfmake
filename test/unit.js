@@ -1022,5 +1022,20 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("complex table with rowspan and colspan", function (t) {
+    var html = `<table><th colspan="3" rowspan="2">ABC</th><th colspan="13">DEF</th><th colspan="4" rowspan="2">GHI</th><th colspan="13">JKL</th></tr><tr><th colspan="10">123</th><th colspan="3">456</th><th colspan="10">789</th><th colspan="3">111</th></tr></table>`;
+    var ret = htmlToPdfMake(html, {window: window});
+    // [{"nodeName":"TABLE","marginBottom":5,"style":["html-table"],"table":{"body":[[{"text":"ABC","nodeName":"TH","bold":true,"fillColor":"#EEEEEE","style":["html-th","html-tr","html-tbody","html-table"],"rowSpan":2,"colSpan":3},{"text":""},{"text":""},{"text":"DEF","nodeName":"TH","bold":true,"fillColor":"#EEEEEE","style":["html-th","html-tr","html-tbody","html-table"],"colSpan":13},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":"GHI","nodeName":"TH","bold":true,"fillColor":"#EEEEEE","style":["html-th","html-tr","html-tbody","html-table"],"rowSpan":2,"colSpan":4},{"text":""},{"text":""},{"text":""},{"text":"JKL","nodeName":"TH","bold":true,"fillColor":"#EEEEEE","style":["html-th","html-tr","html-tbody","html-table"],"colSpan":13},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""}],[{"text":""},{"text":""},{"text":""},{"text":"123","nodeName":"TH","bold":true,"fillColor":"#EEEEEE","style":["html-th","html-tr","html-tbody","html-table"],"colSpan":10},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":"456","nodeName":"TH","bold":true,"fillColor":"#EEEEEE","style":["html-th","html-tr","html-tbody","html-table"],"colSpan":3},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":"789","nodeName":"TH","bold":true,"fillColor":"#EEEEEE","style":["html-th","html-tr","html-tbody","html-table"],"colSpan":10},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":""},{"text":"111","nodeName":"TH","bold":true,"fillColor":"#EEEEEE","style":["html-th","html-tr","html-tbody","html-table"],"colSpan":3},{"text":""},{"text":""}]]}}]
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
+    ret = ret[0];
+    t.check(ret.table && ret.table.body, "table.body is here");
+    t.check(Array.isArray(ret.table.body) && ret.table.body.length===2, "table has 2 rows");
+    t.check(Array.isArray(ret.table.body[0]) && ret.table.body[0].length===33 && Array.isArray(ret.table.body[1]) && ret.table.body[1].length===33, "each row has 33 cells");
+    t.check(ret.table.body[0][0].text==="ABC" && ret.table.body[0][2].text==="" && ret.table.body[0][6].text==="" && ret.table.body[0][16].text==="GHI" && ret.table.body[0][19].text==="" && ret.table.body[0][21].text==="" && ret.table.body[0][24].text==="", "row #0 is OK");
+    t.check(ret.table.body[1][0].text==="" && ret.table.body[1][5].text==="" && ret.table.body[1][6].text==="" && ret.table.body[1][13].text==="456" && ret.table.body[1][19].text==="" && ret.table.body[1][21].text==="" && ret.table.body[1][30].text==="111", "row #1 is OK");
+    t.finish();
+  });
+
   t.finish();
 })

@@ -209,7 +209,7 @@ function htmlToPdfMake(htmlText, options) {
 
         switch(nodeName) {
           case "TABLE":{
-            var rowIndex, cellIndex;
+            var rowIndex;
             // the format for the table is table.body[[], [], …]
             ret.table = {body:[]};
 
@@ -217,47 +217,60 @@ function htmlToPdfMake(htmlText, options) {
             if (Array.isArray(tbodies)) {
               rowIndex = 0;
               // Array with All Rows including THEAD
-              var allRows = [];
+              var hasRowSpan = false; // TRUE if we have some rowspan
+              // first round is to deal with colspan
               // for each THEAD / TBODY
               tbodies.forEach(function(tbody) {
                 // for each row
                 var rows = (tbody.stack || tbody.text);
                 if (Array.isArray(rows)) {
-                  // Add rows to allRows
-                  allRows = allRows.concat(rows);
                   rows.forEach(function(row) {
                     var cells = (row.stack || row.text);
                     // for each cell
                     if (Array.isArray(cells)) {
-                      cellIndex = 0;
                       ret.table.body[rowIndex] = [];
                       cells.forEach(function(cell) {
                         ret.table.body[rowIndex].push(cell);
-
                         // do we have a colSpan?
                         // if yes, insert empty cells due to colspan
                         if (cell.colSpan>1) {
                           i = cell.colSpan;
-                          // do we have a rowSpan in addition of the colSpan?
-                          _this.setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
+                          // insert an empty cell for each colspan
                           while (--i > 0) {
                             ret.table.body[rowIndex].push({text:''});
-                            // keep adding empty cell due to rowspan
-                            _this.setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
-                            cellIndex++;
                           }
-                        } else {
-                          // do we have a rowSpan ?
-                          _this.setRowSpan({rows:allRows, cell:cell, rowIndex:rowIndex, cellIndex:cellIndex});
                         }
 
-                        cellIndex++;
+                        // do we have a rowSpan ?
+                        if (cell.rowSpan > 1) hasRowSpan=true;
                       });
                       rowIndex++;
                     }
                  });
                 }
               });
+
+              if (hasRowSpan) {
+                // we go through all again, just to deal with rowspan
+                ret.table.body.forEach(function(row, rowIndex) {
+                  // for each row
+                  row.forEach(function(cell, cellIndex) {
+                    // do we have a rowSpan?
+                    if (cell.rowSpan>1) {
+                      var len = cell.rowSpan;
+                      var colspan = (cell.colSpan ? cell.colSpan : 1);
+                      for (var i=1; i <= len-1; i++) {
+                        if (ret.table.body[rowIndex+i]) {
+                          while (colspan--) ret.table.body[rowIndex+i].splice(cellIndex, 0, {text:''});
+                        } else {
+                          // if we have an empty <tr></tr>
+                          cell.rowSpan--;
+                        }
+                      }
+                    }
+                  })
+                });
+              }
             }
 
             delete ret.stack;
@@ -522,31 +535,6 @@ function htmlToPdfMake(htmlText, options) {
       }
     }
     return false;
-  }
-
-  /**
-   * Add empty cells due to rowspan
-   *
-   * @param {Object} params
-   *   @param {Array} rows
-   *   @param {Object} cell
-   *   @param {Number} rowIndex Current row index
-   *   @param {Number} cellIndex Current cell index
-   */
-  this.setRowSpan = function(params) {
-    var cells;
-    if (params.cell.rowSpan) {
-      var len = params.cell.rowSpan;
-      for (var i=1; i <= len-1; i++) {
-        cells = (params.rows[params.rowIndex+i].text || params.rows[params.rowIndex+i].stack);
-        if (cells) cells.splice(params.cellIndex, 0, {text:''});
-        else {
-          // if we have an empty <tr></tr> after a row with rowspan, then we need to remove rowSpan
-          // cf https://github.com/Aymkdn/html-to-pdfmake/issues/189
-          params.cell.rowSpan--;
-        }
-      }
-    }
   }
 
   /**

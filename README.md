@@ -483,7 +483,7 @@ Examples:
 
 If you use `html-to-pdfmake` **in a Web browser**, then you could just pass [the option `imagesByReference`](https://github.com/Aymkdn/html-to-pdfmake#imagesbyreference) with the value `true` and the images will be passed by references (starting from PDFMake v0.1.67).
 
-Otherwise the `src` attribute must be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)) or a reference ([see more here](https://github.com/Aymkdn/html-to-pdfmake/issues/109#issue-932953144)).
+Otherwise, for example when using this library with **Node** instead of a Web browser, the `src` attribute must be a **base64 encoded content** (as describe in the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)) or a reference ([see more here](https://github.com/Aymkdn/html-to-pdfmake/issues/109#issue-932953144)).
 
 You can check [this Stackoverflow question](https://stackoverflow.com/questions/934012/get-image-data-in-javascript/42916772#42916772) to know the different ways to get a base64 encoded content from an image.
 
