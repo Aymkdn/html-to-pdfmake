@@ -275,7 +275,7 @@ var pdfDocGenerator = pdfMake.createPdf(docDefinition, {
     vLineColor: function (colIndex, node, rowIndex) {
       if (rowIndex === 0) return 'red';
       return rowIndex > 0 && (colIndex === 0 || colIndex === node.table.body[0].length) ? 'blue' : 'black';
-    }  
+    }
   }
 });
 pdfDocGenerator.getBuffer(function(buffer) {

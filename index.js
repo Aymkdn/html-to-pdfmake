@@ -46,7 +46,7 @@ function htmlToPdfMake(htmlText, options) {
   this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
   this.removeExtraBlanks = (options && typeof options.removeExtraBlanks === "boolean" ? options.removeExtraBlanks : false);
   this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
-  this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);  
+  this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
 
   // A random string to be used in the image references
@@ -258,10 +258,11 @@ function htmlToPdfMake(htmlText, options) {
                     // do we have a rowSpan?
                     if (cell.rowSpan>1) {
                       var len = cell.rowSpan;
-                      var colspan = (cell.colSpan ? cell.colSpan : 1);
+                      var cs, colspan = (cell.colSpan ? cell.colSpan : 1);
                       for (var i=1; i <= len-1; i++) {
+                        cs = colspan;
                         if (ret.table.body[rowIndex+i]) {
-                          while (colspan--) ret.table.body[rowIndex+i].splice(cellIndex, 0, {text:''});
+                          while (cs--) ret.table.body[rowIndex+i].splice(cellIndex, 0, {text:''});
                         } else {
                           // if we have an empty <tr></tr>
                           cell.rowSpan--;
@@ -437,7 +438,7 @@ function htmlToPdfMake(htmlText, options) {
               case 'I': ret.type = 'upper-roman'; break;
               case 'i': ret.type = 'lower-roman'; break;
             }
-            
+
             // check if we have `list-style-type` or `list-style`
             if (ret.listStyle || ret.listStyleType) ret.type = ret.listStyle || ret.listStyleType;
             break;
@@ -617,7 +618,7 @@ function htmlToPdfMake(htmlText, options) {
     if (cssClass.length>0) params.ret.style = cssClass;
     return params.ret;
   }
-	
+
 	/**
 	 * Border Value Rearrange a CSS expression (e.g. 'border:solid 10px red' to 'border:10px solid red')
 	 *
@@ -644,7 +645,7 @@ function htmlToPdfMake(htmlText, options) {
 			return styleStr;
 		}
 	}
-	
+
   /**
    * Transform a CSS expression (e.g. 'margin:10px') in the PDFMake version
    *
@@ -731,7 +732,7 @@ function htmlToPdfMake(htmlText, options) {
             case "font-style": {
               if (value==="italic") ret.push({key:"italics", value:true});
               break;
-            }            
+            }
             case "font-family": {
 							ret.push({
 								key: "font", value: value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g, "").replace(/^([a-z])/g, function (g) {
