@@ -10,6 +10,8 @@ You can find the online demo at <a href="https://aymkdn.github.io/html-to-pdfmak
 
 This module will convert some basic and valid HTML code to its equivalent in *pdfmake*.
 
+If you need to convert a complex HTML, check some online solutions, like [Doppio](https://doppio.sh/).
+
 ### Node
 
 ```bash
@@ -313,6 +315,7 @@ CSS can create very complex design, however this framework can only handle the m
   - `font-weight` (with `bold`)
   - `height`
   - `margin`
+  - `line-height`
   - `text-align`
   - `text-decoration`
   - `text-indent`
