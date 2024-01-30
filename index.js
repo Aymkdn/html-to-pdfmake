@@ -448,7 +448,10 @@ function htmlToPdfMake(htmlText, options) {
             if (ret.stack && !ret.stack[ret.stack.length-1].text) {
               // if not, we restructure our node
               text = ret.stack.slice(0, -1);
-              ret = [ {"text": text}, ret.stack[ret.stack.length-1] ];
+              ret = [
+                (Array.isArray(text) ? {"stack": text} : {"text": text}),
+                ret.stack[ret.stack.length-1]
+              ];
             }
             // we don't want a child of UL/OL to be an array, but it should be a "stack"
             if (Array.isArray(ret)) {
