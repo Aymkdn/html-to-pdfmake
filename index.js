@@ -288,6 +288,25 @@ function htmlToPdfMake(htmlText, options) {
               // determine if we have "width:100%" on the TABLE
               var fullWidth = (element.getAttribute("width") === "100%" || (element.getAttribute("style")||"").replace(/width\s*:\s*100%/, "width:100%").includes("width:100%"));
 
+              var percentRegex = new RegExp( /\d+%/ );
+              var widthRegex = new RegExp( /width\s*:\s*\d+(.\d+)?%/ );
+              var cleanPercentageRegex = new RegExp( /[^0-9.]+/g );
+              var elementWidth = element.getAttribute( "width" );
+              var elementStyle = element.getAttribute( "style" ) || "";
+              var tableHaveWidth = ( percentRegex.test( elementWidth ) || widthRegex.test( elementStyle ) );
+              if ( tableHaveWidth ) {
+                var widthIndex = elementStyle.indexOf( "width:" );
+                var parsedStyle = elementStyle.substring( widthIndex, widthIndex + 11 );
+                var tableWidth = ( parsedStyle || elementWidth ).replace( cleanPercentageRegex, "" );
+              }
+
+              var tableHaveColgroup = false;
+              var tableColgroupIndex = -1;
+              for ( let child of element.children ) {
+                if ( !tableHaveColgroup ) tableColgroupIndex++;
+                if ( child.nodeName.toUpperCase() === "COLGROUP" ) tableHaveColgroup = true;
+              };
+
               ret.table.body.forEach(function(row, rowIndex) {
                 cellsWidths.push([]);
                 cellsHeights.push([]);
@@ -305,6 +324,22 @@ function htmlToPdfMake(htmlText, options) {
                     if (!isNaN(height)) height /= cell.rowSpan;
                     else height = 'auto';
                   }
+
+                  if ( tableHaveColgroup ) {
+                    var colGroups = element.children[ tableColgroupIndex ];
+                    var colElement = colGroups.children[ cellIndex ];
+
+                    var colWidth = colElement.getAttribute( "width" );
+                    var colStyle = colElement.getAttribute( "style" ) || "";
+                    var colHaveWidth = ( percentRegex.test( colWidth ) || widthRegex.test( colStyle ) );
+
+                    if ( colHaveWidth ) {
+                      var colWidthIndex = colStyle.indexOf( "width:" );
+                      var colParsedStyle = colStyle.substring( colWidthIndex, colWidthIndex + 11 );
+                      width = `${ ( colParsedStyle || colWidth ).replace( cleanPercentageRegex, "" ) }%`;
+                    }
+                  }
+
                   cellsWidths[rowIndex].push(width);
                   cellsHeights[rowIndex].push(height);
                 });
@@ -315,6 +350,11 @@ function htmlToPdfMake(htmlText, options) {
                 row.forEach(function(cellWidth, cellIndex) {
                   var type = typeof tableWidths[cellIndex];
                   if (type === "undefined" || (cellWidth !== 'auto' && type === "number" && cellWidth > tableWidths[cellIndex]) || (cellWidth !== 'auto' && tableWidths[cellIndex] === 'auto')) {
+                    if ( tableHaveWidth ) {
+                      const cellPercentage = cellWidth === 'auto' ? tableWidth / cellsWidths.length : ( cellWidth.replace( '%', "" ) * tableWidth ) / 100;
+                      cellWidth = `${ cellPercentage }%`;
+                    }
+
                     tableWidths[cellIndex] = cellWidth;
                   }
                 });
