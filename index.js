@@ -316,7 +316,7 @@ function htmlToPdfMake(htmlText, options) {
               ret.table.body.forEach(function(row, rowIndex) {
                 cellsWidths.push([]);
                 cellsHeights.push([]);
-                row.forEach(function(cell) {
+                row.forEach(function(cell, cellIndex) {
                   // we want to remember the different sizes
                   var width = typeof cell.width !== 'undefined' ? cell.width : 'auto';
                   var height = typeof cell.height !== 'undefined' ? cell.height : 'auto';
