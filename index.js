@@ -288,10 +288,36 @@ function htmlToPdfMake(htmlText, options) {
               // determine if we have "width:100%" on the TABLE
               var fullWidth = (element.getAttribute("width") === "100%" || (element.getAttribute("style")||"").replace(/width\s*:\s*100%/, "width:100%").includes("width:100%"));
 
+              // match XX.XX% or XX%
+              var percentRegex = new RegExp( /\d+(.\d+)?%/ );
+              // match width:XX.XX% or width: XX% (with or without whitespaces)
+              var widthRegex = new RegExp( /width\s*:\s*\d+(.\d+)?%/ );
+              // remove everything from percent string except numbers and dot
+              var cleanPercentageRegex = new RegExp( /[^0-9.]/g );
+              var elementWidth = element.getAttribute( "width" );
+              var elementStyle = element.getAttribute( "style" ) || "";
+              // check if table have width defined
+              var tableHaveWidth = ( percentRegex.test( elementWidth ) || widthRegex.test( elementStyle ) );
+              if ( tableHaveWidth ) {
+                var widthIndex = elementStyle.indexOf( "width:" );
+                var parsedStyle = elementStyle.substring( widthIndex, widthIndex + 11 );
+                // get only numbers of percentage
+                var tableWidth = ( parsedStyle || elementWidth ).replace( cleanPercentageRegex, "" );
+              }
+
+              var tableHaveColgroup = false;
+              var tableColgroupIndex = -1;
+              // check if any of table children is a colgroup with cells widths
+              for ( var x = 0; x < element.children.length; x++ ) {
+                var child = element.children[x];
+                if ( !tableHaveColgroup ) tableColgroupIndex++;
+                if ( child.nodeName.toUpperCase() === "COLGROUP" ) tableHaveColgroup = true;
+              };
+
               ret.table.body.forEach(function(row, rowIndex) {
                 cellsWidths.push([]);
                 cellsHeights.push([]);
-                row.forEach(function(cell) {
+                row.forEach(function(cell, cellIndex) {
                   // we want to remember the different sizes
                   var width = typeof cell.width !== 'undefined' ? cell.width : 'auto';
                   var height = typeof cell.height !== 'undefined' ? cell.height : 'auto';
@@ -305,6 +331,23 @@ function htmlToPdfMake(htmlText, options) {
                     if (!isNaN(height)) height /= cell.rowSpan;
                     else height = 'auto';
                   }
+
+                  // if we have colgroups defining cells widths
+                  if ( tableHaveColgroup ) {
+                    var colGroups = element.children[ tableColgroupIndex ];
+                    // get colgroup by cell index
+                    var colElement = colGroups.children[ cellIndex ];
+                    var colWidth = colElement.getAttribute( "width" );
+                    var colStyle = colElement.getAttribute( "style" ) || "";
+
+                    if (( percentRegex.test( colWidth ) || widthRegex.test( colStyle ) )) {
+                      var colWidthIndex = colStyle.indexOf( "width:" );
+                      var colParsedStyle = colStyle.substring( colWidthIndex, colWidthIndex + 11 );
+                      // update cell width to it's percentage in colgroup
+                      width = String(( colParsedStyle || colWidth ).replace( cleanPercentageRegex, "" )) + "%";
+                    }
+                  }
+
                   cellsWidths[rowIndex].push(width);
                   cellsHeights[rowIndex].push(height);
                 });
@@ -315,6 +358,13 @@ function htmlToPdfMake(htmlText, options) {
                 row.forEach(function(cellWidth, cellIndex) {
                   var type = typeof tableWidths[cellIndex];
                   if (type === "undefined" || (cellWidth !== 'auto' && type === "number" && cellWidth > tableWidths[cellIndex]) || (cellWidth !== 'auto' && tableWidths[cellIndex] === 'auto')) {
+                    if ( tableHaveWidth ) {
+                      // if table have defined widths we need to make a 
+                      // rule of three to get cell's proportional width
+                      var cellPercentage = cellWidth === 'auto' ? tableWidth / cellsWidths.length : ( cellWidth.replace( '%', "" ) * tableWidth ) / 100;
+                      cellWidth = String(cellPercentage) + "%";
+                    }
+
                     tableWidths[cellIndex] = cellWidth;
                   }
                 });
