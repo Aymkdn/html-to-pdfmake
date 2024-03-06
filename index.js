@@ -308,7 +308,8 @@ function htmlToPdfMake(htmlText, options) {
               var tableHaveColgroup = false;
               var tableColgroupIndex = -1;
               // check if any of table children is a colgroup with cells widths
-              for ( let child of element.children ) {
+              for ( var x = 0; x < element.children.length; x++ ) {
+                var child = element.children[x];
                 if ( !tableHaveColgroup ) tableColgroupIndex++;
                 if ( child.nodeName.toUpperCase() === "COLGROUP" ) tableHaveColgroup = true;
               };
@@ -343,7 +344,7 @@ function htmlToPdfMake(htmlText, options) {
                       var colWidthIndex = colStyle.indexOf( "width:" );
                       var colParsedStyle = colStyle.substring( colWidthIndex, colWidthIndex + 11 );
                       // update cell width to it's percentage in colgroup
-                      width = `${ ( colParsedStyle || colWidth ).replace( cleanPercentageRegex, "" ) }%`;
+                      width = String(( colParsedStyle || colWidth ).replace( cleanPercentageRegex, "" )) + "%";
                     }
                   }
 
@@ -360,8 +361,8 @@ function htmlToPdfMake(htmlText, options) {
                     if ( tableHaveWidth ) {
                       // if table have defined widths we need to make a 
                       // rule of three to get cell's proportional width
-                      const cellPercentage = cellWidth === 'auto' ? tableWidth / cellsWidths.length : ( cellWidth.replace( '%', "" ) * tableWidth ) / 100;
-                      cellWidth = `${ cellPercentage }%`;
+                      var cellPercentage = cellWidth === 'auto' ? tableWidth / cellsWidths.length : ( cellWidth.replace( '%', "" ) * tableWidth ) / 100;
+                      cellWidth = String(cellPercentage) + "%";
                     }
 
                     tableWidths[cellIndex] = cellWidth;
