@@ -1037,5 +1037,51 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("table (dynamic widths)",function(t) {
+    var html = `<table style="border-collapse: collapse; width: 80%; height: 40px;" border="1">
+      <colgroup>
+        <col style="width: 30%;">
+        <col style="width: 70%;">
+      </colgroup>
+      <tbody>
+        <tr style="height: 20px;">
+          <td style="background-color: rgb(251, 238, 184); border: 1px solid rgb(241, 196, 15); height: 20px;">Value Cell A1</td>
+          <td style="background-color: rgb(248, 202, 198); text-align: right; border: 2px solid rgb(224, 62, 45); height: 20;">Value Cell B1</td>
+        </tr>
+        <tr style="height: 20px;">
+          <td style="border-image: initial; height: 20px; text-align: center;">Value Cell A2</td>
+          <td style="border-image: initial; height: 20px; text-align: justify;">Value Cell B2</td>
+        </tr>
+      </tbody>
+    </table>`;
+    var ret = htmlToPdfMake(html, {
+      window:window,
+      tableAutoSize: true
+    });
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+
+    t.check(
+      ret.table &&
+      Array.isArray(ret.table.body) &&
+      ret.table.body.length === 2 &&
+      ret.table.body[0][0].text === "Value Cell A1" &&
+      ret.table.body[0][0].fillColor === "#fbeeb8" &&
+      ret.table.body[0][0].borderColor[0] === "#f1c40f" &&
+      ret.table.body[0][0].style[0] === 'html-td' &&
+      ret.table.body[0][0].style[1] === 'html-tr' &&
+      ret.table.body[1][1].text === "Value Cell B2" &&
+      ret.table.body[1][1].style[0] === 'html-td' &&
+      ret.table.body[1][1].style[1] === 'html-tr' &&
+      ret.table.widths[0] === "24%" &&
+      ret.table.widths[1] === "56%" &&
+      Array.isArray(ret.style) &&
+      ret.style[0] === 'html-table',
+    "<table> (dynamic widths)");
+
+    t.finish();
+  })
+
   t.finish();
 })
