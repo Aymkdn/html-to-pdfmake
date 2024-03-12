@@ -1083,5 +1083,32 @@ test("unit tests", function(t) {
     t.finish();
   })
 
+  t.test("table (dynamic widths) 2",function(t) {
+    var html = `<table class="table table-condensed" style="width: 100%;"><thead><tr><th>ABC</th><th>DEF</th><th>GHI</th><th>KLM</th><th>NOP</th></tr></thead><tbody><tr><td>ABC1</td><td>DEF1</td><td>GHI1</td><td>50,00</td><td style="text-align: right;">17:45</td></tr><tr><td>ABC2</td><td>DEF2</td><td>GHI2</td><td>50,00</td><td style="text-align: right;">4:00</td></tr><tr><td colspan="4">Total</td><td style="text-align: right;">21:45</td></tr></tbody></table>`;
+    var ret = htmlToPdfMake(html, {
+      window:window,
+      tableAutoSize: true
+    });
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+
+    t.check(
+      ret.table &&
+      Array.isArray(ret.table.body) &&
+      ret.table.body.length === 4 &&
+      ret.table.body[0][0].text === "ABC" &&
+      ret.table.body[3][1].text === "" &&
+      ret.table.widths.length === 5 &&
+      ret.table.widths[0] === "20%" &&
+      ret.table.widths[1] === "20%" &&
+      ret.table.widths[2] === "20%" &&
+      ret.table.widths[3] === "20%" &&
+      ret.table.widths[4] === "20%",
+    "<table> (dynamic widths) 2");
+
+    t.finish();
+  })
+
   t.finish();
 })
