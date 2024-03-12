@@ -320,7 +320,9 @@ function htmlToPdfMake(htmlText, options) {
                 row.forEach(function(cell, cellIndex) {
                   // we want to remember the different sizes
                   var width = typeof cell.width !== 'undefined' ? cell.width : 'auto';
+                  if (width === '*') width='auto'; // tinymce could generate 'width:*', but it's invalid, so we use 'auto' instead
                   var height = typeof cell.height !== 'undefined' ? cell.height : 'auto';
+                  if (height === '*') height='auto'; // tinymce could generate 'height:*', but it's invalid, so we use 'auto' instead
                   // check if we have colspan or rowspan
                   // if yes, and if width/height is a number, we divide by the col/rowspan, otherwise we use 'auto'
                   if (width !== 'auto' && cell.colSpan>1) {
