@@ -251,26 +251,45 @@ function htmlToPdfMake(htmlText, options) {
               });
 
               if (hasRowSpan) {
-                // we go through all again, just to deal with rowspan
-                ret.table.body.forEach(function(row, rowIndex) {
-                  // for each row
-                  row.forEach(function(cell, cellIndex) {
-                    // do we have a rowSpan?
-                    if (cell.rowSpan>1) {
-                      var len = cell.rowSpan;
-                      var cs, colspan = (cell.colSpan ? cell.colSpan : 1);
-                      for (var i=1; i <= len-1; i++) {
-                        cs = colspan;
-                        if (ret.table.body[rowIndex+i]) {
-                          while (cs--) ret.table.body[rowIndex+i].splice(cellIndex, 0, {text:''});
-                        } else {
-                          // if we have an empty <tr></tr>
-                          cell.rowSpan--;
+                var header = ret.table.body[0];
+                if (Array.isArray(header)) {
+                  // determine the number of columns
+                  var columnCount = header.some(function(cell) {
+                    return cell.colSpan > 0;
+                  })
+                  ? header.reduce(function(partialCount, cell) {
+                      return partialCount + (cell.colSpan ? cell.colSpan : 0)
+                    }, 0)
+                  : header.length;
+                  // determine the number of rows
+                  var rowCount = ret.table.body.length;
+
+                  // for each column
+                  for (var columnInd=0; columnInd<columnCount; columnInd++) {
+                    for (var rowInd=0; rowInd<rowCount; rowInd++) {
+                      var row = ret.table.body[rowInd];
+                      if (Array.isArray(row)) {
+                        var cell = row[columnInd];
+                        // do we have a rowSpan?
+                        if (cell.rowSpan>1) {
+                          var len = cell.rowSpan;
+                          var cs, colspan = (cell.colSpan ? cell.colSpan : 1);
+                          for (var j=1; j<=len-1; j++) {
+                            cs = colspan;
+                            if (ret.table.body[rowInd+j]) {
+                              while (cs--) ret.table.body[rowInd+j].splice(columnInd, 0, {text:''});
+                            } else {
+                              // if we have an empty <tr></tr>
+                              cell.rowSpan--;
+                            }
+                          }
+                          // increase rowInd to skip processed rows
+                          rowInd += (len-1);
                         }
                       }
                     }
-                  })
-                });
+                  }
+                }
               }
             }
 
