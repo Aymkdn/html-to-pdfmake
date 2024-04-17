@@ -382,7 +382,7 @@ function htmlToPdfMake(htmlText, options) {
                     if ( tableHaveWidth ) {
                       // if table have defined widths we need to make a 
                       // rule of three to get cell's proportional width
-                      var cellPercentage = cellWidth === 'auto' ? tableWidth / row.length : ( cellWidth.replace( '%', "" ) * tableWidth ) / 100;
+                      var cellPercentage = cellWidth === 'auto' ? tableWidth / row.length : ( cellWidth.toString().replace( '%', "" ) * tableWidth ) / 100;
                       cellWidth = String(cellPercentage) + "%";
                     }
 
