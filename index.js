@@ -121,7 +121,7 @@ function htmlToPdfMake(htmlText, options) {
   this.convertHtml = function(htmlText) {
     // Create a HTML DOM tree out of html string
     var parser = new this.wndw.DOMParser();
-    if (this.removeExtraBlanks) htmlText = htmlText.replace(/(<\/?(div|p|h1|h2|h3|h4|h5|h6|ul|li)([^>]+)?>)\s+(<\/?(div|p|h1|h2|h3|h4|h5|h6|ul|li))/gi, "$1$4").replace(/(<\/?(div|p|h1|h2|h3|h4|h5|h6|ul|li)([^>]+)?>)\s+(<\/?(div|p|h1|h2|h3|h4|h5|h6|ul|li))/gi, "$1$4");
+    if (this.removeExtraBlanks) htmlText = htmlText.replace(/(<\/?(div|p|h1|h2|h3|h4|h5|h6|ol|ul|li)([^>]+)?>)\s+(<\/?(div|p|h1|h2|h3|h4|h5|h6|ol|ul|li))/gi, "$1$4").replace(/(<\/?(div|p|h1|h2|h3|h4|h5|h6|ol|ul|li)([^>]+)?>)\s+(<\/?(div|p|h1|h2|h3|h4|h5|h6|ol|ul|li))/gi, "$1$4");
     var parsedHtml = parser.parseFromString(htmlText, 'text/html');
 
     var docDef = this.parseElement(parsedHtml.body, []);
