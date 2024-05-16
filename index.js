@@ -968,6 +968,8 @@ function htmlToPdfMake(htmlText, options) {
         // for the alpha number
         if (i === 3) {
           hexString = Math.round(decimalValue.replace(",","") * 255).toString(16);
+          // when the alpha is 1 == FF, we should not use it
+          if (hexString === "ff") hexString="";
         } else {
           // if it ends with '%', we calculcate based on 100%=255
           if (decimalValue.endsWith('%')) {
