@@ -800,7 +800,11 @@ function htmlToPdfMake(htmlText, options) {
               break;
             }
             case "text-decoration": {
-              ret.push({key:"decoration", value:_this.toCamelCase(value)})
+              // verify the value is valid
+              value = _this.toCamelCase(value);
+              if (["underline", "lineThrough", "overline"].includes(value)) {
+                ret.push({key:"decoration", value:value})
+              }
               break;
             }
             case "font-style": {
