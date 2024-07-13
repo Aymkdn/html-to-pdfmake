@@ -731,7 +731,7 @@ function htmlToPdfMake(htmlText, options) {
   this.parseStyle = function(element, ignoreProperties) {
     var style = element.getAttribute("style") || "";
     var ret = [];
-    style = style.split(';');
+    style = style.replace(/!important/g, '').split(';');
     // check if we have "width" or "height"
     var width = element.getAttribute("width");
     var height = element.getAttribute("height");
@@ -835,7 +835,11 @@ function htmlToPdfMake(htmlText, options) {
               break;
             }
             case "white-space": {
-              ret.push({key:"preserveLeadingSpaces", value:(value==='break-spaces' || value.slice(0,3) === 'pre')});
+              if (value==='nowrap') {
+                ret.push({key:"noWrap", value:true});
+              } else {
+                ret.push({key:"preserveLeadingSpaces", value:(value==='break-spaces' || value.slice(0,3) === 'pre')});
+              }
               break;
             }
             default: {

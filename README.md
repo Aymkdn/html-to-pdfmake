@@ -311,15 +311,15 @@ CSS can create very complex design, however this framework can only handle the m
   - `border`
   - `color`
   - `font-family`
-  - `font-style` (with `italic`)
-  - `font-weight` (with `bold`)
+  - `font-style` (for `italic` property only)
+  - `font-weight` (for `bold` property only)
   - `height`
   - `margin`
   - `line-height`
   - `text-align`
   - `text-decoration`
   - `text-indent`
-  - `white-space` (with `break-spaces` and `pre*`)
+  - `white-space` (for `nowrap`, `break-spaces` and `pre*` properties only)
   - `width`
   
 ### Default styles
