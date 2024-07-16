@@ -946,7 +946,7 @@ test("unit tests", function(t) {
     if (debug) console.log(JSON.stringify(ret));
     t.check(Array.isArray(ret) && ret.length === 1, "return is OK");
     ret = ret[0];
-    t.check(ret.text === "red" && ret.color === "#e63737cc", "color:rgba(230,55,55,0.8)");
+    t.check(ret.text === "red" && ret.color === "#e63737" && ret.opacity === 0.8, "color:rgba(230,55,55,0.8)" );
     t.finish();
   });
 

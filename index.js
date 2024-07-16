@@ -744,7 +744,7 @@ function htmlToPdfMake(htmlText, options) {
     // check if we have 'color' or 'size' -- mainly for '<font>'
     var color = element.getAttribute("color");
     if (color) {
-      ret.push({key:"color", value:this.parseColor(color)});
+      ret.push({key:"color", value:this.parseColor(color).color});
     }
     var size = element.getAttribute("size");
     if (size !== null) {
@@ -762,6 +762,7 @@ function htmlToPdfMake(htmlText, options) {
       if (styleDef.length===2) {
         var key = styleDef[0].trim().toLowerCase();
         var value = styleDef[1].trim();
+        var res;
         if (_this.ignoreStyles.indexOf(key) === -1) {
           switch (key) {
             case "margin": {
@@ -822,12 +823,16 @@ function htmlToPdfMake(htmlText, options) {
 							break;
             }
             case "color": {
-              ret.push({key:"color", value:_this.parseColor(value)})
+              res = _this.parseColor(value);
+              ret.push({key:"color", value:res.color});
+              if (res.opacity < 1) ret.push({key:"opacity", value:res.opacity});
               break;
             }
             case "background-color": {
               // if TH/TD and key is 'background', then we use 'fillColor' instead
-              ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:_this.parseColor(value)})
+              res = _this.parseColor(value);
+              ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillColor" : "background"), value:res.color});
+              if (res.opacity < 1) ret.push({key:(nodeName === 'TD' || nodeName === 'TH' ? "fillOpacity" : "opacity"), value:res.opacity});
               break;
             }
             case "text-indent": {
@@ -896,9 +901,9 @@ function htmlToPdfMake(htmlText, options) {
         if (properties.length > 2) {
           var color = properties.slice(2).join(' ');
           if (index > -1) {
-            borderColor[index] = _this.parseColor(color);
+            borderColor[index] = _this.parseColor(color).color;
           } else {
-            for (i=0; i<4; i++) borderColor[i] = _this.parseColor(color);
+            for (i=0; i<4; i++) borderColor[i] = _this.parseColor(color).color;
           }
         }
       });
@@ -933,9 +938,10 @@ function htmlToPdfMake(htmlText, options) {
    * Also tries to convert RGB colors into hex values
    *
    * @param color color as string representation
-   * @returns color as hex values for pdfmake
+   * @returns {color (as hex values for pdfmake), opacity}
    */
   this.parseColor = function(color) {
+    var opacity = 1;
     // e.g. `#fff` or `#ff0048`
     var haxRegex = new RegExp('^#([0-9a-f]{3}|[0-9a-f]{6})$', 'i');
 
@@ -949,9 +955,8 @@ function htmlToPdfMake(htmlText, options) {
     var nameRegex = new RegExp('^[a-z]+$', 'i');
 
     var decimalColors, decimalValue, hexString, ret=[];
-
     if (haxRegex.test(color)) {
-      return color;
+      return {color:color, opacity:opacity};
     }
 
     if (hslRegex.test(color)) {
@@ -975,9 +980,7 @@ function htmlToPdfMake(htmlText, options) {
       decimalColors.forEach(function(decimalValue, i) {
         // for the alpha number
         if (i === 3) {
-          hexString = Math.round(decimalValue.replace(",","") * 255).toString(16);
-          // when the alpha is 1 == FF, we should not use it
-          if (hexString === "ff") hexString="";
+          opacity = decimalValue.slice(1)*1;
         } else {
           // if it ends with '%', we calculcate based on 100%=255
           if (decimalValue.endsWith('%')) {
@@ -988,15 +991,15 @@ function htmlToPdfMake(htmlText, options) {
           }
           hexString = '0' + decimalValue.toString(16);
           hexString = hexString.slice(-2);
+          ret.push(hexString);
         }
-        ret.push(hexString);
       })
-      return '#' + ret.join('');
+      return {color:'#' + ret.join(''), opacity:opacity};
     }
-    if (nameRegex.test(color)) return color;
+    if (nameRegex.test(color)) return {color:color, opacity:opacity};
 
     console.error('Could not parse color "' + color + '"');
-    return color;
+    return {color:color, opacity:opacity};
   }
 
   /**
