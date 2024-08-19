@@ -304,24 +304,17 @@ function htmlToPdfMake(htmlText, options) {
               var cellsHeights = [];
               var tableWidths = [];
               var tableHeights = [];
-              // determine if we have "width:100%" on the TABLE
-              var fullWidth = (element.getAttribute("width") === "100%" || (element.getAttribute("style")||"").replace(/width\s*:\s*100%/, "width:100%").includes("width:100%"));
 
-              // match XX.XX% or XX%
-              var percentRegex = new RegExp( /\d+(.\d+)?%/ );
-              // match width:XX.XX% or width: XX% (with or without whitespaces)
-              var widthRegex = new RegExp( /width\s*:\s*\d+(.\d+)?%/ );
+              // determine if we have "width:100%" on the TABLE
+              var fullWidth = (element.getAttribute("width") === "100%" || element.style.width === "100%");
+
               // remove everything from percent string except numbers and dot
-              var cleanPercentageRegex = new RegExp( /[^0-9.]/g );
-              var elementWidth = element.getAttribute( "width" );
-              var elementStyle = element.getAttribute( "style" ) || "";
+              var elementAttrWidth = element.getAttribute( "width" )||"";
               // check if table have width defined
-              var tableHaveWidth = ( percentRegex.test( elementWidth ) || widthRegex.test( elementStyle ) );
+              var tableHaveWidth = (element.style.width||elementAttrWidth).endsWith("%");
               if ( tableHaveWidth ) {
-                var widthIndex = elementStyle.indexOf( "width:" );
-                var parsedStyle = elementStyle.substring( widthIndex, widthIndex + 11 );
                 // get only numbers of percentage
-                var tableWidth = ( parsedStyle || elementWidth ).replace( cleanPercentageRegex, "" );
+                var tableWidth = (element.style.width||elementAttrWidth).replace( /[^0-9.]/g, "" );
               }
 
               var tableHaveColgroup = false;
@@ -358,14 +351,12 @@ function htmlToPdfMake(htmlText, options) {
                     var colGroups = element.children[ tableColgroupIndex ];
                     // get colgroup by cell index
                     var colElement = colGroups.children[ cellIndex ];
-                    var colWidth = colElement.getAttribute( "width" );
-                    var colStyle = colElement.getAttribute( "style" ) || "";
+                    var colAttrWidth = colElement.getAttribute( "width" ) || "";
+                    var colStyleWidth = colElement.style.width;
 
-                    if (( percentRegex.test( colWidth ) || widthRegex.test( colStyle ) )) {
-                      var colWidthIndex = colStyle.indexOf( "width:" );
-                      var colParsedStyle = colStyle.substring( colWidthIndex, colWidthIndex + 11 );
-                      // update cell width to it's percentage in colgroup
-                      width = String(( colParsedStyle || colWidth ).replace( cleanPercentageRegex, "" )) + "%";
+                    if ((colAttrWidth||colStyleWidth).endsWith("%")) {
+                      // update cell width to its percentage in colgroup
+                      width = (colAttrWidth||colStyleWidth);
                     }
                   }
 
@@ -693,32 +684,32 @@ function htmlToPdfMake(htmlText, options) {
     return params.ret;
   }
 
-	/**
-	 * Border Value Rearrange a CSS expression (e.g. 'border:solid 10px red' to 'border:10px solid red')
-	 *
-	 * @param {String} styleStr The CSS expression values
-	 * @returns {String} border value in global accepted format (e.g. 'border:10px solid red')
-	 */
-	this.borderValueRearrange = function(styleStr) {
-		try {
-			var styleArray = styleStr.split(' ');
+  /**
+   * Border Value Rearrange a CSS expression (e.g. 'border:solid 10px red' to 'border:10px solid red')
+   *
+   * @param {String} styleStr The CSS expression values
+   * @returns {String} border value in global accepted format (e.g. 'border:10px solid red')
+   */
+  this.borderValueRearrange = function(styleStr) {
+    try {
+      var styleArray = styleStr.split(' ');
       if (styleArray.length!==3) return styleStr;
-			var v1 = "0px", v2 = "none", v3 = "transparent";
-			var style = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden", "mix"];
-			styleArray.forEach(function (v) {
-				if (v.match(/^\d/)) {
-					v1 = v;
-				} else if (style.indexOf(v) > -1) {
-					v2 = v;
-				} else {
-					v3 = v;
-				}
-			});
-			return v1 + ' ' + v2 + ' ' + v3;
-		} catch (e) {
-			return styleStr;
-		}
-	}
+      var v1 = "0px", v2 = "none", v3 = "transparent";
+      var style = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden", "mix"];
+      styleArray.forEach(function (v) {
+        if (v.match(/^\d/)) {
+          v1 = v;
+        } else if (style.indexOf(v) > -1) {
+          v2 = v;
+        } else {
+          v3 = v;
+        }
+      });
+      return v1 + ' ' + v2 + ' ' + v3;
+    } catch (e) {
+      return styleStr;
+    }
+  }
 
   /**
    * Transform a CSS expression (e.g. 'margin:10px') in the PDFMake version
@@ -813,14 +804,14 @@ function htmlToPdfMake(htmlText, options) {
               break;
             }
             case "font-family": {
-							ret.push({
-								key: "font", value: value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g, "").replace(/^([a-z])/g, function (g) {
-									return g[0].toUpperCase();
-								}).replace(/ ([a-z])/g, function (g) {
-									return g[1].toUpperCase();
-								})
-							});
-							break;
+              ret.push({
+                key: "font", value: value.split(',')[0].replace(/"|^'|^\s*|\s*$|'$/g, "").replace(/^([a-z])/g, function (g) {
+                  return g[0].toUpperCase();
+                }).replace(/ ([a-z])/g, function (g) {
+                  return g[1].toUpperCase();
+                })
+              });
+              break;
             }
             case "color": {
               res = _this.parseColor(value);
@@ -883,7 +874,7 @@ function htmlToPdfMake(htmlText, options) {
       var borderColor = []; // array of colors
       borders.forEach(function(b) {
         // we have 3 properties: width style color
-				b.value = _this.borderValueRearrange(b.value);
+        b.value = _this.borderValueRearrange(b.value);
         var properties = b.value.split(' ');
         var width = properties[0].replace(/(\d*)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
         var index = -1, i;
