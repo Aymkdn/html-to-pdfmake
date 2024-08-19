@@ -130,6 +130,17 @@ function htmlToPdfMake(htmlText, options) {
     return docDef.stack || docDef.text;
   }
 
+  this.findStyleString = function (styleToFind, fullStyleString) {
+    var styleList = fullStyleString.split(";");
+    for (var i = 0; i < styleList.length; i++) {
+      var str = styleList[i].trim();
+      if (str.startsWith(styleToFind)) {
+        return str;
+      }
+    }
+    return null;
+  };
+
   /**
    * Converts a single HTML element to pdfmake, calls itself recursively for child html elements
    *
@@ -318,8 +329,9 @@ function htmlToPdfMake(htmlText, options) {
               // check if table have width defined
               var tableHaveWidth = ( percentRegex.test( elementWidth ) || widthRegex.test( elementStyle ) );
               if ( tableHaveWidth ) {
-                var widthIndex = elementStyle.indexOf( "width:" );
-                var parsedStyle = elementStyle.substring( widthIndex, widthIndex + 11 );
+                // var widthIndex = elementStyle.indexOf( "width:" );
+                // var parsedStyle = elementStyle.substring( widthIndex, widthIndex + 11 );
+                var parsedStyle = this.findStyleString("width", elementStyle);
                 // get only numbers of percentage
                 var tableWidth = ( parsedStyle || elementWidth ).replace( cleanPercentageRegex, "" );
               }
@@ -362,8 +374,9 @@ function htmlToPdfMake(htmlText, options) {
                     var colStyle = colElement.getAttribute( "style" ) || "";
 
                     if (( percentRegex.test( colWidth ) || widthRegex.test( colStyle ) )) {
-                      var colWidthIndex = colStyle.indexOf( "width:" );
-                      var colParsedStyle = colStyle.substring( colWidthIndex, colWidthIndex + 11 );
+                      // var colWidthIndex = colStyle.indexOf( "width:" );
+                      // var colParsedStyle = colStyle.substring( colWidthIndex, colWidthIndex + 11 );
+                      var colParsedStyle = this.findStyleString("width", colStyle);
                       // update cell width to it's percentage in colgroup
                       width = String(( colParsedStyle || colWidth ).replace( cleanPercentageRegex, "" )) + "%";
                     }
