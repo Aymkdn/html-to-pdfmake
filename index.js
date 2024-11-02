@@ -548,7 +548,10 @@ function htmlToPdfMake(htmlText, options) {
             var setLink = function(pointer, href) {
               pointer = pointer || {text:''}; // for link without any text
               if (Array.isArray(pointer.text)) {
-                return setLink(pointer.text[0], href);
+                pointer.text = pointer.text.map(function(text) {
+                  return setLink(text, href);
+                });
+                return pointer;
               } else if (Array.isArray(pointer.stack)) {
                 // if we have a more complex layer
                 pointer.stack = pointer.stack.map(function(stack) {
@@ -563,6 +566,8 @@ function htmlToPdfMake(htmlText, options) {
             }
             if (element.getAttribute("href")) {
               ret = setLink(ret, element.getAttribute("href"));
+              // reduce the complexity when only 1 text
+              if (Array.isArray(ret.text) && ret.text.length === 1) ret = ret.text[0];
               ret.nodeName = "A";
             }
             break;

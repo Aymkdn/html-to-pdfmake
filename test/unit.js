@@ -209,6 +209,30 @@ test("unit tests", function(t) {
     t.finish();
   })
 
+  t.test("a with subtag",function(t) {
+    var ret = htmlToPdfMake('<a href="https://www.somewhere.com">link <strong>something</strong></a>', {window:window});
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+    t.check(Array.isArray(ret.text) && ret.text.length === 2, "array");
+    t.check(ret.text[0].text === "link ", "text 1");
+    t.check(ret.text[1].text === "something", "text 2");
+    t.check(ret.text[0].color === "blue", "color 1");
+    t.check(ret.text[1].color === "blue", "color 2");
+    t.check(ret.text[0].link === "https://www.somewhere.com", "link 1");
+    t.check(ret.text[1].link === "https://www.somewhere.com", "link 2");
+    t.check(ret.style[0] === 'html-a', "class");
+
+    t.finish();
+  })
+  [
+    {"text":[
+      {"text":"link ","color":"blue","decoration":["underline"],"style":["html-a"],"link":"https://www.somewhere.com"},
+      {"text":"something","nodeName":"STRONG","color":"blue","decoration":["underline"],"bold":true,"style":["html-strong","html-a"],"link":"https://www.somewhere.com"}
+    ],
+    "nodeName":"A","color":"blue","decoration":["underline"],"style":["html-a"]}
+  ]
+
   t.test("strike",function(t) {
     var ret = htmlToPdfMake("<strike>strike</strike>", {window:window});
     if (debug) console.log(JSON.stringify(ret));
