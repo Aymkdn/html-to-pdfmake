@@ -1132,7 +1132,27 @@ test("unit tests", function(t) {
     "<table> (dynamic widths) 2");
 
     t.finish();
-  })
+  });
+
+  t.test("columns",function(t) {
+    var html = `<div data-pdfmake-type="columns"><div data-pdfmake='{"width": "*"}'></div><div style="width:auto">stuff centered</div><div data-pdfmake='{"width": "*"}'></div></div>`;
+    var ret = htmlToPdfMake(html, {
+      window:window
+    });
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+    t.check(
+      Array.isArray(ret.columns) &&
+      ret.columns.length === 3 &&
+      ret.columns[0].width === "*" &&
+      ret.columns[1].width === "auto" &&
+      ret.columns[1].text === "stuff centered" &&
+      ret.columns[2].width === "*",
+    "columns");
+
+    t.finish();
+  });
 
   t.finish();
 })

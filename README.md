@@ -425,6 +425,21 @@ For Base64 encoded image, please refer to the [PDFMake documentation](https://pd
 <h2 id="section1">Section 1</h2>
 ```
 
+### Columns
+
+PDFMake has a concept of [`columns`](https://pdfmake.github.io/docs/0.1/document-definition-object/columns/). We use `<div data-pdfmake-type="column"></div>` to identify it.
+  
+Example to center a table in the page:
+```html
+<div data-pdfmake-type="columns">
+  <div data-pdfmake='{"width":"*"}'></div>
+  <div style="width:auto">
+    <table><tr><th>Table</th><tr><tr><td>Centered</td></tr></table>
+  </div>
+  <div data-pdfmake='{"width":"*"}'></div>
+</div>
+```
+
 ## Examples
 
 You can find more examples in [example.js](example.js) which will create [example.pdf](example.pdf):

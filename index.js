@@ -574,7 +574,15 @@ function htmlToPdfMake(htmlText, options) {
           }
           default: {
             // handle other cases
-            if (options && typeof options.customTag === "function") {
+            if (nodeName === "DIV" && element.dataset && element.dataset.pdfmakeType === "columns") {
+              // if it's a <DIV> with data-pdfmake-type="columns"
+              // then we interpret it as the COLUMNS in PDFMake
+              if (ret.stack) {
+                ret.columns = ret.stack;
+                delete ret.stack;
+              }
+            } else if (options && typeof options.customTag === "function") {
+              // handle custom tags
               ret = options.customTag.call(this, {element:element, parents:parents, ret:ret});
             }
           }
