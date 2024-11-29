@@ -373,7 +373,7 @@ Support for various image formats and references:
 <img data-src='{"url": "https://example.com/image.jpg", "headers": {"Authorization": "Bearer token"}}'>
 ```
 
-For Base64 encoded image, please refer to the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/)) and [here](https://github.com/Aymkdn/html-to-pdfmake/issues/109#issue-932953144). And you can check [this Stackoverflow question](https://stackoverflow.com/questions/934012/get-image-data-in-javascript/42916772#42916772) to know the different ways to get a base64 encoded content from an image.
+For Base64 encoded image, please refer to the [PDFMake documentation](https://pdfmake.github.io/docs/document-definition-object/images/) and [here](https://github.com/Aymkdn/html-to-pdfmake/issues/109#issue-932953144). And you can check [this Stackoverflow question](https://stackoverflow.com/questions/934012/get-image-data-in-javascript/42916772#42916772) to know the different ways to get a base64 encoded content from an image.
 
 ## Common Use Cases
 
@@ -427,7 +427,7 @@ For Base64 encoded image, please refer to the [PDFMake documentation](https://pd
 
 ### Columns
 
-PDFMake has a concept of [`columns`](https://pdfmake.github.io/docs/0.1/document-definition-object/columns/). We use `<div data-pdfmake-type="column"></div>` to identify it.
+PDFMake has a concept of [`columns`](https://pdfmake.github.io/docs/0.1/document-definition-object/columns/). We use `<div data-pdfmake-type="columns"></div>` to identify it.
   
 Example to center a table in the page:
 ```html

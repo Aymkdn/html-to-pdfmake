@@ -1154,5 +1154,20 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("ol with ul",function(t) {
+    var html = `<ol><li><strong>Number 1</strong><span>:</span><ul><li><span>Item</span></li></ul></li></ol>`;
+    var ret = htmlToPdfMake(html, {
+      window:window
+    });
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+    t.check(Array.isArray(ret.ol) && ret.ol.length === 1 && Array.isArray(ret.ol[0].stack), "first stack");
+    t.check(ret.ol[0].stack.length === 2 && Array.isArray(ret.ol[0].stack[0].text) && ret.ol[0].stack[0].text[0].text === "Number 1", "first text");
+    t.check(Array.isArray(ret.ol[0].stack[1].ul) && ret.ol[0].stack[1].ul[0].text[0].text === "Item", "first ul");
+
+    t.finish();
+  });
+
   t.finish();
 })

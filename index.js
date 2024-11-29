@@ -509,9 +509,10 @@ function htmlToPdfMake(htmlText, options) {
             // if it's a stack, then check if the last child has a "text"
             if (ret.stack && !ret.stack[ret.stack.length-1].text) {
               // if not, we restructure our node
+              // by moving the non-stack stuff inside a "text"
               text = ret.stack.slice(0, -1);
               ret = [
-                (Array.isArray(text) ? {"stack": text} : {"text": text}),
+                {"text": text}, // (Array.isArray(text) ? {"stack": text} : {"text": text}),
                 ret.stack[ret.stack.length-1]
               ];
             }
