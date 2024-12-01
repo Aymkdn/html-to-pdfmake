@@ -254,19 +254,13 @@ function htmlToPdfMake(htmlText, options) {
                 var header = ret.table.body[0];
                 if (Array.isArray(header)) {
                   // determine the number of columns
-                  var columnCount = header.some(function(cell) {
-                    return cell.colSpan > 0;
-                  })
-                  ? header.reduce(function(partialCount, cell) {
-                      return partialCount + (cell.colSpan ? cell.colSpan : 0)
-                    }, 0)
-                  : header.length;
+                  var columnsCount = header.length;
                   // determine the number of rows
-                  var rowCount = ret.table.body.length;
+                  var rowsCount = ret.table.body.length;
 
                   // for each column
-                  for (var columnInd=0; columnInd<columnCount; columnInd++) {
-                    for (var rowInd=0; rowInd<rowCount; rowInd++) {
+                  for (var columnInd=0; columnInd<columnsCount; columnInd++) {
+                    for (var rowInd=0; rowInd<rowsCount; rowInd++) {
                       var row = ret.table.body[rowInd];
                       if (Array.isArray(row)) {
                         var cell = row[columnInd];
