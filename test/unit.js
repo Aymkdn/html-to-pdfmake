@@ -572,6 +572,66 @@ test("unit tests", function(t) {
     t.finish();
   })
 
+  t.test("table (rowspan/colspan) with thead and tbody", function(t) {
+    var html = `<table>
+      <thead>
+          <tr>
+            <th rowspan="2">Col A</th>
+            <th colspan="2">Col B & C</th>
+            <th rowspan="2">Col D</th>
+          </tr>
+          <tr>
+            <th>Col B</th>
+            <th>Col C</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+            <td rowspan="2">Cell A1 & A2</td>
+            <td>Cell B1</td>
+            <td rowspan="2">Cell C1 & C2</td>
+            <td>Cell D1</td>
+          </tr>
+          <tr>
+            <td>Cell B2</td>
+            <td>Cell D2</td>
+          </tr>
+      </tbody>
+    </table>`;
+    var ret = htmlToPdfMake(html, {window:window});
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+  
+    t.check(
+      ret.table &&
+      Array.isArray(ret.table.body) &&
+      ret.table.body.length === 4, "base");
+    t.check(
+      ret.table.body[0].length === 4 &&
+      ret.table.body[0][0].text === "Col A" &&
+      ret.table.body[0][1].text === "Col B & C" &&
+      ret.table.body[0][3].text === "Col D" &&
+      ret.table.body[1].length === 4 &&
+      ret.table.body[1][1].text === "Col B" &&
+      ret.table.body[1][2].text === "Col C", "header");
+    t.check(
+      ret.table.body[2].length === 4 &&
+      ret.table.body[2][0].text === "Cell A1 & A2" &&
+      ret.table.body[2][1].text === "Cell B1" &&
+      ret.table.body[2][2].text === "Cell C1 & C2" &&
+      ret.table.body[2][3].text === "Cell D1", "row 1");
+    t.check(
+      ret.table.body[3].length === 4 &&
+      ret.table.body[3][1].text === "Cell B2" &&
+      ret.table.body[3][3].text === "Cell D2", "row 2");
+    t.check(
+      Array.isArray(ret.style) &&
+      ret.style[0] === 'html-table', "table style");
+  
+    t.finish();
+  })
+
   t.test("img",function(t) {
     var ret = htmlToPdfMake('<img width="10" style="height:10px" src="data:image/jpeg;base64,...encodedContent...">', {window:window});
     if (debug) console.log(JSON.stringify(ret));
