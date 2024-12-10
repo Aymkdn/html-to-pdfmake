@@ -65,8 +65,11 @@ const htmlToPdfmake = require('html-to-pdfmake');
 const jsdom = require('jsdom');
 const { JSDOM } = jsdom;
 
-// Initialize
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
+// the below line may vary depending on your version of PDFMake
+// please, check https://github.com/bpampuch/pdfmake to know how to initialize this library
+pdfMake.vfs = pdfFonts;
+
+// initiate the "window" object in Node
 const { window } = new JSDOM('');
 
 // Convert HTML to PDFMake format
