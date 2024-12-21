@@ -345,12 +345,14 @@ function htmlToPdfMake(htmlText, options) {
                     var colGroups = element.children[ tableColgroupIndex ];
                     // get colgroup by cell index
                     var colElement = colGroups.children[ cellIndex ];
-                    var colAttrWidth = colElement.getAttribute( "width" ) || "";
-                    var colStyleWidth = colElement.style.width;
+                    if (colElement) {
+                      var colAttrWidth = colElement.getAttribute( "width" ) || "";
+                      var colStyleWidth = colElement.style.width;
 
-                    if ((colAttrWidth||colStyleWidth).endsWith("%")) {
-                      // update cell width to its percentage in colgroup
-                      width = (colAttrWidth||colStyleWidth);
+                      if ((colAttrWidth||colStyleWidth).endsWith("%")) {
+                        // update cell width to its percentage in colgroup
+                        width = (colAttrWidth||colStyleWidth);
+                      }
                     }
                   }
 
