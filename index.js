@@ -867,8 +867,25 @@ function htmlToPdfMake(htmlText, options) {
                 if (value) {
                   // convert value to a 'pt' when possible
                   var parsedValue = _this.convertToUnit(value);
-                  // if we have 'font-size' with a parsedValue at false, then ignore it
-                  if (key === 'font-size' && parsedValue === false) break;
+                  // if we have 'font-size' with a parsedValue at false, then:
+                  // check if it's one of know keywords (like medium, small, x-small, etc), otherwise ignore it
+                  if (key === 'fontSize' && parsedValue === false) {
+                    if (["xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "xxx-large"].includes(value)) {
+                      // we use 12pt as the medium value
+                      switch(value) {
+                        case "xx-small": value=7.2; break; // 60%
+                        case "x-small": value=9; break; // 75%
+                        case "small": value=10.7; break; // 89%
+                        case "medium": value=12; break;
+                        case "large": value=14.4; break; // 120%
+                        case "x-large": value=18; break; // 150%
+                        case "xx-large": value=24; break; // 200%
+                        case "xxx-large": value=36; break; // 300%
+                      }
+                    } else {
+                      break;
+                    }
+                  }
                   ret.push({key:key, value:(parsedValue === false ? value : parsedValue)});
                 }
               }

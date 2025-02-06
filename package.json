@@ -1,6 +1,6 @@
 {
   "name": "html-to-pdfmake",
-  "version": "2.5.19",
+  "version": "2.5.21",
   "description": "Convert HTML code to PDFMake",
   "main": "index.js",
   "scripts": {
@@ -23,7 +23,7 @@
     "eslint": "^5.16.0",
     "jsdom": "^16.6.0",
     "pdfmake": "^0.2.7",
-    "simple-test-framework": "^0.1.7",
+    "simple-test-framework": "^0.2.1",
     "svg-to-pdfkit": "^0.1.8"
   }
 }

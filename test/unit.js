@@ -1229,5 +1229,25 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("CSS units",function(t) {
+    var html = `<div style="line-height:107%;font-size:large;width:110px;height:50pt;margin-left:1in;margin-top:2em;margin-right:1rem;margin-bottom:0.5cm">hello world</div>`;
+    var ret = htmlToPdfMake(html, {
+      window:window
+    });
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+    t.check(ret.lineHeight == 1.07, "% OK");
+    t.check(ret.fontSize == 14.4, "constant OK");
+    t.check(ret.width == 83, "px OK");
+    t.check(ret.height == 50, "pt OK");
+    t.check(ret.marginLeft == 72, "in OK");
+    t.check(ret.marginRight == 12, "rem OK");
+    t.check(ret.marginTop == 24, "em OK");
+    t.check(ret.marginBottom == 14, "cm OK");
+
+    t.finish();
+  });
+
   t.finish();
 })
