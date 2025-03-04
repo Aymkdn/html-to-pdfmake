@@ -945,7 +945,7 @@ function htmlToPdfMake(htmlText, options) {
         // otherwise we could have 'border-color' or 'border-width'
         else if (b.key === 'border-color') {
           properties = _this.topRightBottomLeftToObject(b.value);
-          borderColor = [ properties.left, properties.top, properties.right, properties.bottom ];
+          borderColor = [ _this.parseColor(properties.left).color, _this.parseColor(properties.top).color, _this.parseColor(properties.right).color, _this.parseColor(properties.bottom).color ];
         }
         else if (b.key === 'border-width') {
           properties = _this.topRightBottomLeftToObject(b.value);
@@ -975,41 +975,26 @@ function htmlToPdfMake(htmlText, options) {
   //
   // to an object that gives {top, right, bottom, left}
   this.topRightBottomLeftToObject = function(props) {
-    var splitProps = String(props).split(' ');
-    switch (splitProps.length) {
-      case 4: {
-        return {
-          top:splitProps[0],
-          right:splitProps[1],
-          bottom:splitProps[2],
-          left:splitProps[3]
-        }
-      }
-      case 3: {
-        return {
-          top:splitProps[0],
-          right:splitProps[1],
-          left:splitProps[1],
-          bottom:splitProps[2],
-        }
-      }
-      case 2: {
-        return {
-          top:splitProps[0],
-          bottom:splitProps[0],
-          right:splitProps[1],
-          left:splitProps[1]
-        }
-      }
-      case 1: {
-        return {
-          top:splitProps[0],
-          right:splitProps[0],
-          bottom:splitProps[0],
-          left:splitProps[0]
-        }
-      }
+    // regexp to capture the colors (hex, rgb, rgba, hsl, hsla, color name)
+    var colorRegex = /#[0-9a-fA-F]{3,6}|\b(?:rgba?|hsla?)\([^)]*\)|\b[a-zA-Z]+\b/g;
+    var colors = props.match(colorRegex) || [];
+
+    var top=colors[0], right=colors[1], bottom=colors[2], left=colors[3];
+
+    switch (colors.length) {
+      case 1:
+        right = bottom = left = top;
+        break;
+      case 2:
+        bottom = top;
+        left = right;
+        break;
+      case 3:
+        left = right;
+        break;
     }
+
+    return { top:top, right:right, bottom:bottom, left:left };
   }
 
   // input: h in [0,360] and s,v in [0,1] - output: "rgb(0–255,0–255,0–255)""
