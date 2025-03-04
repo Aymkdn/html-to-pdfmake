@@ -849,8 +849,8 @@ function htmlToPdfMake(htmlText, options) {
               break;
             }
             default: {
-              // for borders
-              if (key === 'border' || key.indexOf('border-left') === 0 || key.indexOf('border-top') === 0 || key.indexOf('border-right') === 0 || key.indexOf('border-bottom') === 0) {
+              // do we have borders properties?
+              if (key.indexOf('border') === 0) {
                 if (!ignoreProperties) borders.push({key:key, value:value});
               } else {
                 // ignore some properties
@@ -894,35 +894,62 @@ function htmlToPdfMake(htmlText, options) {
         }
       }
     });
-    // for borders
+    // deal with the borders
     if (borders.length > 0) {
-      // we have to merge together the borders in two properties
+      // pdfmake supports only 2 properties:
+      //  - "border" (true/false) to indicate if the border should be visible
+      //  - "borderColor" (string) to indicate the color of the border
       var border = []; // array of boolean
       var borderColor = []; // array of colors
       borders.forEach(function(b) {
-        // we have 3 properties: width style color
-        b.value = _this.borderValueRearrange(b.value);
-        var properties = b.value.split(' ');
-        var width = properties[0].replace(/(\d*)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
         var index = -1, i;
+        // determine if the current property is for 'border-left', or 'border-right', or 'border-top', or 'border-bottom'
         if (b.key.indexOf('-left') > -1) index=0;
         else if (b.key.indexOf('-top') > -1) index=1;
         else if (b.key.indexOf('-right') > -1) index=2;
         else if (b.key.indexOf('-bottom') > -1) index=3;
-        // for the width
-        if (index > -1) {
-          border[index] = (width > 0);
-        } else {
-          for (i=0; i<4; i++) border[i] = (width > 0);
-        }
-        // for the color
-        if (properties.length > 2) {
-          var color = properties.slice(2).join(' ');
+
+        // for 'border', 'border-left', 'border-right', 'border-top', and 'border-bottom', then we should have three values: width style color
+        // so we try to find them
+        var splitKey = b.key.split('-'), properties, width;
+        if (splitKey.length === 1 /* border */ || (splitKey.length === 2 && index >= 0 /* border-left|right|top|bottom */)) {
+          b.value = _this.borderValueRearrange(b.value);
+          properties = b.value.split(' ');
+          width = properties[0].replace(/(\d*)(\.\d+)?([^\d]+)/g,"$1$2 ").trim();
+
+          // for the width
           if (index > -1) {
-            borderColor[index] = _this.parseColor(color).color;
+            border[index] = (width > 0);
           } else {
-            for (i=0; i<4; i++) borderColor[i] = _this.parseColor(color).color;
+            for (i=0; i<4; i++) border[i] = (width > 0);
           }
+          // for the color
+          if (properties.length > 2) {
+            var color = properties.slice(2).join(' ');
+            if (index > -1) {
+              borderColor[index] = _this.parseColor(color).color;
+            } else {
+              for (i=0; i<4; i++) borderColor[i] = _this.parseColor(color).color;
+            }
+          }
+        }
+        // otherwise it means we could have a specific value for a specific property
+        // e.g. 'border-left-color' or 'border-top-width'
+        // only 'color' and 'width' are supported
+        else if (index >= 0 && splitKey[2] === 'color') {
+          borderColor[index] = _this.parseColor(b.value).color;
+        }
+        else if (index >= 0 && splitKey[2] === 'width') {
+          border[index] = !/^0[a-z%]*$/.test(String(b.value));
+        }
+        // otherwise we could have 'border-color' or 'border-width'
+        else if (b.key === 'border-color') {
+          properties = _this.topRightBottomLeftToObject(b.value);
+          borderColor = [ properties.left, properties.top, properties.right, properties.bottom ];
+        }
+        else if (b.key === 'border-width') {
+          properties = _this.topRightBottomLeftToObject(b.value);
+          border = [ !/^0[a-z%]*$/.test(properties.left), !/^0[a-z%]*$/.test(properties.top), !/^0[a-z%]*$/.test(properties.right), !/^0[a-z%]*$/.test(properties.bottom) ]; 
         }
       });
       // fill the gaps
@@ -938,6 +965,51 @@ function htmlToPdfMake(htmlText, options) {
 
   this.toCamelCase = function(str) {
     return str.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase() });
+  }
+
+  // Convert the CSS properties like:
+  //  - top right bottom left
+  //  - top (left/right) bottom
+  //  - (top/bottom) (left/right)
+  //  - (top/bottom/left/right)
+  //
+  // to an object that gives {top, right, bottom, left}
+  this.topRightBottomLeftToObject = function(props) {
+    var splitProps = String(props).split(' ');
+    switch (splitProps.length) {
+      case 4: {
+        return {
+          top:splitProps[0],
+          right:splitProps[1],
+          bottom:splitProps[2],
+          left:splitProps[3]
+        }
+      }
+      case 3: {
+        return {
+          top:splitProps[0],
+          right:splitProps[1],
+          left:splitProps[1],
+          bottom:splitProps[2],
+        }
+      }
+      case 2: {
+        return {
+          top:splitProps[0],
+          bottom:splitProps[0],
+          right:splitProps[1],
+          left:splitProps[1]
+        }
+      }
+      case 1: {
+        return {
+          top:splitProps[0],
+          right:splitProps[0],
+          bottom:splitProps[0],
+          left:splitProps[0]
+        }
+      }
+    }
   }
 
   // input: h in [0,360] and s,v in [0,1] - output: "rgb(0–255,0–255,0–255)""

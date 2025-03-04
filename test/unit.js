@@ -1249,5 +1249,24 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("borders",function(t) {
+    var html = `<table><tr><td style="border:1px solid red">border:1px solid red</td><td style="border-bottom:1px solid blue">border-bottom:1px solid blue</td><td style="border-top-color:green">border-top-color:green</td><td style="border-right-width:0px">border-right-width:0px</td></tr></table>`;
+    var ret = htmlToPdfMake(html, {
+      window:window
+    });
+    if (debug) console.log(JSON.stringify(ret));
+    t.check(Array.isArray(ret) && ret.length===1, "return is OK");
+    ret = ret[0];
+    t.check(Array.isArray(ret.table.body) && ret.table.body[0].length === 4, "table array OK");
+    ret = ret.table.body[0];
+    t.check(ret[0].text === "border:1px solid red" && JSON.stringify(ret[0].border) === '[true,true,true,true]' && JSON.stringify(ret[0].borderColor) === '["red","red","red","red"]', "border:1px solid red");
+    t.check(ret[1].text === "border-bottom:1px solid blue" && JSON.stringify(ret[1].border) === '[true,true,true,true]' && JSON.stringify(ret[1].borderColor) === '["#000000","#000000","#000000","blue"]', "border-bottom:1px solid blue");
+    t.check(ret[2].text === "border-top-color:green" && JSON.stringify(ret[2].borderColor) === '["#000000","green","#000000","#000000"]', "border-top-color:green");
+    t.check(ret[3].text === "border-right-width:0px" && JSON.stringify(ret[3].border) === '[true,true,false,true]', "border-right-width:0px");
+
+    t.finish();
+  });
+
+  
   t.finish();
 })
