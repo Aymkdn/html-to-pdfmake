@@ -920,7 +920,7 @@ test("unit tests", function(t) {
   })
 
   t.test("convertUnit and stack", function(t) {
-    var html = `<div><div style="font-size:16px;margin-left:12pt">points</div><div style="margin-left:1rem">points</div></div>`;
+    var html = `<div><div style="font-size:16px;margin-left:12pt">points</div><div style="margin-left:1rem;margin-right:-.25in">points</div></div>`;
     var ret = htmlToPdfMake(html, {window:window});
     if (debug) console.log(JSON.stringify(ret));
     t.check(Array.isArray(ret) && ret.length===1, "return is OK");
@@ -929,7 +929,8 @@ test("unit tests", function(t) {
     t.check(
       ret.stack[0].marginLeft===12 &&
       ret.stack[0].fontSize===12 &&
-      ret.stack[1].marginLeft===12
+      ret.stack[1].marginLeft === 12 &&
+      ret.stack[1].marginRight === -18
     , "convertUnit");
     t.finish();
   })
