@@ -1196,7 +1196,7 @@ test("unit tests", function(t) {
   });
 
   t.test("columns",function(t) {
-    var html = `<div data-pdfmake-type="columns"><div data-pdfmake='{"width": "*"}'></div><div style="width:auto">stuff centered</div><div data-pdfmake='{"width": "*"}'></div></div>`;
+    var html = `<div data-pdfmake-type="columns"><div data-pdfmake='{"width": "*"}'></div><div style="width:auto">stuff centered</div><div data-pdfmake="{ 'width': '*' } "></div></div>`;
     var ret = htmlToPdfMake(html, {
       window:window
     });

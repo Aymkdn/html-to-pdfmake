@@ -401,8 +401,7 @@ function htmlToPdfMake(htmlText, options) {
             // check if we have some data-pdfmake to apply
             if (element.dataset && element.dataset.pdfmake) {
               // handle when people will use simple quotes, e.g. <table data-pdfmake="{'layout':'noBorders'}">
-              dataset = element.dataset.pdfmake;
-              if (dataset.charAt(1) === "'") dataset=dataset.replace(/'/g,'"');
+              dataset = element.dataset.pdfmake.replace(/'/g,'"');
               try {
                 dataset = JSON.parse(dataset);
                 for (key in dataset) {
@@ -456,9 +455,14 @@ function htmlToPdfMake(htmlText, options) {
             };
             // we can override the default HR style with "data-pdfmake"
             if (element.dataset && element.dataset.pdfmake) {
-              dataset = JSON.parse(element.dataset.pdfmake);
-              for (key in dataset) {
-                styleHR[key] = dataset[key];
+              dataset = element.dataset.pdfmake.replace(/'/g, '"');
+              try {
+                dataset = JSON.parse(dataset);
+                for (key in dataset) {
+                  styleHR[key] = dataset[key];
+                }
+              } catch (e) {
+                console.error(e);
               }
             }
 
@@ -592,9 +596,15 @@ function htmlToPdfMake(htmlText, options) {
 
         // check if we have some data-pdfmake to apply
         if (['HR','TABLE'].indexOf(nodeName) === -1 && element.dataset && element.dataset.pdfmake) {
-          dataset = JSON.parse(element.dataset.pdfmake);
-          for (key in dataset) {
-            ret[key] = dataset[key];
+          // handle when people will use simple quotes
+          dataset = element.dataset.pdfmake.replace(/'/g, '"');
+          try {
+            dataset = JSON.parse(dataset);
+            for (key in dataset) {
+              ret[key] = dataset[key];
+            }
+          } catch (e) {
+            console.error(e);
           }
         }
 
