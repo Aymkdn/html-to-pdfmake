@@ -787,8 +787,11 @@ function htmlToPdfMake(htmlText, options) {
 
               // we now need to convert to PT
               value.forEach(function(val, i) {
-                value[i] = _this.convertToUnit(val);
+                // PDFMake doesn't support "auto" as a value
+                if (val === 'auto') value[i] = '';
+                else value[i] = _this.convertToUnit(val);
               });
+
               // ignore if we have a FALSE in the table
               if (value.indexOf(false) === -1) ret.push({key:key, value:value});
               break;
@@ -865,6 +868,7 @@ function htmlToPdfMake(htmlText, options) {
               } else {
                 // ignore some properties
                 if (ignoreProperties && (key.indexOf("margin-") === 0 || key === 'width' || key === 'height')) break;
+
                 // for IMG only (see issue #181)
                 if (nodeName === "IMG" && (key === 'width' || key === 'height')) {
                   ret.push({key:key, value: _this.convertToUnit(value)});
@@ -896,6 +900,9 @@ function htmlToPdfMake(htmlText, options) {
                       break;
                     }
                   }
+                  // PDFMake doesn't support "auto" as a value for "margin" (at least)
+                  if (key.indexOf("margin") === 0 && value === 'auto') break;
+
                   ret.push({key:key, value:(parsedValue === false ? value : parsedValue)});
                 }
               }
