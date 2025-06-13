@@ -683,7 +683,12 @@ function htmlToPdfMake(htmlText, options) {
         if (stl.key === "decoration") {
           if (!Array.isArray(params.ret[stl.key])) params.ret[stl.key]=[];
           params.ret[stl.key].push(stl.value);
-        } else {
+        }
+        // ignore the "alignment" for the <ol> and <ul> elements (see https://github.com/Aymkdn/html-to-pdfmake/issues/245)
+        else if (["UL", "OL"].includes(params.ret.nodeName) && stl.key === "alignment") {
+          // do nothing 
+        }
+        else {
           // when 'params.ret.margin' is defined but also a 'marginXYZ' is defined in `stl.key`,
           // then we should change the correct index in `params.ret.margin` to reflect it
           if (params.ret.margin && stl.key.indexOf('margin') === 0) {
