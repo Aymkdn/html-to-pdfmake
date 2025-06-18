@@ -664,7 +664,7 @@ function htmlToPdfMake(htmlText, options) {
               if (style === 'decoration') {
                 if (!Array.isArray(params.ret[style])) params.ret[style]=[];
                 // do not apply twice the same (e.g. applying 2 "underline" will cause an extra blank space with an underline)
-                if (params.ret[style].indexOf(_this.defaultStyles[parentNodeName][style]) === -1) {
+                if (_this.defaultStyles[parentNodeName][style] && params.ret[style].indexOf(_this.defaultStyles[parentNodeName][style]) === -1) {
                   params.ret[style].push(_this.defaultStyles[parentNodeName][style]);
                 }
               } else {
