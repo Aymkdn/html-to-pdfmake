@@ -596,7 +596,18 @@ function htmlToPdfMake(htmlText, options) {
         }
 
         // if we are inside <LI> and the text is just empty, PDFMake will ignore it (see https://github.com/Aymkdn/html-to-pdfmake/issues/247)
-        if (parents.length > 0 && parents[parents.length-1].nodeName === "LI" && ((Array.isArray(ret.text) && ret.text.length === 0) || (typeof ret.text === 'string' && ret.text === ''))) {
+        if (
+          (
+            (parents.length > 0 && parents[parents.length-1].nodeName === "LI")
+            ||
+            nodeName === "LI"
+          )
+            &&
+          (
+            (Array.isArray(ret.text) && ret.text.length === 0)
+            ||
+            (typeof ret.text === 'string' && ret.text === ''))
+          ) {
           // so we replace it with a space
           ret.text = ' ';
         }
