@@ -586,14 +586,21 @@ function htmlToPdfMake(htmlText, options) {
               // handle custom tags
               ret = options.customTag.call(this, {element:element, parents:parents, ret:ret});
             }
+
           }
         }
-
+        
         // reduce the number of JSON properties
         if (Array.isArray(ret.text) && ret.text.length === 1 && ret.text[0].text && !ret.text[0].nodeName) {
           ret.text = ret.text[0].text;
         }
 
+        // if we are inside <LI> and the text is just empty, PDFMake will ignore it (see https://github.com/Aymkdn/html-to-pdfmake/issues/247)
+        if (parents.length > 0 && parents[parents.length-1].nodeName === "LI" && ((Array.isArray(ret.text) && ret.text.length === 0) || (typeof ret.text === 'string' && ret.text === ''))) {
+          // so we replace it with a space
+          ret.text = ' ';
+        }
+        
         // check if we have some data-pdfmake to apply
         if (['HR','TABLE'].indexOf(nodeName) === -1 && element.dataset && element.dataset.pdfmake) {
           // handle when people will use simple quotes
