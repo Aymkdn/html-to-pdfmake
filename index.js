@@ -1140,7 +1140,7 @@ function htmlToPdfMake(htmlText, options) {
     val = mtch[1];
     switch(mtch[3]) {
       case 'px':{
-        val = Math.round(val * 0.75292857248934); // 1px => 0.75292857248934pt
+        val *= 0.75; // 1px => 0.75292857248934pt
         break;
       }
       case 'em':
@@ -1149,7 +1149,7 @@ function htmlToPdfMake(htmlText, options) {
         break;
       }
       case 'cm':{
-        val = Math.round(val * 28.34646); // 1cm => 28.34646
+        val *= 28.34; // 1cm => 28.34646
         break;
       }
       case 'in':{

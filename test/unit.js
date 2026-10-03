@@ -657,7 +657,7 @@ test("unit tests", function(t) {
     ret = ret[0];
     t.check(
       ret.image === "data:image/jpeg;base64,...encodedContent..." &&
-      ret.width === 8 && ret.height === 8 &&
+      ret.width === 7.5 && ret.height === 7.5 &&
       Array.isArray(ret.style) &&
       ret.style[0] === 'html-img',
     "<img>");
@@ -698,7 +698,7 @@ test("unit tests", function(t) {
       ret.text === "test" &&
       ret.bold &&
       ret.italics &&
-      ret.fontSize === 11 &&
+      ret.fontSize === 10.5 &&
       ret.alignment === 'center' &&
       Array.isArray(ret.style) &&
       ret.style.includes('html-strong') &&
@@ -927,11 +927,11 @@ test("unit tests", function(t) {
     t.check(
       Array.isArray(ret.table.widths) &&
       ret.table.widths.length === 2 &&
-      ret.table.widths[0] === 264 &&
+      ret.table.widths[0] === 262.5 &&
       ret.table.widths[1] === 'auto' &&
       ret.table.heights.length === 2 &&
       ret.table.heights[0] === 75 &&
-      ret.table.heights[1] === 151
+      ret.table.heights[1] === 150
     , "tableAutoSize");
 
     t.finish();
@@ -1300,12 +1300,12 @@ test("unit tests", function(t) {
     ret = ret[0];
     t.check(ret.lineHeight == 1.07, "% OK");
     t.check(ret.fontSize == 14.4, "constant OK");
-    t.check(ret.width == 83, "px OK");
+    t.check(ret.width == 82.5, "px OK");
     t.check(ret.height == 50, "pt OK");
     t.check(ret.marginLeft == 72, "in OK");
     t.check(ret.marginRight == 12, "rem OK");
     t.check(ret.marginTop == 24, "em OK");
-    t.check(ret.marginBottom == 14, "cm OK");
+    t.check(ret.marginBottom == 14.17, "cm OK");
 
     t.finish();
   });
