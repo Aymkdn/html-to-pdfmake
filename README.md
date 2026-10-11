@@ -163,6 +163,7 @@ const options = {
   tableAutoSize: false,  // Enable automatic table sizing
   imagesByReference: false,  // Handle images by reference
   removeExtraBlanks: false,  // Remove extra whitespace
+  collapseMargins: false,  // Collapse vertical margins between sibling blocks like CSS
   removeTagClasses: false,  // Keep HTML tag classes
   window: window,  // Required for Node.js usage
   ignoreStyles: [],  // Style properties to ignore
@@ -289,6 +290,14 @@ const html = htmlToPdfMake(`<code typecode="QR" style="foreground:black;backgrou
 Boolean that will remove extra unwanted blank spaces from the PDF.
 
 In [some cases](https://github.com/Aymkdn/html-to-pdfmake/issues/145) these blank spaces could appear. Using this option could be quite resource consuming.
+
+#### collapseMargins
+
+Boolean (default `false`) that emulates the CSS [margin collapsing](https://www.w3.org/TR/CSS21/box.html#collapsing-margins) between adjacent sibling blocks: the space between them becomes `max(bottom margin of the first, top margin of the second)` instead of their sum, which is what PDFMake does.
+
+For example `<p>...</p><h2>...</h2>` with `p` having `margin-bottom:10` and `h2` having `margin-top:15` will be separated by 15, not 25.
+
+It also collapses the margin of a block (`<div>`) with the margin of its first/last child, and handles negative margins like CSS does (biggest positive + smallest negative). The margins of empty blocks are not collapsed.
 
 #### showHidden
 

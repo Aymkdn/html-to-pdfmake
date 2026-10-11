@@ -15,6 +15,7 @@
  *   @param  {Boolean} [tableAutoSize=false] It permits to use the width/height defined in styles for a table's cells and rows
  *   @param  {Boolean} [imagesByReference=false] It permits to return two objets ({content, images}) to handle the `<img>` tags by reference
  *   @param  {Boolean} [removeExtraBlanks=false] Some blank spaces in your code may cause extra blank lines in the PDF – use this option to remove them
+ *   @param  {Boolean} [collapseMargins=false] TRUE to collapse the vertical margins between sibling blocks like CSS does (the gap becomes max(bottom, top) instead of bottom + top)
  *   @param  {Boolean} [showHidden=false] TRUE if the 'display:none' elements should be displayed
  *   @param  {Boolean} [removeTagClasses=false] TRUE if we don't want to have 'html-TAG' added as a class for each node
  *   @param  {Array} [ignoreStyles=[]] An array of style property to ignore
@@ -45,6 +46,7 @@ function htmlToPdfMake(htmlText, options) {
   this.tableAutoSize = (options && typeof options.tableAutoSize === "boolean" ? options.tableAutoSize : false);
   this.imagesByReference = (options && typeof options.imagesByReference === "boolean" ? options.imagesByReference : false);
   this.removeExtraBlanks = (options && typeof options.removeExtraBlanks === "boolean" ? options.removeExtraBlanks : false);
+  this.collapseMargins = (options && typeof options.collapseMargins === "boolean" ? options.collapseMargins : false);
   this.showHidden = (options && typeof options.showHidden === "boolean" ? options.showHidden : false);
   this.removeTagClasses = (options && typeof options.removeTagClasses === "boolean" ? options.removeTagClasses : false);
   this.ignoreStyles = (options && Array.isArray(options.ignoreStyles) ? options.ignoreStyles : []);
@@ -127,7 +129,109 @@ function htmlToPdfMake(htmlText, options) {
     var docDef = this.parseElement(parsedHtml.body, []);
 
     // remove first level
-    return docDef.stack || docDef.text;
+    var content = docDef.stack || docDef.text;
+    if (this.collapseMargins) this.collapseVerticalMargins(content);
+    return content;
+  }
+
+  /**
+   * Emulates the CSS "margin collapsing" of vertical margins (https://www.w3.org/TR/CSS21/box.html#collapsing-margins):
+   *  - between adjacent sibling blocks
+   *  - between a block (stack) and its first/last child, when the block has no border
+   *  - with negative margins (max positive + min negative)
+   * Not handled: margins of empty blocks collapsing through themselves.
+   *
+   * @param {Array} nodes The PDFMake nodes (modified in place)
+   * @return {Array} the same array
+   */
+  this.collapseVerticalMargins = function(nodes) {
+    var _this = this;
+    if (!Array.isArray(nodes)) return nodes;
+
+    // effective margin [left, top, right, bottom], with the same precedence as PDFMake
+    function getMargin(node) {
+      var m = node.margin, base;
+      if (typeof m === 'number') base = [m, m, m, m];
+      else if (Array.isArray(m) && m.length === 2) base = [m[0], m[1], m[0], m[1]];
+      else if (Array.isArray(m) && m.length === 4) base = m.slice(0);
+      else base = [0, 0, 0, 0];
+      return [
+        node.marginLeft || base[0] || 0,
+        node.marginTop || base[1] || 0,
+        node.marginRight || base[2] || 0,
+        node.marginBottom || base[3] || 0
+      ];
+    }
+
+    function setMargin(node, margin) {
+      node.margin = margin;
+      delete node.marginLeft;
+      delete node.marginTop;
+      delete node.marginRight;
+      delete node.marginBottom;
+    }
+
+    // adjoining margins: the biggest positive + the smallest negative (so max if both are positive)
+    function collapse(a, b) {
+      return Math.max(a, b, 0) + Math.min(a, b, 0);
+    }
+
+    // go deeper in a node
+    function walk(node) {
+      ['stack', 'ul', 'ol'].forEach(function(key) {
+        if (Array.isArray(node[key])) _this.collapseVerticalMargins(node[key]);
+      });
+      // columns are side by side: they are not siblings in a vertical flow
+      if (Array.isArray(node.columns)) node.columns.forEach(function(col) { if (col && typeof col === 'object') walk(col); });
+      if (node.table && Array.isArray(node.table.body)) {
+        node.table.body.forEach(function(row) {
+          if (Array.isArray(row)) row.forEach(function(cell) { if (cell && typeof cell === 'object') walk(cell); });
+        });
+      }
+      // a block without border lets its first/last child margin collapse with its own
+      if (Array.isArray(node.stack) && node.stack.length > 0 && !node.border) {
+        var first = node.stack[0];
+        var last = node.stack[node.stack.length-1];
+        var pm = getMargin(node);
+        var changed = false;
+        if (first && typeof first === 'object') {
+          var fm = getMargin(first);
+          if (fm[1] !== 0) {
+            pm[1] = collapse(pm[1], fm[1]);
+            fm[1] = 0;
+            setMargin(first, fm);
+            changed = true;
+          }
+        }
+        if (last && typeof last === 'object') {
+          var lm = getMargin(last);
+          if (lm[3] !== 0) {
+            pm[3] = collapse(pm[3], lm[3]);
+            lm[3] = 0;
+            setMargin(last, lm);
+            changed = true;
+          }
+        }
+        if (changed) setMargin(node, pm);
+      }
+    }
+
+    var prev = null;
+    nodes.forEach(function(node) {
+      if (!node || typeof node !== 'object') { prev = null; return; }
+      walk(node);
+      if (prev) {
+        var bottom = getMargin(prev)[3];
+        var margin = getMargin(node);
+        var top = collapse(bottom, margin[1]) - bottom;
+        if (top !== margin[1]) {
+          margin[1] = top;
+          setMargin(node, margin);
+        }
+      }
+      prev = node;
+    });
+    return nodes;
   }
 
   /**
