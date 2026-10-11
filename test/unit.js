@@ -1310,6 +1310,53 @@ test("unit tests", function(t) {
     t.finish();
   });
 
+  t.test("collapseMargins",function(t) {
+    var html = `<p>a</p><h2>b</h2><h2>c</h2><div><p>d</p><h3>e</h3></div>`;
+    var opts = {
+      window:window,
+      defaultStyles:{
+        p:{margin:[0, 0, 0, 10]},
+        h2:{marginTop:15, marginBottom:4},
+        h3:{marginTop:6, marginBottom:4}
+      }
+    };
+
+    // by default: the margins are added (PDFMake behavior)
+    var ret = htmlToPdfMake(html, opts);
+    t.check(ret[1].marginTop === 15 && ret[2].marginTop === 15, "default: untouched");
+
+    // with the option: max(bottom, top) - bottom
+    opts.collapseMargins = true;
+    ret = htmlToPdfMake(html, opts);
+    t.check(JSON.stringify(ret[1].margin) === '[0,5,0,4]', "p(10) + h2(15) => gap 15");
+    t.check(JSON.stringify(ret[2].margin) === '[0,11,0,4]', "h2(4) + h2(15) => gap 15");
+    t.check(JSON.stringify(ret[3].stack[1].margin) === '[0,0,0,0]' && ret[3].margin[3] === 4, "nested: p(10) + h3(6) => gap 10, h3 bottom goes to the div");
+    t.check(ret[0].margin[3] === 10, "first element untouched");
+
+    // parent / first-child and last-child
+    var ret2 = htmlToPdfMake(`<p>a</p><div><h2>b</h2><p>c</p></div><p>d</p>`, {
+      window:window, collapseMargins:true,
+      defaultStyles:{ p:{margin:[0,0,0,10]}, h2:{marginTop:15, marginBottom:4} }
+    });
+    var div = ret2[1];
+    t.check(JSON.stringify(div.margin) === '[0,5,0,10]' && JSON.stringify(div.stack[0].margin) === '[0,0,0,4]' && JSON.stringify(div.stack[1].margin) === '[0,0,0,0]', "block/first-child and last-child");
+
+    // negative margins and columns
+    var ret3 = htmlToPdfMake(`<p>a</p><h2>b</h2>`, {
+      window:window, collapseMargins:true,
+      defaultStyles:{ p:{margin:[0,0,0,10]}, h2:{margin:[0,-4,0,0]} }
+    });
+    t.check(JSON.stringify(ret3[1].margin) === '[0,-4,0,0]', "negative: 10 + (-4) => 6");
+    var ret4 = htmlToPdfMake(`<div data-pdfmake-type="columns"><p>x</p><p>y</p></div>`, {
+      window:window, collapseMargins:true,
+      defaultStyles:{ p:{margin:[0,15,0,10]} }
+    });
+    t.check(ret4[0].columns[1].margin[1] === 15, "columns are not collapsed between them");
+
+
+    t.finish();
+  });
+
   t.test("borders",function(t) {
     var html = `<table><tr><td style="border:1px solid red">border:1px solid red</td><td style="border-bottom:1px solid blue">border-bottom:1px solid blue</td><td style="border-top-color:green">border-top-color:green</td><td style="border-right-width:0px">border-right-width:0px</td><td style="border-color:rgb(255, 0, 0) blue green">border-color:rgb(255, 0, 0) blue green</td></tr></table>`;
     var ret = htmlToPdfMake(html, {
