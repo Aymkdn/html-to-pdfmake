@@ -55,7 +55,7 @@
   <div style="display:flex;height:35vh">
     <div style="flex:1;display:flex;flex-direction:column;">
       <b>Your HTML code here:</b>
-      <textarea style="height:100%" id="code" onkeyup="toHTML()">
+      <textarea style="height:100%" id="code">
 &lt;div>
   &lt;h1>My title&lt;/h1>
   &lt;p>
@@ -115,7 +115,7 @@
       <div style="overflow:auto;padding:10px;background-color:#EEEEEE"><canvas id="pdf"></canvas></div>
     </div>
   </div>
-  <script src="browser-2.5.36.js"></script>
+  <script src="browser-2.6.0.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfmake@latest/build/pdfmake.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pdfmake@latest/build/vfs_fonts.js"></script>
   <script type="module">
@@ -207,6 +207,7 @@
     function toHTML() {
       htmlBag.innerHTML = codeBag.value;
     }
+    codeBag.addEventListener('keyup', toHTML);
     toHTML();
   </script>
 </body>

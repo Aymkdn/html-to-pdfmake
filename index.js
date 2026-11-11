@@ -824,6 +824,7 @@ function htmlToPdfMake(htmlText, options) {
               case "marginTop": params.ret.margin[1]=stl.value; break;
               case "marginRight": params.ret.margin[2]=stl.value; break;
               case "marginBottom": params.ret.margin[3]=stl.value; break;
+              case "margin": params.ret.margin = stl.value; break;
             }
           } else {
             params.ret[stl.key] = stl.value;
